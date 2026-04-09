@@ -1,0 +1,45 @@
+# Flutter
+halalet_app/.dart_tool/
+halalet_app/.packages
+# Keep halalet_app/build/web/ for deployment, ignore the rest
+halalet_app/build/app/
+halalet_app/build/ios/
+halalet_app/build/linux/
+halalet_app/build/macos/
+halalet_app/build/windows/
+halalet_app/.flutter-plugins
+halalet_app/.flutter-plugins-dependencies
+halalet_app/pubspec.lock
+halalet_app/.idea/
+halalet_app/*.iml
+halalet_app/android/.gradle/
+halalet_app/android/local.properties
+halalet_app/ios/Pods/
+halalet_app/ios/Podfile.lock
+halalet_app/ios/.symlinks/
+halalet_app/ios/Flutter/flutter_export_environment.sh
+halalet_app/ios/Flutter/Generated.xcconfig
+
+# Backend
+backend/__pycache__/
+backend/routes/__pycache__/
+backend/venv/
+backend/*.db
+backend/.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.apk
+*.ipa
+
+# Claude
+.claude/
