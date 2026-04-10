@@ -57,7 +57,14 @@ class DashboardScreen extends StatelessWidget {
         _ExchangeRateTicker(api: provider.api),
         const SizedBox(height: 16),
         _PortfolioCard(provider: provider, fmt: fmt),
-        const SizedBox(height: 16),
+        const SizedBox(height: 14),
+        _CashBalanceCard(
+          value: '${fmt.format(provider.availableCashBalance)} ETB',
+          subLabel: provider.reservedForOrders > 0
+              ? '${fmt.format(provider.reservedForOrders)} reserved'
+              : null,
+        ),
+        const SizedBox(height: 14),
         _mobileStatsGrid(context, provider, fmt, l, onNavigateTo),
         const SizedBox(height: 16),
         // Quick access cards for new features
@@ -120,35 +127,43 @@ class DashboardScreen extends StatelessWidget {
         _ExchangeRateTicker(api: provider.api),
         const SizedBox(height: 20),
 
-        // Portfolio card + Stats in a row on desktop
-        if (desktop)
+        // Top row: Capital at Risk + Cash Balance (equal height)
+        if (desktop) ...[
           IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
                   flex: 3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _PortfolioCard(provider: provider, fmt: fmt),
-                      const SizedBox(height: 14),
-                      _AllocationCard(provider: provider, fmt: fmt),
-                    ],
-                  ),
+                  child: _PortfolioCard(provider: provider, fmt: fmt),
                 ),
                 const SizedBox(width: 20),
                 Expanded(
                   flex: 4,
-                  child: _webStatsGrid(context, provider, fmt, onNavigateTo),
+                  child: _CashBalanceCard(
+                    value: '${fmt.format(provider.availableCashBalance)} ETB',
+                    subLabel: provider.reservedForOrders > 0
+                        ? '${fmt.format(provider.reservedForOrders)} reserved'
+                        : null,
+                  ),
                 ),
               ],
             ),
-          )
+          ),
+          const SizedBox(height: 14),
+          // Bottom row: Allocation + 3 stat cards (all equal height)
+          _webStatsGrid(context, provider, fmt, onNavigateTo),
+        ]
         else ...[
           _PortfolioCard(provider: provider, fmt: fmt),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
+          _CashBalanceCard(
+            value: '${fmt.format(provider.availableCashBalance)} ETB',
+            subLabel: provider.reservedForOrders > 0
+                ? '${fmt.format(provider.reservedForOrders)} reserved'
+                : null,
+          ),
+          const SizedBox(height: 14),
           _webStatsGrid(context, provider, fmt, onNavigateTo),
         ],
         const SizedBox(height: 28),
@@ -225,14 +240,10 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _mobileStatsGrid(BuildContext context, AppProvider provider, NumberFormat fmt, AppLocalizations l, void Function(int)? onNavigateTo) {
-    final reserved = provider.reservedForOrders;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _CashBalanceCard(
-          value: '${fmt.format(provider.availableCashBalance)} ETB',
-          subLabel: reserved > 0 ? '${fmt.format(reserved)} reserved' : null,
-        ),
+        _AllocationCard(provider: provider, fmt: fmt),
         const SizedBox(height: 12),
         Row(
           children: [
@@ -272,51 +283,47 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _webStatsGrid(BuildContext context, AppProvider provider, NumberFormat fmt, void Function(int)? onNavigateTo) {
-    final reserved = provider.reservedForOrders;
     final l = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _CashBalanceCard(
-          value: '${fmt.format(provider.availableCashBalance)} ETB',
-          subLabel: reserved > 0 ? '${fmt.format(reserved)} reserved' : null,
-        ),
-        const SizedBox(height: 14),
-        Row(
-          children: [
-            Expanded(
-              child: _StatCard(
-                icon: Icons.receipt_long_outlined,
-                label: l.openOrders,
-                value: '${provider.orders.where((o) => o.isPending).length}',
-                color: HalalEtTheme.primaryLight,
-                onTap: onNavigateTo != null ? () => onNavigateTo(3) : null,
-              ),
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 2,
+            child: _AllocationCard(provider: provider, fmt: fmt),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: _StatCard(
+              icon: Icons.receipt_long_outlined,
+              label: l.openOrders,
+              value: '${provider.orders.where((o) => o.isPending).length}',
+              color: HalalEtTheme.primaryLight,
+              onTap: onNavigateTo != null ? () => onNavigateTo(3) : null,
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _StatCard(
-                icon: Icons.pie_chart_outline,
-                label: l.holdings,
-                value: '${provider.holdings.length} assets',
-                color: const Color(0xFF818CF8),
-                onTap: onNavigateTo != null ? () => onNavigateTo(2) : null,
-              ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: _StatCard(
+              icon: Icons.pie_chart_outline,
+              label: l.holdings,
+              value: '${provider.holdings.length} assets',
+              color: const Color(0xFF818CF8),
+              onTap: onNavigateTo != null ? () => onNavigateTo(2) : null,
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _StatCard(
-                icon: Icons.star_outline_rounded,
-                label: l.watchlist,
-                value: '${provider.watchlist.length} assets',
-                color: const Color(0xFFFBBF24),
-                onTap: onNavigateTo != null ? () => onNavigateTo(4) : null,
-              ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: _StatCard(
+              icon: Icons.star_outline_rounded,
+              label: l.watchlist,
+              value: '${provider.watchlist.length} assets',
+              color: const Color(0xFFFBBF24),
+              onTap: onNavigateTo != null ? () => onNavigateTo(4) : null,
             ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -889,6 +896,7 @@ class _AllocationCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
@@ -901,9 +909,7 @@ class _AllocationCard extends StatelessWidget {
                       color: HalalEtTheme.textSecondary)),
             ],
           ),
-          const SizedBox(height: 12),
           _bar('Holdings', holdingsPct, const Color(0xFF818CF8)),
-          const SizedBox(height: 10),
           _bar('Cash', cashPct, HalalEtTheme.accent),
         ],
       ),
