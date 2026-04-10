@@ -114,21 +114,19 @@ class DashboardScreen extends StatelessWidget {
 
         // Portfolio card + Stats in a row on desktop
         if (desktop)
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: _PortfolioCard(provider: provider, fmt: fmt),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  flex: 4,
-                  child: _webStatsGrid(context, provider, fmt, onNavigateTo),
-                ),
-              ],
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: _PortfolioCard(provider: provider, fmt: fmt),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                flex: 4,
+                child: _webStatsGrid(context, provider, fmt, onNavigateTo),
+              ),
+            ],
           )
         else ...[
           _PortfolioCard(provider: provider, fmt: fmt),
@@ -211,31 +209,25 @@ class DashboardScreen extends StatelessWidget {
   Widget _mobileStatsGrid(BuildContext context, AppProvider provider, NumberFormat fmt, AppLocalizations l, void Function(int)? onNavigateTo) {
     final reserved = provider.reservedForOrders;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _CashBalanceCard(
-                value: '${fmt.format(provider.availableCashBalance)} ETB',
-                subLabel: reserved > 0 ? '${fmt.format(reserved)} reserved' : null,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _StatCard(
-                icon: Icons.receipt_long_outlined,
-                label: l.openOrders,
-                value:
-                    '${provider.orders.where((o) => o.isPending).length}',
-                color: HalalEtTheme.primaryLight,
-                onTap: onNavigateTo != null ? () => onNavigateTo(3) : null,
-              ),
-            ),
-          ],
+        _CashBalanceCard(
+          value: '${fmt.format(provider.availableCashBalance)} ETB',
+          subLabel: reserved > 0 ? '${fmt.format(reserved)} reserved' : null,
         ),
         const SizedBox(height: 12),
         Row(
           children: [
+            Expanded(
+              child: _StatCard(
+                icon: Icons.receipt_long_outlined,
+                label: l.openOrders,
+                value: '${provider.orders.where((o) => o.isPending).length}',
+                color: HalalEtTheme.primaryLight,
+                onTap: onNavigateTo != null ? () => onNavigateTo(3) : null,
+              ),
+            ),
+            const SizedBox(width: 12),
             Expanded(
               child: _StatCard(
                 icon: Icons.pie_chart_outline,
@@ -265,58 +257,46 @@ class DashboardScreen extends StatelessWidget {
     final reserved = provider.reservedForOrders;
     final l = AppLocalizations.of(context);
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: _CashBalanceCard(
-                  value: '${fmt.format(provider.availableCashBalance)} ETB',
-                  subLabel: reserved > 0 ? '${fmt.format(reserved)} reserved' : null,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.receipt_long_outlined,
-                  label: l.openOrders,
-                  value: '${provider.orders.where((o) => o.isPending).length}',
-                  color: HalalEtTheme.primaryLight,
-                  onTap: onNavigateTo != null ? () => onNavigateTo(3) : null,
-                ),
-              ),
-            ],
-          ),
+        _CashBalanceCard(
+          value: '${fmt.format(provider.availableCashBalance)} ETB',
+          subLabel: reserved > 0 ? '${fmt.format(reserved)} reserved' : null,
         ),
         const SizedBox(height: 14),
-        Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.pie_chart_outline,
-                  label: l.holdings,
-                  value: '${provider.holdings.length} assets',
-                  color: const Color(0xFF818CF8),
-                  onTap: onNavigateTo != null ? () => onNavigateTo(2) : null,
-                ),
+        Row(
+          children: [
+            Expanded(
+              child: _StatCard(
+                icon: Icons.receipt_long_outlined,
+                label: l.openOrders,
+                value: '${provider.orders.where((o) => o.isPending).length}',
+                color: HalalEtTheme.primaryLight,
+                onTap: onNavigateTo != null ? () => onNavigateTo(3) : null,
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.star_outline_rounded,
-                  label: l.watchlist,
-                  value: '${provider.watchlist.length} assets',
-                  color: const Color(0xFFFBBF24),
-                  onTap: onNavigateTo != null ? () => onNavigateTo(4) : null,
-                ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: _StatCard(
+                icon: Icons.pie_chart_outline,
+                label: l.holdings,
+                value: '${provider.holdings.length} assets',
+                color: const Color(0xFF818CF8),
+                onTap: onNavigateTo != null ? () => onNavigateTo(2) : null,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: _StatCard(
+                icon: Icons.star_outline_rounded,
+                label: l.watchlist,
+                value: '${provider.watchlist.length} assets',
+                color: const Color(0xFFFBBF24),
+                onTap: onNavigateTo != null ? () => onNavigateTo(4) : null,
+              ),
+            ),
+          ],
         ),
       ],
     );

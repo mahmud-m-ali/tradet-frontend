@@ -104,18 +104,16 @@ class PortfolioScreen extends StatelessWidget {
 
                   // Balance card
                   if (desktop)
-                    IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(flex: 3, child: _balanceCard(context, summary, fmt)),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            flex: 2,
-                            child: _quickStats(summary, fmt),
-                          ),
-                        ],
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 3, child: _balanceCard(context, summary, fmt)),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          flex: 2,
+                          child: _quickStats(summary, fmt),
+                        ),
+                      ],
                     )
                   else
                     _balanceCard(context, summary, fmt),
