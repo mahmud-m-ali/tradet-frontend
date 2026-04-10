@@ -102,32 +102,23 @@ class PortfolioScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Balance card + deposit: side by side on desktop
+                  // Balance card
                   if (desktop)
                     IntrinsicHeight(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Expanded(flex: 3, child: _balanceCard(summary, fmt)),
+                          Expanded(flex: 3, child: _balanceCard(context, summary, fmt)),
                           const SizedBox(width: 20),
                           Expanded(
                             flex: 2,
-                            child: Column(
-                              children: [
-                                _depositButton(context),
-                                const SizedBox(height: 14),
-                                _quickStats(summary, fmt),
-                              ],
-                            ),
+                            child: _quickStats(summary, fmt),
                           ),
                         ],
                       ),
                     )
-                  else ...[
-                    _balanceCard(summary, fmt),
-                    const SizedBox(height: 16),
-                    _depositButton(context),
-                  ],
+                  else
+                    _balanceCard(context, summary, fmt),
                   const SizedBox(height: 24),
 
                   // Holdings header
@@ -162,7 +153,8 @@ class PortfolioScreen extends StatelessWidget {
     );
   }
 
-  Widget _balanceCard(dynamic summary, NumberFormat fmt) {
+  Widget _balanceCard(BuildContext context, dynamic summary, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -234,41 +226,101 @@ class PortfolioScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _showDepositSheet(context),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.add_circle_outline, color: Colors.white, size: 17),
+                          const SizedBox(width: 6),
+                          Text(l.deposit,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _showWithdrawSheet(context),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.remove_circle_outline, color: Colors.white, size: 17),
+                          const SizedBox(width: 6),
+                          Text(l.withdraw,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
   Widget _quickStats(dynamic summary, NumberFormat fmt) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: HalalEtTheme.cardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: HalalEtTheme.divider.withValues(alpha: 0.3)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Quick Stats',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: HalalEtTheme.textSecondary)),
-            const SizedBox(height: 14),
-            _quickStatRow('Total Invested', '${fmt.format(summary?.totalInvested ?? 0)} ETB'),
-            const SizedBox(height: 8),
-            _quickStatRow('Holdings Value', '${fmt.format(summary?.totalHoldingsValue ?? 0)} ETB'),
-            const SizedBox(height: 8),
-            _quickStatRow(
-              'Return',
-              '${(summary?.totalPnl ?? 0) >= 0 ? '+' : ''}${fmt.format(summary?.totalPnl ?? 0)} ETB',
-              color: (summary?.totalPnl ?? 0) >= 0 ? HalalEtTheme.positive : HalalEtTheme.negative,
-            ),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: HalalEtTheme.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: HalalEtTheme.divider.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Quick Stats',
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: HalalEtTheme.textSecondary)),
+          const SizedBox(height: 14),
+          _quickStatRow('Total Invested', '${fmt.format(summary?.totalInvested ?? 0)} ETB'),
+          const SizedBox(height: 8),
+          _quickStatRow('Holdings Value', '${fmt.format(summary?.totalHoldingsValue ?? 0)} ETB'),
+          const SizedBox(height: 8),
+          _quickStatRow(
+            'Return',
+            '${(summary?.totalPnl ?? 0) >= 0 ? '+' : ''}${fmt.format(summary?.totalPnl ?? 0)} ETB',
+            color: (summary?.totalPnl ?? 0) >= 0 ? HalalEtTheme.positive : HalalEtTheme.negative,
+          ),
+        ],
       ),
     );
   }
@@ -284,72 +336,6 @@ class PortfolioScreen extends StatelessWidget {
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: color ?? Colors.white)),
-      ],
-    );
-  }
-
-  Widget _depositButton(BuildContext context) {
-    return Row(
-      children: [
-        // Deposit button
-        Expanded(
-          child: GestureDetector(
-            onTap: () => _showDepositSheet(context),
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: HalalEtTheme.cardBg,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: HalalEtTheme.positive.withValues(alpha: 0.3)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.add_circle_outline, color: HalalEtTheme.positive, size: 20),
-                    const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context).deposit,
-                        style: const TextStyle(
-                            color: HalalEtTheme.positive,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14)),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        // Withdraw button
-        Expanded(
-          child: GestureDetector(
-            onTap: () => _showWithdrawSheet(context),
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: HalalEtTheme.cardBg,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: HalalEtTheme.accent.withValues(alpha: 0.3)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.remove_circle_outline, color: HalalEtTheme.accent, size: 20),
-                    const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context).withdraw,
-                        style: const TextStyle(
-                            color: HalalEtTheme.accent,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14)),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }

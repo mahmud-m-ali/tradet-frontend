@@ -215,17 +215,9 @@ class DashboardScreen extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StatCard(
-                icon: Icons.account_balance_wallet_outlined,
-                label: l.cashBalance,
-                value: () {
-                  final cash = provider.availableCashBalance;
-                  return '${fmt.format(cash)} ETB';
-                }(),
+              child: _CashBalanceCard(
+                value: '${fmt.format(provider.availableCashBalance)} ETB',
                 subLabel: reserved > 0 ? '${fmt.format(reserved)} reserved' : null,
-                color: HalalEtTheme.accent,
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const TransactionsScreen())),
               ),
             ),
             const SizedBox(width: 12),
@@ -281,14 +273,9 @@ class DashboardScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                child: _StatCard(
-                  icon: Icons.account_balance_wallet_outlined,
-                  label: l.cashBalance,
+                child: _CashBalanceCard(
                   value: '${fmt.format(provider.availableCashBalance)} ETB',
                   subLabel: reserved > 0 ? '${fmt.format(reserved)} reserved' : null,
-                  color: HalalEtTheme.accent,
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const TransactionsScreen())),
                 ),
               ),
               const SizedBox(width: 14),
@@ -663,74 +650,6 @@ class _PortfolioCard extends StatelessWidget {
                 ),
               ],
             ),
-          const SizedBox(height: 16),
-          Divider(color: HalalEtTheme.divider.withValues(alpha: 0.3), height: 1),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => _showDepositSheet(context),
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: HalalEtTheme.positive.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: HalalEtTheme.positive.withValues(alpha: 0.3)),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.add_circle_outline,
-                              color: HalalEtTheme.positive, size: 17),
-                          const SizedBox(width: 6),
-                          Text(AppLocalizations.of(context).deposit,
-                              style: const TextStyle(
-                                  color: HalalEtTheme.positive,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => _showWithdrawSheet(context),
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: HalalEtTheme.accent.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: HalalEtTheme.accent.withValues(alpha: 0.3)),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.remove_circle_outline,
-                              color: HalalEtTheme.accent, size: 17),
-                          const SizedBox(width: 6),
-                          Text(AppLocalizations.of(context).withdraw,
-                              style: const TextStyle(
-                                  color: HalalEtTheme.accent,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -808,6 +727,115 @@ class _StatCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _CashBalanceCard extends StatelessWidget {
+  final String value;
+  final String? subLabel;
+
+  const _CashBalanceCard({required this.value, this.subLabel});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: HalalEtTheme.cardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: HalalEtTheme.accent.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(Icons.account_balance_wallet_outlined, size: 20, color: HalalEtTheme.accent),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            l.cashBalance,
+            style: const TextStyle(fontSize: 11, color: HalalEtTheme.textMuted),
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (subLabel != null) ...[
+            const SizedBox(height: 2),
+            Text(
+              subLabel!,
+              style: const TextStyle(fontSize: 10, color: HalalEtTheme.warning),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _showDepositSheet(context),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      decoration: BoxDecoration(
+                        color: HalalEtTheme.positive.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: HalalEtTheme.positive.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.add_circle_outline, color: HalalEtTheme.positive, size: 13),
+                          const SizedBox(width: 4),
+                          Text(l.deposit,
+                              style: const TextStyle(color: HalalEtTheme.positive, fontWeight: FontWeight.w700, fontSize: 11)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _showWithdrawSheet(context),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      decoration: BoxDecoration(
+                        color: HalalEtTheme.accent.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: HalalEtTheme.accent.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.remove_circle_outline, color: HalalEtTheme.accent, size: 13),
+                          const SizedBox(width: 4),
+                          Text(l.withdraw,
+                              style: const TextStyle(color: HalalEtTheme.accent, fontWeight: FontWeight.w700, fontSize: 11)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
