@@ -39,6 +39,7 @@ Thumbs.db
 
 # Build artifacts
 *.apk
+!TradEt.apk
 *.ipa
 
 # Claude
