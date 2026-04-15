@@ -1,7 +1,27 @@
-# Flutter
+# Flutter — tradet_app
+tradet_app/.dart_tool/
+tradet_app/.packages
+tradet_app/build/app/
+tradet_app/build/ios/
+tradet_app/build/linux/
+tradet_app/build/macos/
+tradet_app/build/windows/
+tradet_app/.flutter-plugins
+tradet_app/.flutter-plugins-dependencies
+tradet_app/pubspec.lock
+tradet_app/.idea/
+tradet_app/*.iml
+tradet_app/android/.gradle/
+tradet_app/android/local.properties
+tradet_app/ios/Pods/
+tradet_app/ios/Podfile.lock
+tradet_app/ios/.symlinks/
+tradet_app/ios/Flutter/flutter_export_environment.sh
+tradet_app/ios/Flutter/Generated.xcconfig
+
+# Flutter — halalet_app (legacy, build artifacts only)
 halalet_app/.dart_tool/
 halalet_app/.packages
-# Keep halalet_app/build/web/ for deployment, ignore the rest
 halalet_app/build/app/
 halalet_app/build/ios/
 halalet_app/build/linux/
@@ -37,9 +57,8 @@ backend/.env
 .DS_Store
 Thumbs.db
 
-# Build artifacts
+# Build deliverables (APK/IPA — not tracked in git)
 *.apk
-!TradEt.apk
 *.ipa
 
 # Claude
