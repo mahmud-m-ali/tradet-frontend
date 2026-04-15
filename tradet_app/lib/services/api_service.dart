@@ -39,7 +39,7 @@ String _friendlyError(dynamic error) {
 class ApiService {
   // Default fallback URLs
   static const String _defaultTunnelUrl =
-      'https://atomahmud.pythonanywhere.com/api';
+      'https://tradet.amber.et/api';
   // ignore: unused_field
   static const String _localUrl = 'http://localhost:8000/api';
 
