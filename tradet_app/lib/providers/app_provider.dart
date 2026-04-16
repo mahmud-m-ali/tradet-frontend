@@ -142,6 +142,20 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Convenience wrapper: runs [fn], captures any error into [_error], and
+  /// always calls [notifyListeners] in the finally block.
+  /// Use this for fire-and-forget void operations; methods that return a value
+  /// must manage [_isLoading] and [notifyListeners] themselves.
+  Future<void> _run(Future<void> Function() fn) async {
+    try {
+      await fn();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      notifyListeners();
+    }
+  }
+
   /// Checks for a stored token, refreshes it if expired, and hydrates [user].
   Future<void> checkAuthStatus() async {
     _isLoggedIn = await _api.isLoggedIn;

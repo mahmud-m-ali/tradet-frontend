@@ -23,6 +23,8 @@ class TradeScreen extends StatefulWidget {
 }
 
 class _TradeScreenState extends State<TradeScreen> {
+  static const double _kFeeRate = 0.015;
+
   bool _isBuy = true;
   bool _isLimitOrder = false; // false = market, true = limit
   final _qtyController = TextEditingController();
@@ -58,7 +60,7 @@ class _TradeScreenState extends State<TradeScreen> {
     return qty * price;
   }
 
-  double get _fee => _total * 0.015;
+  double get _fee => _total * _kFeeRate;
 
   void _onSliderChanged(double value) {
     setState(() {

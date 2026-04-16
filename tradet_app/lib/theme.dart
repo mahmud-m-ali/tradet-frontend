@@ -25,6 +25,14 @@ class TradEtTheme {
   static const Color warning = Color(0xFFFBBF24);
   static const Color divider = Color(0xFF1F6B42);
 
+  // Chart / accent palette — used across dashboard and market screens
+  static const Color indigo = Color(0xFF818CF8);
+  static const Color amber = Color(0xFFFBBF24);
+  static const Color cyan = Color(0xFF22D3EE);
+  static const Color blue = Color(0xFF60A5FA);
+  static const Color rose = Color(0xFFF87171);
+  static const Color emerald = Color(0xFF34D399);
+
   /// Full-screen vertical gradient for dark mode scaffold backgrounds.
   static LinearGradient get bgGradient => const LinearGradient(
         colors: [Color(0xFF0D3B20), Color(0xFF134A2C), Color(0xFF1A5C38)],
