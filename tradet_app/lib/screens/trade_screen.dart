@@ -159,7 +159,7 @@ class _TradeScreenState extends State<TradeScreen> {
                             Text(asset.symbol,
                                 style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: Colors.white)),
                             const SizedBox(width: 6),
-                            ShariaBadge(isCompliant: asset.isShariaCompliant, compact: true),
+                            ShariaBadge(isCompliant: asset.isShariaCompliant, complianceLevel: asset.complianceLevel, compact: true),
                             if (asset.isEcxListed) ...[const SizedBox(width: 4), const EcxBadge()],
                           ]),
                           Text(

@@ -4,31 +4,77 @@ import '../theme.dart';
 class ShariaBadge extends StatelessWidget {
   final bool isCompliant;
   final bool compact;
+  /// If provided, overrides isCompliant: 'halal' | 'permissible' | 'non_compliant'
+  final String? complianceLevel;
 
   const ShariaBadge({
     super.key,
     required this.isCompliant,
     this.compact = false,
+    this.complianceLevel,
   });
+
+  String get _level {
+    if (complianceLevel != null) return complianceLevel!;
+    return isCompliant ? 'halal' : 'permissible';
+  }
+
+  Color get _bgColor {
+    switch (_level) {
+      case 'halal':
+        return TradEtTheme.positive.withValues(alpha: 0.15);
+      case 'permissible':
+        return const Color(0xFFF59E0B).withValues(alpha: 0.15);
+      default:
+        return TradEtTheme.negative.withValues(alpha: 0.15);
+    }
+  }
+
+  Color get _fgColor {
+    switch (_level) {
+      case 'halal':
+        return TradEtTheme.positive;
+      case 'permissible':
+        return const Color(0xFFF59E0B);
+      default:
+        return TradEtTheme.negative;
+    }
+  }
+
+  String get _label {
+    switch (_level) {
+      case 'halal':
+        return compact ? 'Halal' : 'Sharia Compliant';
+      case 'permissible':
+        return compact ? 'Permissible' : 'Permissible';
+      default:
+        return compact ? 'Non-Halal' : 'Non-Compliant';
+    }
+  }
+
+  IconData get _icon {
+    switch (_level) {
+      case 'halal':
+        return Icons.verified_rounded;
+      case 'permissible':
+        return Icons.info_rounded;
+      default:
+        return Icons.warning_rounded;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isCompliant
-        ? TradEtTheme.positive.withValues(alpha: 0.15)
-        : TradEtTheme.negative.withValues(alpha: 0.15);
-    final fgColor =
-        isCompliant ? TradEtTheme.positive : TradEtTheme.negative;
-
     if (compact) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
         decoration: BoxDecoration(
-          color: bgColor,
+          color: _bgColor,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
-          isCompliant ? 'Halal' : 'Non-Halal',
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: fgColor),
+          _label,
+          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: _fgColor),
         ),
       );
     }
@@ -36,18 +82,17 @@ class ShariaBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: _bgColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(isCompliant ? Icons.verified_rounded : Icons.warning_rounded,
-              size: 14, color: fgColor),
+          Icon(_icon, size: 14, color: _fgColor),
           const SizedBox(width: 4),
           Text(
-            isCompliant ? 'Sharia Compliant' : 'Non-Compliant',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: fgColor),
+            _label,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: _fgColor),
           ),
         ],
       ),

@@ -44,6 +44,8 @@ class Asset {
   final double maxTradeQty;
   final bool isEcxListed;
   final bool isShariaCompliant;
+  final bool isHaram;
+  final String complianceLevel; // 'halal' | 'permissible' | 'non_compliant'
   final double? price;
   final double? bidPrice;
   final double? askPrice;
@@ -70,6 +72,8 @@ class Asset {
     this.maxTradeQty = 10000,
     this.isEcxListed = false,
     this.isShariaCompliant = true,
+    this.isHaram = false,
+    this.complianceLevel = 'halal',
     this.price,
     this.bidPrice,
     this.askPrice,
@@ -98,6 +102,8 @@ class Asset {
       maxTradeQty: (json['max_trade_qty'] ?? 10000).toDouble(),
       isEcxListed: json['is_ecx_listed'] == 1,
       isShariaCompliant: json['is_sharia_compliant'] == 1,
+      isHaram: json['is_haram'] == 1,
+      complianceLevel: json['compliance_level'] ?? (json['is_sharia_compliant'] == 1 ? 'halal' : 'permissible'),
       price: json['price']?.toDouble(),
       bidPrice: json['bid_price']?.toDouble(),
       askPrice: json['ask_price']?.toDouble(),
@@ -135,6 +141,7 @@ class PortfolioHolding {
   final double pnl;
   final double pnlPercentage;
   final bool isShariaCompliant;
+  final String complianceLevel;
 
   PortfolioHolding({
     required this.assetId,
@@ -150,9 +157,11 @@ class PortfolioHolding {
     required this.pnl,
     required this.pnlPercentage,
     this.isShariaCompliant = true,
+    this.complianceLevel = 'halal',
   });
 
   factory PortfolioHolding.fromJson(Map<String, dynamic> json) {
+    final isShariaCompliant = json['is_sharia_compliant'] == 1;
     return PortfolioHolding(
       assetId: json['asset_id'],
       symbol: json['symbol'] ?? '',
@@ -166,7 +175,8 @@ class PortfolioHolding {
       currentValue: (json['current_value'] ?? 0).toDouble(),
       pnl: (json['pnl'] ?? 0).toDouble(),
       pnlPercentage: (json['pnl_percentage'] ?? 0).toDouble(),
-      isShariaCompliant: json['is_sharia_compliant'] == 1,
+      isShariaCompliant: isShariaCompliant,
+      complianceLevel: isShariaCompliant ? 'halal' : 'permissible',
     );
   }
 }

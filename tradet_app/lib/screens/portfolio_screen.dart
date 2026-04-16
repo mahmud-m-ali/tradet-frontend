@@ -712,6 +712,7 @@ class PortfolioScreen extends StatelessWidget {
                             const SizedBox(width: 6),
                             ShariaBadge(
                               isCompliant: h.isShariaCompliant,
+                              complianceLevel: h.complianceLevel,
                               compact: true,
                             ),
                             const SizedBox(width: 8),

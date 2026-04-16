@@ -711,6 +711,7 @@ class _WebAssetRowState extends State<_WebAssetRow> {
                   children: [
                     ShariaBadge(
                       isCompliant: asset.isShariaCompliant,
+                      complianceLevel: asset.complianceLevel,
                       compact: true,
                     ),
                     if (asset.isEcxListed) ...[
@@ -829,6 +830,7 @@ class _AssetCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       ShariaBadge(
                         isCompliant: asset.isShariaCompliant,
+                        complianceLevel: asset.complianceLevel,
                         compact: true,
                       ),
                       if (asset.isEcxListed) ...[
