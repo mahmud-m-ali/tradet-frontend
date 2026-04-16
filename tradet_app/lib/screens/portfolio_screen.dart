@@ -17,6 +17,7 @@ class PortfolioScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final fmt = NumberFormat('#,##0.00', 'en');
     final wide = isWideScreen(context);
     final desktop = isDesktop(context);
@@ -198,9 +199,9 @@ class PortfolioScreen extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // Holdings header
-                  const Text(
-                    'Holdings / ይዞታዎች',
-                    style: TextStyle(
+                  Text(
+                    l.holdings,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -223,7 +224,7 @@ class PortfolioScreen extends StatelessWidget {
                                 appRoute(context, TradeScreen(asset: asset)),
                               )
                             : null,
-                        child: _mobileHoldingCard(h, fmt),
+                        child: _mobileHoldingCard(context, h, fmt),
                       );
                     }),
                   const SizedBox(height: 16),
@@ -802,7 +803,8 @@ class PortfolioScreen extends StatelessWidget {
   }
 
   // ─── Mobile: holding card (unchanged) ───
-  Widget _mobileHoldingCard(dynamic h, NumberFormat fmt) {
+  Widget _mobileHoldingCard(BuildContext context, dynamic h, NumberFormat fmt) {
+    final langCode = AppLocalizations.of(context).langCode;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
@@ -838,8 +840,8 @@ class PortfolioScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      h.nameAm != null
-                          ? '${h.assetName} / ${h.nameAm}'
+                      (langCode == 'am' || langCode == 'ti') && h.nameAm != null
+                          ? h.nameAm!
                           : h.assetName,
                       style: const TextStyle(
                         fontSize: 12,
@@ -1221,9 +1223,9 @@ class PortfolioScreen extends StatelessWidget {
                 value: selectedBank,
                 dropdownColor: TradEtTheme.surfaceLight,
                 style: const TextStyle(color: Colors.white, fontSize: 14),
-                decoration: const InputDecoration(
-                  labelText: 'Select Bank / ባንክ ይምረጡ',
-                  prefixIcon: Icon(Icons.account_balance, size: 20),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).selectBank,
+                  prefixIcon: const Icon(Icons.account_balance, size: 20),
                 ),
                 items: _ethiopianBanks
                     .map(
@@ -1246,9 +1248,9 @@ class PortfolioScreen extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
-                decoration: const InputDecoration(
-                  labelText: 'Account Number / የሒሳብ ቁጥር',
-                  prefixIcon: Icon(Icons.credit_card, size: 20),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).accountNumber,
+                  prefixIcon: const Icon(Icons.credit_card, size: 20),
                 ),
               ),
               const SizedBox(height: 14),

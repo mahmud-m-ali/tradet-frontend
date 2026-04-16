@@ -55,6 +55,9 @@ class AppLocalizations {
 
   // ─── Auth ────────────────────────────────────────
   String get welcomeBack => _t({'en': 'Welcome back', 'am': 'እንኳን ደህና መጡ', 'ti': 'እንኳዕ ብደሓን መጻእካ', 'om': 'Baga nagaan dhufte', 'so': 'Ku soo dhawoow', 'gur': 'ደህና መጣህ'});
+  String get fullName => _t({'en': 'Full Name', 'am': 'ሙሉ ስም', 'ti': 'ምሉእ ስም', 'om': 'Maqaa guutuu', 'so': 'Magaca oo dhan', 'gur': 'ሙሉ ስም'});
+  String get phone => _t({'en': 'Phone', 'am': 'ስልክ', 'ti': 'ስልኪ', 'om': 'Bilbila', 'so': 'Telefoon', 'gur': 'ስልክ'});
+  String get createAccount => _t({'en': 'Create Account', 'am': 'መለያ ፍጠር', 'ti': 'ኣካውንት ፍጠር', 'om': "Herrega uumi", 'so': 'Samee Akoon', 'gur': 'መለያ ፍጠር'});
   String get signInToContinue => _t({'en': 'Sign in to continue', 'am': 'ለመቀጠል ይግቡ', 'ti': 'ንምቕጻል እቶ', 'om': 'Itti fufuuf seeni', 'so': 'Si aad u sii waddo gal', 'gur': 'ለመቀጠር ግባ'});
   String get email => _t({'en': 'Email', 'am': 'ኢሜይል', 'ti': 'ኢመይል', 'om': 'Imeelii', 'so': 'Iimeel', 'gur': 'ኢሜይል'});
   String get emailRequired => _t({'en': 'Email is required', 'am': 'ኢሜይል ያስፈልጋል', 'ti': 'ኢመይል የድሊ', 'om': 'Imeeliin barbaachisaadha', 'so': 'Iimeel waa loo baahan yahay', 'gur': 'ኢሜይል ያስፈጋል'});

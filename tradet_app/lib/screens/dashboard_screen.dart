@@ -246,16 +246,16 @@ class DashboardScreen extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: _webHoldingsSection(provider, fmt)),
+                Expanded(child: _webHoldingsSection(context, provider, fmt, l)),
                 const SizedBox(width: 20),
-                Expanded(child: _webOrdersSection(provider, fmt)),
+                Expanded(child: _webOrdersSection(context, provider, fmt, l)),
               ],
             ),
           )
         else ...[
-          _webHoldingsSection(provider, fmt),
+          _webHoldingsSection(context, provider, fmt, l),
           const SizedBox(height: 20),
-          _webOrdersSection(provider, fmt),
+          _webOrdersSection(context, provider, fmt, l),
         ],
         const SizedBox(height: 28),
         const DisclaimerFooter(),
@@ -445,13 +445,12 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _webHoldingsSection(AppProvider provider, NumberFormat fmt) {
+  Widget _webHoldingsSection(BuildContext context, AppProvider provider, NumberFormat fmt, AppLocalizations l) {
     return WebSectionCard(
-      title: 'Your Holdings',
-      titleAm: 'የእርስዎ ንብረቶች',
+      title: l.yourHoldings,
       isEmpty: provider.holdings.isEmpty,
       emptyIcon: Icons.pie_chart_outline_rounded,
-      emptyText: 'No holdings yet',
+      emptyText: l.noHoldingsYet,
       child: Column(
         children: provider.holdings
             .take(5)
@@ -466,13 +465,12 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _webOrdersSection(AppProvider provider, NumberFormat fmt) {
+  Widget _webOrdersSection(BuildContext context, AppProvider provider, NumberFormat fmt, AppLocalizations l) {
     return WebSectionCard(
-      title: 'Recent Orders',
-      titleAm: 'የቅርብ ጊዜ ትዕዛዞች',
+      title: l.recentOrders,
       isEmpty: provider.orders.isEmpty,
       emptyIcon: Icons.receipt_long_outlined,
-      emptyText: 'No orders yet',
+      emptyText: l.noOrdersYet,
       child: Column(
         children: provider.orders
             .take(5)

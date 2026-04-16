@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
 import '../widgets/responsive_layout.dart';
@@ -49,6 +50,7 @@ class _ZakatScreenState extends State<ZakatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final wide = isWideScreen(context);
     final content = Container(
       decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
@@ -87,7 +89,7 @@ class _ZakatScreenState extends State<ZakatScreen> {
             const SizedBox(height: 20),
 
             // Input form
-            _buildCard('Additional Wealth / ተጨማሪ ሀብት', [
+            _buildCard(l.additionalWealth, [
               _buildInput(_otherSavingsCtrl, 'Other Savings (ETB)', Icons.savings_outlined),
               const SizedBox(height: 12),
               _buildInput(_goldCtrl, 'Gold Value (ETB)', Icons.diamond_outlined),
@@ -96,7 +98,7 @@ class _ZakatScreenState extends State<ZakatScreen> {
             ]),
             const SizedBox(height: 16),
 
-            _buildCard('Deductions / ቅነሳዎች', [
+            _buildCard(l.deductions, [
               _buildInput(_debtsCtrl, 'Outstanding Debts (ETB)', Icons.money_off_outlined),
               const SizedBox(height: 12),
               _buildInput(_expensesCtrl, 'Essential Expenses (ETB)', Icons.receipt_long_outlined),
@@ -104,7 +106,7 @@ class _ZakatScreenState extends State<ZakatScreen> {
             const SizedBox(height: 16),
 
             // Nisab method
-            _buildCard('Nisab Method / የኒሳብ ዘዴ', [
+            _buildCard(l.nisabMethod, [
               Row(children: [
                 Expanded(child: _methodChip('Gold (85g)', 'gold')),
                 const SizedBox(width: 12),
@@ -126,8 +128,8 @@ class _ZakatScreenState extends State<ZakatScreen> {
                 child: _loading
                     ? const SizedBox(width: 20, height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
-                    : const Text('Calculate Zakat / ዘካት ያስሉ',
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                    : Text(l.calculateZakat,
+                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
               ),
             ),
 

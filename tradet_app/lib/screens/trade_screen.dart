@@ -587,13 +587,14 @@ class _TradeScreenState extends State<TradeScreen> {
   // ─── Shared building blocks ───
 
   Widget _priceHeader(Asset asset) {
+    final langCode = AppLocalizations.of(context).langCode;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
         Text(
-          asset.nameAm != null
-              ? '${asset.name} / ${asset.nameAm}'
+          (langCode == 'am' || langCode == 'ti') && asset.nameAm != null
+              ? asset.nameAm!
               : asset.name,
           style: const TextStyle(
               fontSize: 13, color: TradEtTheme.textSecondary),
@@ -878,8 +879,8 @@ class _TradeScreenState extends State<TradeScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Quantity / ብዛት',
-                style: TextStyle(
+            Text(AppLocalizations.of(context).quantity,
+                style: const TextStyle(
                     color: TradEtTheme.textSecondary,
                     fontSize: 13,
                     fontWeight: FontWeight.w500)),

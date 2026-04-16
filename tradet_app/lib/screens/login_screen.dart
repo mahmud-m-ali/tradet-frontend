@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
-import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/responsive_layout.dart';
+import '../widgets/language_selector.dart';
 import 'register_screen.dart';
 import 'home_screen.dart';
 
@@ -30,9 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    ApiService.loadServerUrl().then((_) {
-      if (mounted) setState(() {});
-    });
   }
 
   @override
@@ -62,79 +60,6 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _showServerSettings() {
-    final urlController = TextEditingController(
-      text: ApiService.currentServerDisplay,
-    );
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF0A3D2A),
-        title: const Text('Server Settings',
-            style: TextStyle(color: Colors.white, fontSize: 18)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Enter the backend server URL:',
-                style: TextStyle(color: TradEtTheme.textSecondary, fontSize: 13)),
-            const SizedBox(height: 12),
-            TextField(
-              controller: urlController,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              decoration: InputDecoration(
-                hintText: 'https://your-server.com',
-                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
-                prefixIcon: const Icon(Icons.dns_outlined, size: 18),
-                filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.08),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: TradEtTheme.primaryLight.withValues(alpha: 0.3)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: TradEtTheme.primaryLight.withValues(alpha: 0.3)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Current: ${ApiService.baseUrl}',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 11),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: TradEtTheme.textSecondary)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: TradEtTheme.primaryLight,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () async {
-              await ApiService.setServerUrl(urlController.text.trim());
-              if (mounted) {
-                Navigator.pop(ctx);
-                setState(() {});
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Server updated: ${ApiService.baseUrl}'),
-                    backgroundColor: TradEtTheme.positive,
-                  ),
-                );
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _login() async {
     if (_isLocked) return;
     if (!_formKey.currentState!.validate()) return;
@@ -162,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -176,16 +102,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: Stack(
             children: [
-              // Settings button - top right
-              Positioned(
+              // Language selector - top right
+              const Positioned(
                 top: 12,
                 right: 16,
-                child: IconButton(
-                  onPressed: _showServerSettings,
-                  icon: const Icon(Icons.settings_outlined,
-                      color: TradEtTheme.textMuted, size: 22),
-                  tooltip: 'Server Settings',
-                ),
+                child: LanguageSelector(),
               ),
 
               // Centered login card
@@ -265,18 +186,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  const Text(
-                                    'Welcome back',
-                                    style: TextStyle(
+                                  Text(
+                                    l.welcomeBack,
+                                    style: const TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  const Text(
-                                    'Sign in to continue / ለመቀጠል ይግቡ',
-                                    style: TextStyle(
+                                  Text(
+                                    l.signInToContinue,
+                                    style: const TextStyle(
                                         fontSize: 13, color: TradEtTheme.textSecondary),
                                   ),
                                   const SizedBox(height: 24),
@@ -317,13 +238,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     keyboardType: TextInputType.emailAddress,
                                     textInputAction: TextInputAction.next,
                                     style: const TextStyle(color: Colors.white),
-                                    decoration: const InputDecoration(
-                                      labelText: 'Email',
+                                    decoration: InputDecoration(
+                                      labelText: l.email,
                                       hintText: 'you@example.com',
-                                      prefixIcon: Icon(Icons.email_outlined, size: 20),
+                                      prefixIcon: const Icon(Icons.email_outlined, size: 20),
                                     ),
                                     validator: (v) =>
-                                        v == null || v.isEmpty ? 'Email is required' : null,
+                                        v == null || v.isEmpty ? l.emailRequired : null,
                                   ),
                                   const SizedBox(height: 16),
 
@@ -335,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onFieldSubmitted: (_) => _login(),
                                     style: const TextStyle(color: Colors.white),
                                     decoration: InputDecoration(
-                                      labelText: 'Password / የይለፍ ቃል',
+                                      labelText: l.password,
                                       prefixIcon: const Icon(Icons.lock_outlined, size: 20),
                                       suffixIcon: IconButton(
                                         icon: Icon(
@@ -350,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                     validator: (v) =>
-                                        v == null || v.isEmpty ? 'Password is required' : null,
+                                        v == null || v.isEmpty ? l.passwordRequired : null,
                                   ),
                                   const SizedBox(height: 28),
 
@@ -409,8 +330,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   width: 20,
                                                   child: CircularProgressIndicator(
                                                       strokeWidth: 2, color: Colors.white))
-                                              : const Text('Sign In / ግባ',
-                                                  style: TextStyle(fontSize: 15)),
+                                              : Text(l.signIn,
+                                                  style: const TextStyle(fontSize: 15)),
                                         ),
                                       );
                                     },
@@ -424,16 +345,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text("Don't have an account? ",
-                                    style: TextStyle(
+                                Text(l.dontHaveAccount + ' ',
+                                    style: const TextStyle(
                                         color: TradEtTheme.textSecondary, fontSize: 14)),
                                 GestureDetector(
                                   onTap: () {
                                     context.read<AppProvider>().clearError();
                                     Navigator.of(context).push(appRoute(context, const RegisterScreen()));
                                   },
-                                  child: const Text(
-                                    'Register / ይመዝገቡ',
+                                  child: Text(
+                                    l.register,
                                     style: TextStyle(
                                       color: TradEtTheme.positive,
                                       fontWeight: FontWeight.w600,

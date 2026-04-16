@@ -21,7 +21,6 @@ import '../screens/home_screen.dart';
 // ─── Web Section Card ───
 class WebSectionCard extends StatelessWidget {
   final String title;
-  final String titleAm;
   final bool isEmpty;
   final IconData emptyIcon;
   final String emptyText;
@@ -30,7 +29,6 @@ class WebSectionCard extends StatelessWidget {
   const WebSectionCard({
     super.key,
     required this.title,
-    required this.titleAm,
     required this.isEmpty,
     required this.emptyIcon,
     required this.emptyText,
@@ -49,25 +47,13 @@ class WebSectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                titleAm,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: TradEtTheme.textMuted,
-                ),
-              ),
-            ],
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 16),
           if (isEmpty)

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
+import '../widgets/language_selector.dart';
 import '../widgets/responsive_layout.dart';
 import 'home_screen.dart';
 
@@ -83,6 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
@@ -145,14 +148,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
 
-                        _field(_nameController, 'Full Name / ሙሉ ስም',
+                        _field(_nameController, l.fullName,
                             Icons.person_outlined),
                         const SizedBox(height: 14),
-                        _field(_emailController, 'Email / ኢሜይል',
+                        _field(_emailController, l.email,
                             Icons.email_outlined,
                             keyboard: TextInputType.emailAddress),
                         const SizedBox(height: 14),
-                        _field(_phoneController, 'Phone / ስልክ',
+                        _field(_phoneController, l.phone,
                             Icons.phone_outlined,
                             keyboard: TextInputType.phone),
                         const SizedBox(height: 14),
@@ -164,7 +167,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onChanged: _updateStrength,
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
-                            labelText: 'Password / የይለፍ ቃል',
+                            labelText: l.password,
                             prefixIcon: const Icon(Icons.lock_outlined, size: 20),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -292,7 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       height: 20, width: 20,
                                       child: CircularProgressIndicator(
                                           strokeWidth: 2, color: Colors.white))
-                                  : const Text('Create Account / መለያ ፍጠር'),
+                                  : Text(l.createAccount),
                             );
                           },
                         ),

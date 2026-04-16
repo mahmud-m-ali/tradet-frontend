@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../models/models.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
@@ -82,6 +83,7 @@ class _ConverterScreenState extends State<ConverterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final wide = isWideScreen(context);
 
     final content = Container(
@@ -174,8 +176,8 @@ class _ConverterScreenState extends State<ConverterScreen> {
             const SizedBox(height: 24),
 
             // Exchange rates table
-            const Text('NBE Exchange Rates / የኤንቢኢ ምንዛሬ',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+            Text(l.nbeExchangeRates,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
             const SizedBox(height: 12),
 
             if (_loading)

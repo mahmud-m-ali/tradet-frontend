@@ -358,7 +358,7 @@ class ProfileScreen extends StatelessWidget {
           // Theme toggle
           _webSettingRow(
             icon: provider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-            title: 'Theme / ገጽታ',
+            title: AppLocalizations.of(context).theme,
             subtitle: provider.isDarkMode ? 'Dark mode' : 'Light mode',
             color: const Color(0xFF818CF8),
             trailing: Switch(
@@ -589,13 +589,13 @@ class ProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: TradEtTheme.negative.withValues(alpha: 0.2)),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.logout_rounded, color: TradEtTheme.negative, size: 18),
-                  SizedBox(width: 8),
-                  Text('Logout / ውጣ',
-                      style: TextStyle(color: TradEtTheme.negative,
+                  const Icon(Icons.logout_rounded, color: TradEtTheme.negative, size: 18),
+                  const SizedBox(width: 8),
+                  Text(AppLocalizations.of(context).logout,
+                      style: const TextStyle(color: TradEtTheme.negative,
                           fontWeight: FontWeight.w600, fontSize: 14)),
                 ],
               ),
@@ -639,7 +639,7 @@ class ProfileScreen extends StatelessWidget {
         ],
         _kycTierCard(context, user?.kycStatus ?? 'pending'),
         const SizedBox(height: 16),
-        _complianceCard(),
+        _complianceCard(context),
         const SizedBox(height: 16),
         _settingsCard(),
         const SizedBox(height: 16),
@@ -738,7 +738,7 @@ class ProfileScreen extends StatelessWidget {
                 backgroundColor: TradEtTheme.warning,
                 foregroundColor: Colors.black,
               ),
-              child: const Text('Complete KYC / ማንነት ያረጋግጡ'),
+              child: Text(AppLocalizations.of(context).completeKyc),
             ),
           ),
         ],
@@ -865,7 +865,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _complianceCard() {
+  Widget _complianceCard(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -876,8 +877,8 @@ class ProfileScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Compliance / ቁጥጥር',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+          Text(l.compliance,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
           const SizedBox(height: 14),
           _complianceItem(Icons.verified_rounded, 'Sharia Compliant (AAOIFI)',
               'All assets screened for halal compliance', TradEtTheme.positive),
@@ -947,8 +948,8 @@ class ProfileScreen extends StatelessWidget {
                   provider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
                   color: TradEtTheme.accent, size: 22,
                 ),
-                title: const Text('Theme / ገጽታ',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                title: Text(AppLocalizations.of(context).theme,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                 subtitle: Text(provider.isDarkMode ? 'Dark mode' : 'Light mode',
                     style: const TextStyle(fontSize: 12, color: TradEtTheme.textMuted)),
                 trailing: Switch(
@@ -968,12 +969,12 @@ class ProfileScreen extends StatelessWidget {
               ),
               Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
               _settingsTile(
-                  Icons.notifications_outlined, 'Notifications / ማሳወቂያ', 'Manage alerts', () {}),
+                  Icons.notifications_outlined, AppLocalizations.of(context).notifications, 'Manage alerts', () {}),
               Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
               _appLockTile(context),
               Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
               _settingsTile(
-                  Icons.help_outline_rounded, 'Help / እርዳታ', 'FAQ & Support', () {}),
+                  Icons.help_outline_rounded, AppLocalizations.of(context).help, 'FAQ & Support', () {}),
             ],
           ),
         );
@@ -992,8 +993,8 @@ class ProfileScreen extends StatelessWidget {
             color: enabled ? TradEtTheme.positive : TradEtTheme.accent,
             size: 22,
           ),
-          title: const Text('App Lock / መተግበሪያ ቀንዲል',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+          title: Text(AppLocalizations.of(context).appLock,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
           subtitle: Text(
             enabled ? 'PIN set — tap to change or disable' : 'Set a PIN to lock the app',
             style: const TextStyle(fontSize: 12, color: TradEtTheme.textMuted),
@@ -1120,13 +1121,13 @@ class ProfileScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: TradEtTheme.negative.withValues(alpha: 0.25)),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.logout_rounded, color: TradEtTheme.negative, size: 20),
-            SizedBox(width: 8),
-            Text('Logout / ውጣ',
-                style: TextStyle(
+            const Icon(Icons.logout_rounded, color: TradEtTheme.negative, size: 20),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context).logout,
+                style: const TextStyle(
                     color: TradEtTheme.negative,
                     fontWeight: FontWeight.w600,
                     fontSize: 15)),
@@ -1245,16 +1246,16 @@ class ProfileScreen extends StatelessWidget {
                 initialValue: selectedIdType,
                 dropdownColor: TradEtTheme.cardBgLight,
                 style: const TextStyle(color: Colors.white, fontSize: 14),
-                decoration: const InputDecoration(labelText: 'ID Type / የመታወቂያ አይነት'),
-                items: const [
+                decoration: InputDecoration(labelText: AppLocalizations.of(context).idType),
+                items: [
                   DropdownMenuItem(
-                      value: 'national_id', child: Text('National ID / ብሔራዊ መታወቂያ')),
-                  DropdownMenuItem(value: 'passport', child: Text('Passport / ፓስፖርት')),
+                      value: 'national_id', child: Text(AppLocalizations.of(context).nationalId)),
+                  DropdownMenuItem(value: 'passport', child: Text(AppLocalizations.of(context).passport)),
                   DropdownMenuItem(
                       value: 'drivers_license',
-                      child: Text('Driver\'s License / መንጃ ፈቃድ')),
+                      child: Text(AppLocalizations.of(context).driversLicense)),
                   DropdownMenuItem(
-                      value: 'kebele_id', child: Text('Kebele ID / የቀበሌ መታወቂያ')),
+                      value: 'kebele_id', child: Text(AppLocalizations.of(context).kebeleId)),
                 ],
                 onChanged: (v) =>
                     setDialogState(() => selectedIdType = v ?? 'national_id'),
@@ -1263,7 +1264,7 @@ class ProfileScreen extends StatelessWidget {
               TextField(
                 controller: idNumberController,
                 style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(labelText: 'ID Number / መታወቂያ ቁጥር'),
+                decoration: InputDecoration(labelText: AppLocalizations.of(context).idNumber),
               ),
             ],
           ),
