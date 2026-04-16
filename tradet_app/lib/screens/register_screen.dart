@@ -20,7 +20,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController(text: '+251');
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   bool _tosAccepted = false;
   String _passwordStrength = '';
   Color _strengthColor = TradEtTheme.textMuted;
@@ -54,6 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -162,8 +165,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          textInputAction: TextInputAction.done,
-                          onFieldSubmitted: (_) => _register(),
+                          textInputAction: TextInputAction.next,
                           onChanged: _updateStrength,
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
@@ -189,13 +191,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             children: [
                               const Icon(Icons.security_outlined, size: 13, color: TradEtTheme.textMuted),
                               const SizedBox(width: 5),
-                              Text('Strength: ',
-                                  style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
+                              const Text('Strength: ',
+                                  style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
                               Text(_passwordStrength,
                                   style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _strengthColor)),
                             ],
                           ),
                         ],
+                        const SizedBox(height: 14),
+
+                        // Confirm password
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscureConfirmPassword,
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) => _register(),
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: l.confirmPassword,
+                            prefixIcon: const Icon(Icons.lock_outlined, size: 20),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                size: 20,
+                                color: TradEtTheme.textMuted,
+                              ),
+                              onPressed: () => setState(
+                                  () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                            ),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return l.passwordRequired;
+                            if (v != _passwordController.text) return l.passwordsDoNotMatch;
+                            return null;
+                          },
+                        ),
                         const SizedBox(height: 24),
 
                         // Compliance

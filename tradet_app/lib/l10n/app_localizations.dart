@@ -62,6 +62,8 @@ class AppLocalizations {
   String get email => _t({'en': 'Email', 'am': 'ኢሜይል', 'ti': 'ኢመይል', 'om': 'Imeelii', 'so': 'Iimeel', 'gur': 'ኢሜይል'});
   String get emailRequired => _t({'en': 'Email is required', 'am': 'ኢሜይል ያስፈልጋል', 'ti': 'ኢመይል የድሊ', 'om': 'Imeeliin barbaachisaadha', 'so': 'Iimeel waa loo baahan yahay', 'gur': 'ኢሜይል ያስፈጋል'});
   String get password => _t({'en': 'Password', 'am': 'የይለፍ ቃል', 'ti': 'ቃል ምስጢር', 'om': 'Jecha darbii', 'so': 'Furaha sirta', 'gur': 'የምስጢር ቃል'});
+  String get confirmPassword => _t({'en': 'Confirm Password', 'am': 'የይለፍ ቃል አረጋግጥ', 'ti': 'ቃል ምስጢር ኣረጋግጽ', 'om': 'Jecha darbii mirkaneessi', 'so': 'Xaqiiji furaha sirta', 'gur': 'የምስጢር ቃል አረጋግጥ'});
+  String get passwordsDoNotMatch => _t({'en': 'Passwords do not match', 'am': 'የይለፍ ቃሎቹ አይዛመዱም', 'ti': 'ቃላት ምስጢር ኣይቃዶን', 'om': 'Jechoonni darbii wal hin fakkaatan', 'so': 'Furayaashu kuma mid ahayn', 'gur': 'የምስጢር ቃሎቹ አይዛመዱም'});
   String get passwordRequired => _t({'en': 'Password is required', 'am': 'የይለፍ ቃል ያስፈልጋል', 'ti': 'ቃል ምስጢር የድሊ', 'om': 'Jecha darbii barbaachisaadha', 'so': 'Furaha sirta waa loo baahan yahay', 'gur': 'የምስጢር ቃል ያስፈጋል'});
   String get signIn => _t({'en': 'Sign In', 'am': 'ግባ', 'ti': 'እቶ', 'om': 'Seeni', 'so': 'Gal', 'gur': 'ግባ'});
   String get register => _t({'en': 'Register', 'am': 'ይመዝገቡ', 'ti': 'ተመዝገብ', 'om': "Galmaa'i", 'so': 'Isdiiwaangeli', 'gur': 'ተመዝገብ'});
