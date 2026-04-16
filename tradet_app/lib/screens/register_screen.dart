@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
-import '../widgets/language_selector.dart';
 import '../widgets/responsive_layout.dart';
 import 'home_screen.dart';
 
@@ -110,12 +109,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 28),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 480),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
                         const Text(
                           'Create Account',
                           style: TextStyle(
@@ -332,15 +334,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                         const SizedBox(height: 32),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+                      ],           // Column children
+                    ),             // Column
+                  ),               // Form
+                ),                 // ConstrainedBox
+              ),                   // Center
+            ),                     // SingleChildScrollView
+          ),                       // Expanded
+        ],                         // SafeArea Column children
+      ),                           // SafeArea Column
+      ),                           // SafeArea
+      ),                           // Container
     );
   }
 
