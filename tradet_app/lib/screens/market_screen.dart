@@ -619,8 +619,6 @@ class _WebAssetRowState extends State<_WebAssetRow> {
                           const SizedBox(width: 3),
                           const EcxBadge(),
                         ],
-                        const SizedBox(width: 4),
-                        DataSourceBadge(dataSource: asset.dataSource),
                       ],
                     ),
                     Text(
@@ -812,8 +810,6 @@ class _AssetCard extends StatelessWidget {
                   // Badges on their own row
                   Row(
                     children: [
-                      DataSourceBadge(dataSource: asset.dataSource),
-                      const SizedBox(width: 4),
                       ShariaBadge(
                         isCompliant: asset.isShariaCompliant,
                         complianceLevel: asset.complianceLevel,
