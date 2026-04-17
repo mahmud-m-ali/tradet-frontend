@@ -5,10 +5,30 @@ import '../models/models.dart';
 import '../services/api_service.dart';
 import '../services/cache_service.dart';
 import '../services/security_log_service.dart';
+import '../services/demo_service.dart';
 
 /// Central [ChangeNotifier] that drives all app state via the Provider package.
 class AppProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
+
+  // ── Demo mode ──────────────────────────────────────────────────────────────
+  bool _isDemoMode = false;
+  bool get isDemoMode => _isDemoMode;
+
+  /// Activates demo mode with pre-seeded data — no network calls required.
+  Future<void> loginDemo() async {
+    _isDemoMode = true;
+    _isLoggedIn = true;
+    _user = DemoService.demoUser;
+    _assets = DemoService.demoAssets;
+    _holdings = DemoService.demoHoldings;
+    _portfolioSummary = DemoService.demoSummary;
+    _orders = DemoService.demoOrders;
+    _watchlist = DemoService.demoWatchlist;
+    _transactions = DemoService.demoTransactions;
+    _analyticsSpots = DemoService.demoAnalyticsSpots(1);
+    notifyListeners();
+  }
 
   // Theme mode
   ThemeMode _themeMode = ThemeMode.dark;
@@ -255,6 +275,12 @@ class AppProvider extends ChangeNotifier {
   /// Loads portfolio value history for the analytics chart.
   /// Aggregates per-asset chart history weighted by holding quantity, plus cash.
   Future<void> loadAnalytics(int periodIndex) async {
+    if (_isDemoMode) {
+      _analyticsSpots = DemoService.demoAnalyticsSpots(periodIndex);
+      _analyticsLoading = false;
+      notifyListeners();
+      return;
+    }
     _analyticsLoading = true;
     notifyListeners();
     try {
@@ -335,6 +361,7 @@ class AppProvider extends ChangeNotifier {
   /// Clears token, purges all cached data, and resets in-memory state.
   Future<void> logout() async {
     final uid = _user?.email ?? '';
+    _isDemoMode = false;
     await _api.clearToken();
     await CacheService.clearAll();
     _isLoggedIn = false;
@@ -347,7 +374,7 @@ class AppProvider extends ChangeNotifier {
     _paymentMethods = [];
     _portfolioSummary = null;
     notifyListeners();
-    SecurityLogService.record(SecurityEvent.logout, userId: uid);
+    if (uid.isNotEmpty) SecurityLogService.record(SecurityEvent.logout, userId: uid);
   }
 
   /// Submits KYC identity documents and refreshes the user profile on success.
@@ -386,6 +413,7 @@ class AppProvider extends ChangeNotifier {
     bool ecxOnly = false,
     bool refresh = false,
   }) async {
+    if (_isDemoMode) { _assets = DemoService.demoAssets; notifyListeners(); return; }
     _assetsLoading = true;
     _assetsError = null;
     notifyListeners();
@@ -405,6 +433,12 @@ class AppProvider extends ChangeNotifier {
 
   /// Fetches holdings and summary from the portfolio endpoint.
   Future<void> loadPortfolio() async {
+    if (_isDemoMode) {
+      _holdings = DemoService.demoHoldings;
+      _portfolioSummary = DemoService.demoSummary;
+      notifyListeners();
+      return;
+    }
     _portfolioLoading = true;
     _portfolioError = null;
     notifyListeners();
@@ -423,6 +457,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> loadOrders() async {
+    if (_isDemoMode) { _orders = DemoService.demoOrders; notifyListeners(); return; }
     _ordersLoading = true;
     _ordersError = null;
     notifyListeners();
@@ -437,6 +472,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> loadWatchlist() async {
+    if (_isDemoMode) { _watchlist = DemoService.demoWatchlist; notifyListeners(); return; }
     try {
       _watchlist = await _api.getWatchlist();
       notifyListeners();
@@ -514,6 +550,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> loadTransactions() async {
+    if (_isDemoMode) { _transactions = DemoService.demoTransactions; notifyListeners(); return; }
     try {
       _transactions = await _api.getTransactions();
       notifyListeners();

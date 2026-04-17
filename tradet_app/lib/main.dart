@@ -11,6 +11,8 @@ import 'providers/app_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/app_lock_screen.dart';
+import 'screens/onboarding_screen.dart';
+import 'white_label.dart';
 import 'services/app_lock_service.dart';
 import 'theme.dart';
 
@@ -46,7 +48,7 @@ class TradEtApp extends StatelessWidget {
       child: Consumer<AppProvider>(
         builder: (context, provider, _) {
           return MaterialApp(
-            title: 'TradEt',
+            title: WhiteLabel.appName,
             debugShowCheckedModeBanner: false,
             themeMode: provider.themeMode,
             theme: TradEtTheme.lightTheme,
@@ -104,9 +106,17 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
+  bool _showOnboarding = false;
+
   Future<void> _checkAuth() async {
+    final onboardingShown = await OnboardingScreen.hasBeenShown();
     await context.read<AppProvider>().checkAuthStatus();
-    if (mounted) setState(() => _checking = false);
+    if (mounted) {
+      setState(() {
+        _showOnboarding = !onboardingShown;
+        _checking = false;
+      });
+    }
   }
 
   @override
@@ -147,7 +157,7 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
               ),
               const SizedBox(height: 28),
               const Text(
-                'ትሬድኢት',
+                WhiteLabel.appNameAmharic,
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.w800,
@@ -157,7 +167,7 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
               ),
               const SizedBox(height: 4),
               Text(
-                'TradEt',
+                WhiteLabel.appName,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -167,7 +177,7 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
               ),
               const SizedBox(height: 8),
               Text(
-                'Sharia Compliant Trading',
+                WhiteLabel.tagline,
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey.shade400,
@@ -178,6 +188,8 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
         ),
       );
     }
+
+    if (_showOnboarding) return const OnboardingScreen();
 
     return Consumer<AppProvider>(
       builder: (context, provider, _) {

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
+import '../white_label.dart';
 import '../widgets/responsive_layout.dart';
 import 'dashboard_screen.dart';
 import 'market_screen.dart';
@@ -92,8 +93,47 @@ class _HomeScreenState extends State<HomeScreen> {
     // If current index is beyond the 4 core tabs, show the screen but highlight "More"
     final navIndex = _currentIndex < 4 ? _currentIndex : 4;
 
+    final isDemoMode = context.watch<AppProvider>().isDemoMode;
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: Column(
+        children: [
+          if (isDemoMode)
+            Material(
+              color: TradEtTheme.accent.withValues(alpha: 0.15),
+              child: InkWell(
+                onTap: () async {
+                  await context.read<AppProvider>().logout();
+                  if (context.mounted) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (r) => false,
+                    );
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.play_circle_outline,
+                          size: 14, color: TradEtTheme.accent),
+                      const SizedBox(width: 6),
+                      const Text('DEMO MODE — Data is simulated for presentation',
+                          style: TextStyle(
+                              color: TradEtTheme.accent,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600)),
+                      const Spacer(),
+                      const Text('Exit', style: TextStyle(color: TradEtTheme.accent, fontSize: 11)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          Expanded(child: _screens[_currentIndex]),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: TradEtTheme.primaryDark,
@@ -204,28 +244,66 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ─── Web: Sidebar navigation (all 9 items) ───
   Widget _buildWebLayout() {
+    final isDemoMode = context.watch<AppProvider>().isDemoMode;
     return Scaffold(
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Column(
         children: [
-          // Sidebar
-          AppWebSidebar(
-            currentIndex: _currentIndex,
-            onTap: (i) => setState(() => _currentIndex = i),
-            onLogout: () async {
-              await context.read<AppProvider>().logout();
-              if (mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  appRoute(context, const LoginScreen()),
-                  (route) => false,
-                );
-              }
-            },
+          if (isDemoMode)
+            Material(
+              color: TradEtTheme.accent.withValues(alpha: 0.15),
+              child: InkWell(
+                onTap: () async {
+                  await context.read<AppProvider>().logout();
+                  if (mounted) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        appRoute(context, const LoginScreen()), (r) => false);
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.play_circle_outline, size: 14, color: TradEtTheme.accent),
+                      const SizedBox(width: 6),
+                      const Text('DEMO MODE — All data is simulated for presentation purposes',
+                          style: TextStyle(color: TradEtTheme.accent, fontSize: 11,
+                              fontWeight: FontWeight.w600)),
+                      const Spacer(),
+                      const Text('Exit Demo →',
+                          style: TextStyle(color: TradEtTheme.accent, fontSize: 11,
+                              fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Sidebar
+                AppWebSidebar(
+                  currentIndex: _currentIndex,
+                  onTap: (i) => setState(() => _currentIndex = i),
+                  onLogout: () async {
+                    await context.read<AppProvider>().logout();
+                    if (mounted) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        appRoute(context, const LoginScreen()),
+                        (route) => false,
+                      );
+                    }
+                  },
+                ),
+                // Vertical divider
+                Container(width: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                // Main content
+                Expanded(child: _screens[_currentIndex]),
+              ],
+            ),
           ),
-          // Vertical divider
-          Container(width: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
-          // Main content
-          Expanded(child: _screens[_currentIndex]),
         ],
       ),
     );
@@ -284,13 +362,13 @@ class AppWebSidebar extends StatelessWidget {
                 ),
                 if (isExpanded) ...[
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'TradEt',
-                          style: TextStyle(
+                          WhiteLabel.appName,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -298,18 +376,18 @@ class AppWebSidebar extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'by Amber • ትሬድኢት',
-                          style: TextStyle(
+                          'by ${WhiteLabel.bankName} • ${WhiteLabel.appNameAmharic}',
+                          style: const TextStyle(
                             fontSize: 11,
                             color: TradEtTheme.textMuted,
                           ),
                         ),
                         const SizedBox(height: 3),
-                        Row(
+                        const Row(
                           children: [
-                            const Icon(Icons.verified_rounded,
+                            Icon(Icons.verified_rounded,
                                 size: 11, color: TradEtTheme.positive),
-                            const SizedBox(width: 3),
+                            SizedBox(width: 3),
                             Text(
                               'Sharia Certified',
                               style: TextStyle(

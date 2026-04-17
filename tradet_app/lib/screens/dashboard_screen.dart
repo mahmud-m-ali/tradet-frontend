@@ -87,6 +87,8 @@ class DashboardScreen extends StatelessWidget {
               : null,
         ),
         const SizedBox(height: 14),
+        _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
+        const SizedBox(height: 14),
         _mobileStatsGrid(context, provider, fmt, l, onNavigateTo),
         const SizedBox(height: 16),
         // Quick access cards for new features
@@ -215,6 +217,8 @@ class DashboardScreen extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           IntrinsicHeight(child: _webRow2(context, provider, l, onNavigateTo)),
+          const SizedBox(height: 14),
+          _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
         ] else ...[
           PortfolioCard(provider: provider, fmt: fmt),
           const SizedBox(height: 14),
@@ -224,6 +228,8 @@ class DashboardScreen extends StatelessWidget {
                 ? '${fmt.format(provider.reservedForOrders)} reserved'
                 : null,
           ),
+          const SizedBox(height: 14),
+          _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
           const SizedBox(height: 14),
           IntrinsicHeight(child: _webRow2(context, provider, l, onNavigateTo)),
         ],
@@ -483,6 +489,121 @@ class DashboardScreen extends StatelessWidget {
               ),
             )
             .toList(),
+      ),
+    );
+  }
+}
+
+/// Sharia Compliance Score card — shows what % of portfolio value is AAOIFI compliant.
+class _ShariaComplianceScoreCard extends StatelessWidget {
+  final AppProvider provider;
+  final NumberFormat fmt;
+
+  const _ShariaComplianceScoreCard({required this.provider, required this.fmt});
+
+  @override
+  Widget build(BuildContext context) {
+    final holdings = provider.holdings;
+    if (holdings.isEmpty) return const SizedBox.shrink();
+
+    final totalValue =
+        holdings.fold<double>(0, (s, h) => s + h.currentValue);
+    final compliantValue = holdings
+        .where((h) => h.isShariaCompliant)
+        .fold<double>(0, (s, h) => s + h.currentValue);
+    final score = totalValue > 0 ? (compliantValue / totalValue) : 1.0;
+    final pct = (score * 100).toStringAsFixed(1);
+
+    final color = score >= 0.9
+        ? TradEtTheme.positive
+        : score >= 0.7
+            ? TradEtTheme.warning
+            : TradEtTheme.negative;
+
+    final label = score >= 0.9
+        ? 'AAOIFI Compliant'
+        : score >= 0.7
+            ? 'Mostly Compliant'
+            : 'Review Required';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: TradEtTheme.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.stars_rounded, size: 18, color: color),
+              const SizedBox(width: 8),
+              const Text('Sharia Compliance Score',
+                  style: TextStyle(
+                      color: TradEtTheme.textSecondary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600)),
+              const Spacer(),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: color.withValues(alpha: 0.3)),
+                ),
+                child: Text(label,
+                    style: TextStyle(
+                        color: color,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text('$pct%',
+                  style: TextStyle(
+                      color: color,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800)),
+              const SizedBox(width: 8),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text('of portfolio value',
+                    style: const TextStyle(
+                        color: TradEtTheme.textMuted, fontSize: 12)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // Progress bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: score,
+              backgroundColor: TradEtTheme.divider,
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+              minHeight: 6,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text('${fmt.format(compliantValue)} ETB compliant',
+                  style: const TextStyle(
+                      color: TradEtTheme.textMuted, fontSize: 11)),
+              const Spacer(),
+              Text('AAOIFI Standard No. 21',
+                  style: const TextStyle(
+                      color: TradEtTheme.textMuted, fontSize: 11)),
+            ],
+          ),
+        ],
       ),
     );
   }
