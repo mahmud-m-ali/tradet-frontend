@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
+import '../white_label.dart';
 import '../widgets/responsive_layout.dart';
 
 class NewsScreen extends StatefulWidget {
@@ -22,15 +23,27 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   final _categories = [
     {'label': 'All', 'value': null},
+    {'label': 'Research', 'value': 'research'},
     {'label': 'Ethiopia', 'value': 'ethiopia'},
     {'label': 'Islamic Finance', 'value': 'islamic'},
     {'label': 'Global', 'value': 'global'},
   ];
 
+  List<NewsArticle> _filterArticles(List<NewsArticle> all) {
+    if (_currentCategory == 'research') {
+      return all.where((a) {
+        final text = '${a.title} ${a.description} ${a.source}'.toLowerCase();
+        return WhiteLabel.researchKeywords.any((kw) => text.contains(kw));
+      }).toList();
+    }
+    return all;
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _categories.length, vsync: this);
+    _allArticles = [];
     _tabController.addListener(_onTabChanged);
     _loadNews();
   }
@@ -41,12 +54,19 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  List<NewsArticle> _allArticles = [];
+
   void _onTabChanged() {
     if (_tabController.indexIsChanging) return;
     final cat = _categories[_tabController.index]['value'];
     if (cat != _currentCategory) {
       _currentCategory = cat;
-      _loadNews();
+      // fab_research filters locally — no network call needed
+      if (cat == 'research') {
+        setState(() { _articles = _filterArticles(_allArticles); });
+      } else {
+        _loadNews();
+      }
     }
   }
 
@@ -54,7 +74,11 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
     setState(() { _loading = true; _error = null; });
     try {
       final api = context.read<AppProvider>().api;
-      _articles = await api.getNews(category: _currentCategory);
+      // fetch all articles for local filtering
+      final fetchCat = _currentCategory == 'research' ? null : _currentCategory;
+      final fetched = await api.getNews(category: fetchCat);
+      _allArticles = fetched;
+      _articles = _filterArticles(fetched);
     } catch (e) {
       _error = 'Failed to load news';
     }
@@ -153,11 +177,14 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildArticleCard(NewsArticle article) {
-    final categoryColor = switch (article.category) {
-      'ethiopia' => const Color(0xFF60A5FA),
-      'islamic' => TradEtTheme.accent,
-      _ => TradEtTheme.positive,
-    };
+    final isResearch = _currentCategory == 'research';
+    final categoryColor = isResearch
+        ? WhiteLabel.brandAccent
+        : switch (article.category) {
+            'ethiopia' => const Color(0xFF60A5FA),
+            'islamic' => TradEtTheme.accent,
+            _ => TradEtTheme.positive,
+          };
 
     return GestureDetector(
       onTap: () => _copyUrl(article.link),

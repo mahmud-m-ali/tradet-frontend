@@ -241,6 +241,8 @@ class PortfolioScreen extends StatelessWidget {
 
   Widget _balanceCard(BuildContext context, dynamic summary, NumberFormat fmt) {
     final l = AppLocalizations.of(context);
+    final provider = context.read<AppProvider>();
+    final totalEtb = (summary?.totalPortfolioValue ?? 0) as double;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -287,13 +289,47 @@ class PortfolioScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            fmt.format(summary?.totalPortfolioValue ?? 0),
+            fmt.format(totalEtb),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 34,
               fontWeight: FontWeight.w800,
               letterSpacing: -1,
             ),
+          ),
+          // USD equivalent using NBE selling rate
+          FutureBuilder<Map<String, dynamic>>(
+            future: provider.api.getExchangeRates().then((r) =>
+                {'selling': r['USD']?.selling ?? 0.0}).catchError((_) => {'selling': 0.0}),
+            builder: (_, snap) {
+              final selling = (snap.data?['selling'] as double?) ?? 0.0;
+              if (selling <= 0) return const SizedBox.shrink();
+              final usd = totalEtb / selling;
+              final usdFmt = NumberFormat('#,##0.00', 'en');
+              return Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  children: [
+                    Text(
+                      '≈ USD ${usdFmt.format(usd)}',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.6),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '@ ${usdFmt.format(selling)} ETB/USD (NBE)',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.4),
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
           const SizedBox(height: 20),
           Container(
@@ -573,6 +609,22 @@ class PortfolioScreen extends StatelessWidget {
     AppProvider provider,
     NumberFormat fmt,
   ) {
+    return FutureBuilder<double>(
+      future: provider.api
+          .getExchangeRates()
+          .then((r) => r['USD']?.selling ?? 0.0)
+          .catchError((_) => 0.0),
+      builder: (_, snap) =>
+          _webHoldingsTableInner(context, provider, fmt, snap.data ?? 0.0),
+    );
+  }
+
+  Widget _webHoldingsTableInner(
+    BuildContext context,
+    AppProvider provider,
+    NumberFormat fmt,
+    double usdRate,
+  ) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
@@ -762,14 +814,28 @@ class PortfolioScreen extends StatelessWidget {
                       ),
                       Expanded(
                         flex: 1,
-                        child: Text(
-                          '${fmt.format(h.currentValue)} ETB',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.right,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${fmt.format(h.currentValue)} ETB',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            if (usdRate > 0)
+                              Text(
+                                'USD ${fmt.format(h.currentValue / usdRate)}',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: TradEtTheme.textMuted,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                          ],
                         ),
                       ),
                       SizedBox(
