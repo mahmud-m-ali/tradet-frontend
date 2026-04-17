@@ -330,44 +330,44 @@ class _LoginScreenState extends State<LoginScreen> {
                                     },
                                   ),
 
-                                  const SizedBox(height: 12),
-
-                                  // Try Demo — custom container ensures visibility regardless of theme
-                                  MouseRegion(
-                                    cursor: SystemMouseCursors.click,
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        await context.read<AppProvider>().loginDemo();
-                                        if (context.mounted) {
-                                          Navigator.of(context).pushReplacement(
-                                              appRoute(context, const HomeScreen()));
-                                        }
-                                      },
-                                      child: Container(
-                                        height: 48,
-                                        decoration: BoxDecoration(
-                                          color: TradEtTheme.accent.withValues(alpha: 0.12),
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(
-                                              color: TradEtTheme.accent, width: 1.5),
-                                        ),
-                                        child: const Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.play_circle_outline,
-                                                size: 18, color: TradEtTheme.accent),
-                                            SizedBox(width: 8),
-                                            Text('Try Demo',
-                                                style: TextStyle(
-                                                    color: TradEtTheme.accent,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w700)),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
                                 ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            // Try Demo — outside card to avoid any clipping by BoxDecoration
+                            MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () async {
+                                  await context.read<AppProvider>().loginDemo();
+                                  if (context.mounted) {
+                                    Navigator.of(context).pushReplacement(
+                                        appRoute(context, const HomeScreen()));
+                                  }
+                                },
+                                child: Container(
+                                  height: 52,
+                                  decoration: BoxDecoration(
+                                    color: TradEtTheme.accent.withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                        color: TradEtTheme.accent, width: 2),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.play_circle_outline,
+                                          size: 20, color: TradEtTheme.accent),
+                                      const SizedBox(width: 8),
+                                      Text('Try Demo',
+                                          style: TextStyle(
+                                              color: TradEtTheme.accent,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w800)),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                             const SizedBox(height: 16),
