@@ -885,7 +885,7 @@ class TopMoverCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const Spacer(),
+              const SizedBox(height: 6),
               if (asset.sparkline.length >= 2)
                 SizedBox(
                   height: 30,
@@ -1910,7 +1910,7 @@ class _MoversSectionState extends State<MoversSection> {
 Widget topMoversSection(AppProvider provider, NumberFormat fmt) {
   if (provider.assets.isNotEmpty) {
     return SizedBox(
-      height: 140,
+      height: 110,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: getTopMovers(provider).length,
@@ -1956,7 +1956,7 @@ Widget topLosersSection(AppProvider provider, NumberFormat fmt) {
       );
     }
     return SizedBox(
-      height: 140,
+      height: 110,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: losers.length,
@@ -1985,7 +1985,7 @@ Widget webTopMoversSection(
         crossAxisCount: crossAxisCount,
         crossAxisSpacing: 14,
         mainAxisSpacing: 14,
-        childAspectRatio: 1.1,
+        childAspectRatio: 1.5,
       ),
       itemCount: movers.length,
       itemBuilder: (context, index) {
@@ -2038,7 +2038,7 @@ Widget webTopLosersSection(
         crossAxisCount: crossAxisCount,
         crossAxisSpacing: 14,
         mainAxisSpacing: 14,
-        childAspectRatio: 1.1,
+        childAspectRatio: 1.5,
       ),
       itemCount: losers.length,
       itemBuilder: (context, index) {
