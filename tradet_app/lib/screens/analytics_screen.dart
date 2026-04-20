@@ -86,11 +86,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   // ── Header ──
                   Row(
                     children: [
-                      if (!wide)
+                      if (!wide && Navigator.of(context).canPop())
                         IconButton(
                           icon: const Icon(Icons.arrow_back_ios_new_rounded,
                               color: Colors.white, size: 20),
-                          onPressed: () => Navigator.of(context).maybePop(),
+                          onPressed: () => Navigator.of(context).pop(),
                           tooltip: 'Back',
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(minWidth: 36, minHeight: 36),

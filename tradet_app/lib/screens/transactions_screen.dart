@@ -68,11 +68,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 padding: EdgeInsets.fromLTRB(wide ? 32 : 4, wide ? 24 : 8, wide ? 32 : 20, 0),
                 child: Row(
                   children: [
-                    if (!wide)
+                    if (!wide && Navigator.of(context).canPop())
                       IconButton(
                         icon: const Icon(Icons.arrow_back_ios_new_rounded,
                             color: Colors.white, size: 20),
-                        onPressed: () => Navigator.of(context).maybePop(),
+                        onPressed: () => Navigator.of(context).pop(),
                         tooltip: 'Back',
                       ),
                     Expanded(

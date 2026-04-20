@@ -403,10 +403,11 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 14),
-        // Sharia Score — flex:2
+        // Sharia Score — flex:2 (compact to match StatCard height)
         Expanded(
           flex: 2,
-          child: _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
+          child: _ShariaComplianceScoreCard(
+              provider: provider, fmt: fmt, compact: true),
         ),
         const SizedBox(width: 14),
         // Transactions — flex:1
@@ -592,8 +593,13 @@ class DashboardScreen extends StatelessWidget {
 class _ShariaComplianceScoreCard extends StatelessWidget {
   final AppProvider provider;
   final NumberFormat fmt;
+  final bool compact;
 
-  const _ShariaComplianceScoreCard({required this.provider, required this.fmt});
+  const _ShariaComplianceScoreCard({
+    required this.provider,
+    required this.fmt,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -620,6 +626,64 @@ class _ShariaComplianceScoreCard extends StatelessWidget {
             ? 'Mostly Compliant'
             : 'Review Required';
 
+    if (compact) {
+      // Compact: matches StatCard layout — icon+label on top, value, sublabel
+      return Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: TradEtTheme.cardBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(Icons.stars_rounded, size: 20, color: color),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(label,
+                      style: TextStyle(
+                          color: color,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text('$pct%',
+                style: TextStyle(
+                    color: color,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: LinearProgressIndicator(
+                value: score,
+                backgroundColor: TradEtTheme.divider,
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+                minHeight: 4,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text('Sharia Score',
+                style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
+                overflow: TextOverflow.ellipsis),
+          ],
+        ),
+      );
+    }
+
+    // Full size (mobile)
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -675,7 +739,6 @@ class _ShariaComplianceScoreCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          // Progress bar
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(

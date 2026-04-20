@@ -137,6 +137,9 @@ class HeroTradeCard extends StatelessWidget {
           // Label row
           Row(
             children: [
+              const Icon(Icons.account_balance_rounded,
+                  size: 14, color: TradEtTheme.textSecondary),
+              const SizedBox(width: 6),
               const Text(
                 'Total Portfolio Value',
                 style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary),
@@ -603,13 +606,19 @@ class _CashBalanceCardState extends State<CashBalanceCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Title + icon on top row
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                Icons.account_balance_wallet_outlined,
-                size: 20,
-                color: TradEtTheme.accent,
+              Icon(Icons.account_balance_wallet_outlined,
+                  size: 14, color: TradEtTheme.accent),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l.cashBalance,
+                  style: const TextStyle(
+                      fontSize: 12, color: TradEtTheme.textSecondary),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               GestureDetector(
                 onTap: () => setState(() => _visible = !_visible),
@@ -617,13 +626,13 @@ class _CashBalanceCardState extends State<CashBalanceCard> {
                   _visible
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  size: 16,
+                  size: 15,
                   color: TradEtTheme.textMuted,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
           Text(
             _visible ? widget.value : '••••••',
             style: const TextStyle(
@@ -633,12 +642,6 @@ class _CashBalanceCardState extends State<CashBalanceCard> {
             ),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
-          ),
-          const SizedBox(height: 2),
-          Text(
-            l.cashBalance,
-            style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
-            overflow: TextOverflow.ellipsis,
           ),
           if (widget.subLabel != null) ...[
             const SizedBox(height: 2),
