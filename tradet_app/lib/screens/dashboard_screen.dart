@@ -195,7 +195,8 @@ class DashboardScreen extends StatelessWidget {
         ExchangeRateTicker(api: provider.api),
         const SizedBox(height: 16),
 
-        // Hero: portfolio value + cash + CTAs
+        // Hero: portfolio value + capital at risk + CTAs (left)
+        //        Cash balance (right) — same height via IntrinsicHeight
         if (desktop)
           IntrinsicHeight(
             child: Row(
@@ -211,18 +212,11 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 20),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(child: CashBalanceCard(
-                        value: '${fmt.format(provider.availableCashBalance)} ETB',
-                        subLabel: provider.reservedForOrders > 0
-                            ? '${fmt.format(provider.reservedForOrders)} reserved'
-                            : null,
-                      )),
-                      const SizedBox(height: 12),
-                      Expanded(child: PortfolioCard(provider: provider, fmt: fmt)),
-                    ],
+                  child: CashBalanceCard(
+                    value: '${fmt.format(provider.availableCashBalance)} ETB',
+                    subLabel: provider.reservedForOrders > 0
+                        ? '${fmt.format(provider.reservedForOrders)} reserved'
+                        : null,
                   ),
                 ),
               ],

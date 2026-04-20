@@ -101,10 +101,11 @@ class HeroTradeCard extends StatelessWidget {
     final summary = provider.portfolioSummary;
     final totalValue = summary?.totalPortfolioValue ?? 0;
     final cashBalance = provider.availableCashBalance;
+    final holdingsValue = totalValue - cashBalance;
     final totalPnl = summary?.totalPnl ?? 0;
     final totalInvested = summary?.totalInvested ?? 0;
     final pnlPct = totalInvested > 0 ? (totalPnl / totalInvested * 100) : 0.0;
-    final reserved = provider.reservedForOrders;
+    final wide = isWideScreen(context);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -131,13 +132,31 @@ class HeroTradeCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Total value
-          const Text(
-            'Total Portfolio Value',
-            style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary),
+          // Label row
+          Row(
+            children: [
+              const Text(
+                'Total Portfolio Value',
+                style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: TradEtTheme.positive.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text('Halal',
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: TradEtTheme.positive)),
+              ),
+            ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             '${fmt.format(totalValue)} ETB',
             style: const TextStyle(
@@ -147,8 +166,8 @@ class HeroTradeCard extends StatelessWidget {
               letterSpacing: -0.8,
             ),
           ),
-          const SizedBox(height: 4),
-          if (summary != null)
+          if (summary != null) ...[
+            const SizedBox(height: 3),
             Row(
               children: [
                 Icon(
@@ -167,29 +186,66 @@ class HeroTradeCard extends StatelessWidget {
                 ),
               ],
             ),
-          const SizedBox(height: 14),
-          // Cash row
-          Row(
-            children: [
-              const Icon(Icons.account_balance_wallet_outlined,
-                  size: 14, color: TradEtTheme.textMuted),
-              const SizedBox(width: 6),
-              Text(
-                'Cash: ${fmt.format(cashBalance)} ETB',
-                style: const TextStyle(
-                    fontSize: 12, color: TradEtTheme.textSecondary),
-              ),
-              if (reserved > 0) ...[
-                const SizedBox(width: 8),
+          ],
+          const SizedBox(height: 10),
+          // Capital at Risk row (replaces separate card on desktop)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.show_chart_rounded,
+                    size: 13, color: TradEtTheme.textMuted),
+                const SizedBox(width: 6),
+                const Text('Capital at Risk',
+                    style: TextStyle(
+                        fontSize: 11, color: TradEtTheme.textSecondary)),
+                const Spacer(),
                 Text(
-                  '(${fmt.format(reserved)} reserved)',
+                  '${fmt.format(holdingsValue)} ETB',
                   style: const TextStyle(
-                      fontSize: 11, color: TradEtTheme.textMuted),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
               ],
-            ],
+            ),
           ),
-          const SizedBox(height: 16),
+          // On mobile also show cash (desktop has separate CashBalanceCard)
+          if (!wide) ...[
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.account_balance_wallet_outlined,
+                      size: 13, color: TradEtTheme.textMuted),
+                  const SizedBox(width: 6),
+                  const Text('Available Cash',
+                      style: TextStyle(
+                          fontSize: 11, color: TradEtTheme.textSecondary)),
+                  const Spacer(),
+                  Text(
+                    '${fmt.format(cashBalance)} ETB',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 14),
           // CTA buttons
           Row(
             children: [
@@ -1580,6 +1636,8 @@ class TopOpportunitiesSection extends StatelessWidget {
       ),
     ];
 
+    final wide = isWideScreen(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1593,24 +1651,42 @@ class TopOpportunitiesSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 160,
-          child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(context).copyWith(
-              dragDevices: {
-                PointerDeviceKind.touch,
-                PointerDeviceKind.mouse,
-              },
+        // On wide screens: 3 equal-width cards in a Row
+        // On mobile: horizontal scroll with fixed-width cards
+        if (wide)
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (int i = 0; i < categories.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 14),
+                  Expanded(
+                    child: _OpportunityCategoryCard(
+                        category: categories[i], fmt: fmt),
+                  ),
+                ],
+              ],
             ),
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: categories.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (context, i) =>
-                  _OpportunityCategoryCard(category: categories[i], fmt: fmt),
+          )
+        else
+          SizedBox(
+            height: 160,
+            child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(
+                dragDevices: {
+                  PointerDeviceKind.touch,
+                  PointerDeviceKind.mouse,
+                },
+              ),
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: categories.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, i) =>
+                    _OpportunityCategoryCard(category: categories[i], fmt: fmt),
+              ),
             ),
           ),
-        ),
       ],
     );
   }
