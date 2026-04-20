@@ -115,14 +115,8 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
 
                       return GestureDetector(
                         onTap: () {
-                          // Prefer the fully-loaded asset from provider.assets
-                          // so TradeScreen has all fields (bid/ask/high/low/category…)
-                          final fullAsset = provider.assets.firstWhere(
-                            (a) => a.id == asset.id,
-                            orElse: () => asset,
-                          );
                           Navigator.of(context).push(
-                              appRoute(context, TradeScreen(asset: fullAsset)));
+                              appRoute(context, TradeScreen(asset: asset)));
                         },
                         child: MouseRegion(
                           cursor: SystemMouseCursors.click,

@@ -1193,250 +1193,289 @@ class PortfolioScreen extends StatelessWidget {
 
   void _showWithdrawSheet(BuildContext context) {
     final amountCtrl = TextEditingController();
-    final accountCtrl = TextEditingController();
-    String? selectedBank;
+    int? selectedMethodId;
+
+    // Ensure payment methods are loaded
+    context.read<AppProvider>().loadPaymentMethods();
 
     showResponsiveSheet<void>(
       context: context,
       backgroundColor: const Color(0xFF1A3D2B),
       builder: (ctx, isDialog) => StatefulBuilder(
-        builder: (ctx, setSheetState) => Padding(
-          padding: EdgeInsets.fromLTRB(
-            24,
-            isDialog ? 20 : 24,
-            24,
-            isDialog ? 24 : MediaQuery.of(ctx).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (!isDialog)
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2D5A3D),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-              if (isDialog)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Withdraw ETB',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+        builder: (ctx, setSheetState) => Consumer<AppProvider>(
+          builder: (ctx, provider, _) {
+            final methods = provider.paymentMethods;
+            final available = provider.availableCashBalance;
+            final reserved = provider.reservedForOrders;
+
+            // Auto-select primary on first load
+            if (selectedMethodId == null && methods.isNotEmpty) {
+              final primary = methods.where((m) => m.isPrimary);
+              selectedMethodId =
+                  primary.isNotEmpty ? primary.first.id : methods.first.id;
+            }
+
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                24,
+                isDialog ? 20 : 24,
+                24,
+                isDialog ? 24 : MediaQuery.of(ctx).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (!isDialog)
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2D5A3D),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white54),
-                      onPressed: () => Navigator.pop(ctx),
-                    ),
+                  if (isDialog)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Withdraw ETB',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white)),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white54),
+                          onPressed: () => Navigator.pop(ctx),
+                        ),
+                      ],
+                    )
+                  else ...[
+                    const SizedBox(height: 20),
+                    const Text('Withdraw ETB',
+                        style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white)),
                   ],
-                )
-              else ...[
-                const SizedBox(height: 20),
-                const Text(
-                  'Withdraw ETB',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 4),
-              const Text(
-                'ገንዘብ አውጣ • Withdraw to your bank account (Riba-free)',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: TradEtTheme.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Consumer<AppProvider>(
-                builder: (_, provider, __) {
-                  final available = provider.availableCashBalance;
-                  final reserved = provider.reservedForOrders;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Available: ${available.toStringAsFixed(2)} ETB',
-                        style: const TextStyle(
+                  const SizedBox(height: 4),
+                  const Text('Withdraw to your saved bank account (Riba-free)',
+                      style: TextStyle(
+                          fontSize: 13, color: TradEtTheme.textSecondary)),
+                  const SizedBox(height: 12),
+                  // Available balance
+                  Text('Available: ${available.toStringAsFixed(2)} ETB',
+                      style: const TextStyle(
                           fontSize: 13,
                           color: TradEtTheme.positive,
-                          fontWeight: FontWeight.w600,
-                        ),
+                          fontWeight: FontWeight.w600)),
+                  if (reserved > 0)
+                    Text(
+                        'Reserved in open orders: ${reserved.toStringAsFixed(2)} ETB',
+                        style: const TextStyle(
+                            fontSize: 11, color: TradEtTheme.warning)),
+                  const SizedBox(height: 16),
+
+                  // Payment method selector
+                  if (methods.isEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.warning.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: TradEtTheme.warning.withValues(alpha: 0.4)),
                       ),
-                      if (reserved > 0)
-                        Text(
-                          'Reserved in open orders: ${reserved.toStringAsFixed(2)} ETB',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: TradEtTheme.warning,
+                      child: const Row(
+                        children: [
+                          Icon(Icons.warning_amber_rounded,
+                              color: TradEtTheme.warning, size: 18),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'No payment methods saved. Add a bank account in Profile > Payment Methods first.',
+                              style: TextStyle(
+                                  color: TradEtTheme.warning, fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ] else ...[
+                    const Text('Destination Account',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: TradEtTheme.textSecondary,
+                            fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    ...methods.map((m) {
+                      final selected = selectedMethodId == m.id;
+                      return GestureDetector(
+                        onTap: () =>
+                            setSheetState(() => selectedMethodId = m.id),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: selected
+                                ? TradEtTheme.positive.withValues(alpha: 0.12)
+                                : TradEtTheme.cardBg,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: selected
+                                  ? TradEtTheme.positive
+                                  : TradEtTheme.divider,
+                              width: selected ? 1.5 : 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: TradEtTheme.surfaceLight,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(Icons.account_balance,
+                                    size: 18,
+                                    color: TradEtTheme.primaryLight),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(m.bankName,
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white)),
+                                        ),
+                                        if (m.isPrimary)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: TradEtTheme.accent
+                                                  .withValues(alpha: 0.15),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: const Text('Primary',
+                                                style: TextStyle(
+                                                    fontSize: 9,
+                                                    color: TradEtTheme.accent,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                          ),
+                                      ],
+                                    ),
+                                    Text(
+                                        '${m.accountName}  •  ****${m.accountNumber.length > 4 ? m.accountNumber.substring(m.accountNumber.length - 4) : m.accountNumber}',
+                                        style: const TextStyle(
+                                            fontSize: 11,
+                                            color: TradEtTheme.textSecondary)),
+                                  ],
+                                ),
+                              ),
+                              if (selected)
+                                const Icon(Icons.check_circle_rounded,
+                                    color: TradEtTheme.positive, size: 20),
+                            ],
                           ),
                         ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 14),
+                      );
+                    }),
+                  ],
+                  const SizedBox(height: 14),
 
-              // Bank selector
-              DropdownButtonFormField<String>(
-                value: selectedBank,
-                dropdownColor: TradEtTheme.surfaceLight,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).selectBank,
-                  prefixIcon: const Icon(Icons.account_balance, size: 20),
-                ),
-                items: _ethiopianBanks
-                    .map(
-                      (bank) => DropdownMenuItem(
-                        value: bank,
-                        child: Text(bank, style: const TextStyle(fontSize: 13)),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (v) => setSheetState(() => selectedBank = v),
-              ),
-              const SizedBox(height: 14),
-
-              // Account number
-              TextField(
-                controller: accountCtrl,
-                keyboardType: TextInputType.number,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).accountNumber,
-                  prefixIcon: const Icon(Icons.credit_card, size: 20),
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Amount
-              TextField(
-                controller: amountCtrl,
-                keyboardType: TextInputType.number,
-                autofocus: true,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-                decoration: const InputDecoration(
-                  prefixText: 'ETB  ',
-                  prefixStyle: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: TradEtTheme.textSecondary,
+                  // Amount input
+                  TextField(
+                    controller: amountCtrl,
+                    keyboardType: TextInputType.number,
+                    autofocus: methods.isNotEmpty,
+                    style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white),
+                    decoration: const InputDecoration(
+                      prefixText: 'ETB  ',
+                      prefixStyle: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: TradEtTheme.textSecondary),
+                      hintText: '0.00',
+                    ),
                   ),
-                  hintText: '0.00',
-                ),
-              ),
-              const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: TradEtTheme.accent,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                onPressed: () async {
-                  final amount = double.tryParse(amountCtrl.text);
-                  if (amount == null || amount <= 0) return;
-                  if (selectedBank == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Please select a bank'),
-                        backgroundColor: TradEtTheme.warning,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    );
-                    return;
-                  }
-                  if (accountCtrl.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Please enter account number'),
-                        backgroundColor: TradEtTheme.warning,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    );
-                    return;
-                  }
-                  final available = context
-                      .read<AppProvider>()
-                      .availableCashBalance;
-                  if (amount > available) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Insufficient available balance. Available: ${available.toStringAsFixed(2)} ETB',
-                        ),
-                        backgroundColor: TradEtTheme.negative,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    );
-                    return;
-                  }
-                  Navigator.pop(ctx);
-                  final result = await context.read<AppProvider>().withdraw(
-                    amount: amount,
-                    bankName: selectedBank!,
-                    accountNumber: accountCtrl.text.trim(),
-                  );
-                  if (context.mounted) {
-                    await context.read<AppProvider>().loadPortfolio();
-                    final isError = result.containsKey('error');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          isError
-                              ? (result['error'] ?? 'Withdrawal failed')
-                              : (result['message'] ?? 'Withdrawal complete'),
-                        ),
-                        backgroundColor: isError
-                            ? TradEtTheme.negative
-                            : TradEtTheme.positive,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    );
-                  }
-                },
-                child: Text(
-                  AppLocalizations.of(context).withdraw,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: methods.isEmpty
+                          ? TradEtTheme.divider
+                          : TradEtTheme.accent,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    onPressed: methods.isEmpty
+                        ? null
+                        : () async {
+                            final amount = double.tryParse(amountCtrl.text);
+                            if (amount == null || amount <= 0) return;
+                            if (amount > available) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                                    'Insufficient balance. Available: ${available.toStringAsFixed(2)} ETB'),
+                                backgroundColor: TradEtTheme.negative,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ));
+                              return;
+                            }
+                            final method = methods
+                                .firstWhere((m) => m.id == selectedMethodId);
+                            Navigator.pop(ctx);
+                            final result = await context
+                                .read<AppProvider>()
+                                .withdraw(
+                                  amount: amount,
+                                  bankName: method.bankName,
+                                  accountNumber: method.accountNumber,
+                                );
+                            if (context.mounted) {
+                              await context
+                                  .read<AppProvider>()
+                                  .loadPortfolio();
+                              final isError = result.containsKey('error');
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(isError
+                                    ? (result['error'] ?? 'Withdrawal failed')
+                                    : (result['message'] ??
+                                        'Withdrawal complete')),
+                                backgroundColor: isError
+                                    ? TradEtTheme.negative
+                                    : TradEtTheme.positive,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ));
+                            }
+                          },
+                    child: Text(AppLocalizations.of(context).withdraw,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 15)),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

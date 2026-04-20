@@ -1055,13 +1055,20 @@ class _TradeScreenState extends State<TradeScreen> {
                 thumbShape:
                     const RoundSliderThumbShape(enabledThumbRadius: 8),
               ),
-              child: Slider(
-                value: _sliderValue.clamp(
-                    asset.minTradeQty, asset.maxTradeQty),
-                min: asset.minTradeQty,
-                max: asset.maxTradeQty,
-                onChanged: _onSliderChanged,
-              ),
+              child: Builder(builder: (context) {
+                final sliderMax = _isBuy
+                    ? maxFromCash.clamp(asset.minTradeQty, asset.maxTradeQty)
+                    : maxSellQty.clamp(asset.minTradeQty, asset.maxTradeQty);
+                final effectiveMax = sliderMax > asset.minTradeQty
+                    ? sliderMax
+                    : asset.minTradeQty * 2;
+                return Slider(
+                  value: _sliderValue.clamp(asset.minTradeQty, effectiveMax),
+                  min: asset.minTradeQty,
+                  max: effectiveMax,
+                  onChanged: _onSliderChanged,
+                );
+              }),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

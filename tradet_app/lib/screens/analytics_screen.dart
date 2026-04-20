@@ -86,6 +86,15 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   // ── Header ──
                   Row(
                     children: [
+                      if (!wide)
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white, size: 20),
+                          onPressed: () => Navigator.of(context).maybePop(),
+                          tooltip: 'Back',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                        ),
                       const Icon(Icons.bar_chart_rounded,
                           color: TradEtTheme.primaryLight, size: 26),
                       const SizedBox(width: 10),

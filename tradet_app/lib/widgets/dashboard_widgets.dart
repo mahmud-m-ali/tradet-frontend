@@ -83,6 +83,264 @@ class WebSectionCard extends StatelessWidget {
   }
 }
 
+// ─── Hero Trade Card (wireframe: combined portfolio + cash + CTAs) ───
+class HeroTradeCard extends StatelessWidget {
+  final AppProvider provider;
+  final NumberFormat fmt;
+  final void Function(int)? onNavigateTo;
+
+  const HeroTradeCard({
+    super.key,
+    required this.provider,
+    required this.fmt,
+    this.onNavigateTo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final summary = provider.portfolioSummary;
+    final totalValue = summary?.totalPortfolioValue ?? 0;
+    final cashBalance = provider.availableCashBalance;
+    final totalPnl = summary?.totalPnl ?? 0;
+    final totalInvested = summary?.totalInvested ?? 0;
+    final pnlPct = totalInvested > 0 ? (totalPnl / totalInvested * 100) : 0.0;
+    final reserved = provider.reservedForOrders;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF0D3B20),
+            const Color(0xFF0B2E1A).withValues(alpha: 0.95),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: TradEtTheme.positive.withValues(alpha: 0.2),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: TradEtTheme.positive.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Total value
+          const Text(
+            'Total Portfolio Value',
+            style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '${fmt.format(totalValue)} ETB',
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: -0.8,
+            ),
+          ),
+          const SizedBox(height: 4),
+          if (summary != null)
+            Row(
+              children: [
+                Icon(
+                  totalPnl >= 0 ? Icons.trending_up : Icons.trending_down,
+                  size: 14,
+                  color: totalPnl >= 0 ? TradEtTheme.positive : TradEtTheme.negative,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '${totalPnl >= 0 ? "+" : ""}${fmt.format(totalPnl)} (${pnlPct.toStringAsFixed(1)}%)',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: totalPnl >= 0 ? TradEtTheme.positive : TradEtTheme.negative,
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(height: 14),
+          // Cash row
+          Row(
+            children: [
+              const Icon(Icons.account_balance_wallet_outlined,
+                  size: 14, color: TradEtTheme.textMuted),
+              const SizedBox(width: 6),
+              Text(
+                'Cash: ${fmt.format(cashBalance)} ETB',
+                style: const TextStyle(
+                    fontSize: 12, color: TradEtTheme.textSecondary),
+              ),
+              if (reserved > 0) ...[
+                const SizedBox(width: 8),
+                Text(
+                  '(${fmt.format(reserved)} reserved)',
+                  style: const TextStyle(
+                      fontSize: 11, color: TradEtTheme.textMuted),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 16),
+          // CTA buttons
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (onNavigateTo != null) {
+                      onNavigateTo!(1); // Market
+                    }
+                  },
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        gradient: TradEtTheme.heroGradient,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: TradEtTheme.positive.withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.bolt_rounded, size: 16, color: Colors.white),
+                          SizedBox(width: 6),
+                          Text(
+                            'Trade Now',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (onNavigateTo != null) {
+                      onNavigateTo!(2); // Portfolio
+                    }
+                  },
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.surfaceLight,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: TradEtTheme.divider.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.pie_chart_outline,
+                              size: 16, color: TradEtTheme.primaryLight),
+                          SizedBox(width: 6),
+                          Text(
+                            'Portfolio',
+                            style: TextStyle(
+                              color: TradEtTheme.primaryLight,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Trust / Compliance Strip ───
+class TrustStrip extends StatelessWidget {
+  const TrustStrip({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: TradEtTheme.surfaceLight,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _TrustBadge(icon: Icons.verified_rounded,
+              label: 'ECX Regulated', color: TradEtTheme.primaryLight),
+          _TrustDivider(),
+          _TrustBadge(icon: Icons.star_rounded,
+              label: 'Sharia Certified', color: TradEtTheme.positive),
+          _TrustDivider(),
+          _TrustBadge(icon: Icons.gavel_rounded,
+              label: 'AAOIFI Compliant', color: TradEtTheme.accent),
+        ],
+      ),
+    );
+  }
+}
+
+class _TrustBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  const _TrustBadge({required this.icon, required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 13, color: color),
+        const SizedBox(width: 4),
+        Text(label,
+            style: TextStyle(
+                fontSize: 10, fontWeight: FontWeight.w600, color: color)),
+      ],
+    );
+  }
+}
+
+class _TrustDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: 1, height: 16, color: TradEtTheme.divider.withValues(alpha: 0.5));
+  }
+}
+
+// ─── Portfolio Card ───
 class PortfolioCard extends StatelessWidget {
   final AppProvider provider;
   final NumberFormat fmt;
@@ -1261,6 +1519,220 @@ class ErrorRetryWidget extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Top Opportunities Section ───
+
+class TopOpportunitiesSection extends StatelessWidget {
+  final AppProvider provider;
+  final NumberFormat fmt;
+
+  const TopOpportunitiesSection({
+    super.key,
+    required this.provider,
+    required this.fmt,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final assets = provider.assets.where((a) => a.isShariaCompliant).toList();
+    if (assets.isEmpty) return const SizedBox.shrink();
+
+    // Top Volume — highest volume24h
+    final byVolume = [...assets]
+      ..sort((a, b) => (b.volume24h ?? 0).compareTo(a.volume24h ?? 0));
+    final topVolume = byVolume.take(3).toList();
+
+    // Trending — highest positive change24h
+    final byChange = [...assets]
+      ..sort((a, b) => (b.change24h ?? 0).compareTo(a.change24h ?? 0));
+    final trending = byChange.where((a) => (a.change24h ?? 0) > 0).take(3).toList();
+
+    // Popular — ECX-listed with high volume
+    final popular = [...assets.where((a) => a.isEcxListed)]
+      ..sort((a, b) => (b.volume24h ?? 0).compareTo(a.volume24h ?? 0));
+    final topPopular = popular.take(3).toList();
+
+    final categories = [
+      _OpportunityCategory(
+        label: 'Top Volume',
+        icon: Icons.show_chart_rounded,
+        color: TradEtTheme.primaryLight,
+        assets: topVolume,
+      ),
+      _OpportunityCategory(
+        label: 'Trending',
+        icon: Icons.trending_up_rounded,
+        color: TradEtTheme.positive,
+        assets: trending,
+      ),
+      _OpportunityCategory(
+        label: 'ECX Listed',
+        icon: Icons.verified_rounded,
+        color: TradEtTheme.accent,
+        assets: topPopular,
+      ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Top Opportunities',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+            letterSpacing: -0.3,
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 160,
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              dragDevices: {
+                PointerDeviceKind.touch,
+                PointerDeviceKind.mouse,
+              },
+            ),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, i) =>
+                  _OpportunityCategoryCard(category: categories[i], fmt: fmt),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OpportunityCategory {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final List<Asset> assets;
+  const _OpportunityCategory({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.assets,
+  });
+}
+
+class _OpportunityCategoryCard extends StatelessWidget {
+  final _OpportunityCategory category;
+  final NumberFormat fmt;
+  const _OpportunityCategoryCard({
+    required this.category,
+    required this.fmt,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 220,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: TradEtTheme.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: category.color.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(category.icon, color: category.color, size: 16),
+              const SizedBox(width: 6),
+              Text(
+                category.label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: category.color,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: category.assets.isEmpty
+                  ? [
+                      const Text('No data',
+                          style: TextStyle(
+                              color: TradEtTheme.textMuted, fontSize: 11)),
+                    ]
+                  : category.assets
+                      .map((asset) => GestureDetector(
+                            onTap: () => Navigator.of(context).push(
+                              appRoute(context, TradeScreen(asset: asset)),
+                            ),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      asset.symbol,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Text(
+                                    asset.price != null
+                                        ? fmt.format(asset.price!)
+                                        : '--',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: TradEtTheme.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: ((asset.change24h ?? 0) >= 0
+                                              ? TradEtTheme.positive
+                                              : TradEtTheme.negative)
+                                          .withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      '${(asset.change24h ?? 0) >= 0 ? '+' : ''}${(asset.change24h ?? 0).toStringAsFixed(1)}%',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                        color: (asset.change24h ?? 0) >= 0
+                                            ? TradEtTheme.positive
+                                            : TradEtTheme.negative,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ))
+                      .toList(),
             ),
           ),
         ],

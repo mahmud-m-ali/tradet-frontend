@@ -65,9 +65,16 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             children: [
               // Header
               Padding(
-                padding: EdgeInsets.fromLTRB(wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 0),
+                padding: EdgeInsets.fromLTRB(wide ? 32 : 4, wide ? 24 : 8, wide ? 32 : 20, 0),
                 child: Row(
                   children: [
+                    if (!wide)
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white, size: 20),
+                        onPressed: () => Navigator.of(context).maybePop(),
+                        tooltip: 'Back',
+                      ),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

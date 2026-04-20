@@ -75,26 +75,25 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
+        // Hero: portfolio value + cash + CTAs
+        HeroTradeCard(
+            provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
+        const SizedBox(height: 10),
+        // Trust / compliance strip
+        const TrustStrip(),
+        const SizedBox(height: 14),
         // Exchange rate ticker
         ExchangeRateTicker(api: provider.api),
-        const SizedBox(height: 16),
-        PortfolioCard(provider: provider, fmt: fmt),
-        const SizedBox(height: 14),
-        CashBalanceCard(
-          value: '${fmt.format(provider.availableCashBalance)} ETB',
-          subLabel: provider.reservedForOrders > 0
-              ? '${fmt.format(provider.reservedForOrders)} reserved'
-              : null,
-        ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 20),
+        // Top Opportunities
+        TopOpportunitiesSection(provider: provider, fmt: fmt),
+        const SizedBox(height: 24),
+        // Market Momentum
+        MoversSection(provider: provider, fmt: fmt),
+        const SizedBox(height: 24),
         _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
         const SizedBox(height: 14),
         _mobileStatsGrid(context, provider, fmt, l, onNavigateTo),
-        const SizedBox(height: 16),
-        // Quick access cards for new features
-        QuickAccessGrid(l: l),
-        const SizedBox(height: 24),
-        MoversSection(provider: provider, fmt: fmt),
         const SizedBox(height: 24),
         if (provider.holdings.isNotEmpty) ...[
           SectionHeader(title: l.yourHoldings),
@@ -121,6 +120,9 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ),
         ],
+        const SizedBox(height: 24),
+        // Utility shortcuts (bottom)
+        QuickAccessGrid(l: l),
         const SizedBox(height: 20),
         const DisclaimerFooter(),
         const SizedBox(height: 8),
@@ -188,51 +190,64 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        // Exchange rate ticker
-        ExchangeRateTicker(api: provider.api),
-        const SizedBox(height: 20),
-
-        // Desktop 2-column layout:
-        //  Row 1: Capital at Risk (left) | Cash Balance (right)  — equal widths
-        //  Row 2: Portfolio Split (left) | 3 stat cards (right)  — equal widths
-        if (desktop) ...[
+        // Hero: portfolio value + cash + CTAs
+        if (desktop)
           IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: PortfolioCard(provider: provider, fmt: fmt),
+                  flex: 2,
+                  child: HeroTradeCard(
+                    provider: provider,
+                    fmt: fmt,
+                    onNavigateTo: onNavigateTo,
+                  ),
                 ),
                 const SizedBox(width: 20),
                 Expanded(
-                  child: CashBalanceCard(
-                    value: '${fmt.format(provider.availableCashBalance)} ETB',
-                    subLabel: provider.reservedForOrders > 0
-                        ? '${fmt.format(provider.reservedForOrders)} reserved'
-                        : null,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(child: CashBalanceCard(
+                        value: '${fmt.format(provider.availableCashBalance)} ETB',
+                        subLabel: provider.reservedForOrders > 0
+                            ? '${fmt.format(provider.reservedForOrders)} reserved'
+                            : null,
+                      )),
+                      const SizedBox(height: 12),
+                      Expanded(child: PortfolioCard(provider: provider, fmt: fmt)),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 14),
+          )
+        else
+          HeroTradeCard(
+              provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
+        const SizedBox(height: 12),
+        // Trust strip
+        const TrustStrip(),
+        const SizedBox(height: 16),
+        // Exchange rate ticker
+        ExchangeRateTicker(api: provider.api),
+        const SizedBox(height: 20),
+
+        // Stats row (web)
+        if (desktop) ...[
           IntrinsicHeight(child: _webRow2(context, provider, l, onNavigateTo)),
           const SizedBox(height: 14),
           _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
         ] else ...[
-          PortfolioCard(provider: provider, fmt: fmt),
-          const SizedBox(height: 14),
-          CashBalanceCard(
-            value: '${fmt.format(provider.availableCashBalance)} ETB',
-            subLabel: provider.reservedForOrders > 0
-                ? '${fmt.format(provider.reservedForOrders)} reserved'
-                : null,
-          ),
-          const SizedBox(height: 14),
           _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
           const SizedBox(height: 14),
           IntrinsicHeight(child: _webRow2(context, provider, l, onNavigateTo)),
         ],
+        const SizedBox(height: 28),
+
+        // Top Opportunities
+        TopOpportunitiesSection(provider: provider, fmt: fmt),
         const SizedBox(height: 28),
 
         // Top Movers / Losers segmented
@@ -242,10 +257,6 @@ class DashboardScreen extends StatelessWidget {
           webMode: true,
           desktop: desktop,
         ),
-        const SizedBox(height: 28),
-
-        // Quick access to new features
-        QuickAccessGrid(l: l),
         const SizedBox(height: 28),
 
         // Holdings + Orders side by side on desktop
@@ -265,6 +276,10 @@ class DashboardScreen extends StatelessWidget {
           const SizedBox(height: 20),
           _webOrdersSection(context, provider, fmt, l),
         ],
+        const SizedBox(height: 28),
+
+        // Utility shortcuts (bottom)
+        QuickAccessGrid(l: l),
         const SizedBox(height: 28),
         const DisclaimerFooter(),
         const SizedBox(height: 8),
