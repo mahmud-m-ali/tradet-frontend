@@ -74,26 +74,22 @@ class DashboardScreen extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
+        // Exchange rate ticker — right below greeting
+        ExchangeRateTicker(api: provider.api),
+        const SizedBox(height: 14),
         // Hero: portfolio value + cash + CTAs
         HeroTradeCard(
             provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
         const SizedBox(height: 10),
         // Trust / compliance strip
         const TrustStrip(),
-        const SizedBox(height: 14),
-        // Exchange rate ticker
-        ExchangeRateTicker(api: provider.api),
         const SizedBox(height: 20),
         // Top Opportunities
         TopOpportunitiesSection(provider: provider, fmt: fmt),
         const SizedBox(height: 24),
         // Market Momentum
         MoversSection(provider: provider, fmt: fmt),
-        const SizedBox(height: 24),
-        _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
-        const SizedBox(height: 14),
-        _mobileStatsGrid(context, provider, fmt, l, onNavigateTo),
         const SizedBox(height: 24),
         if (provider.holdings.isNotEmpty) ...[
           SectionHeader(title: l.yourHoldings),
@@ -120,6 +116,11 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ),
         ],
+        const SizedBox(height: 24),
+        // Portfolio overview + compliance section (above Quick Access)
+        _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
+        const SizedBox(height: 12),
+        _mobileStatsGrid(context, provider, fmt, l, onNavigateTo),
         const SizedBox(height: 24),
         // Utility shortcuts (bottom)
         QuickAccessGrid(l: l),
@@ -189,7 +190,11 @@ class DashboardScreen extends StatelessWidget {
                   ),
           ],
         ),
+        const SizedBox(height: 12),
+        // Exchange rate ticker — right below greeting
+        ExchangeRateTicker(api: provider.api),
         const SizedBox(height: 16),
+
         // Hero: portfolio value + cash + CTAs
         if (desktop)
           IntrinsicHeight(
@@ -229,21 +234,6 @@ class DashboardScreen extends StatelessWidget {
         const SizedBox(height: 12),
         // Trust strip
         const TrustStrip(),
-        const SizedBox(height: 16),
-        // Exchange rate ticker
-        ExchangeRateTicker(api: provider.api),
-        const SizedBox(height: 20),
-
-        // Stats row (web)
-        if (desktop) ...[
-          IntrinsicHeight(child: _webRow2(context, provider, l, onNavigateTo)),
-          const SizedBox(height: 14),
-          _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
-        ] else ...[
-          _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
-          const SizedBox(height: 14),
-          IntrinsicHeight(child: _webRow2(context, provider, l, onNavigateTo)),
-        ],
         const SizedBox(height: 28),
 
         // Top Opportunities
@@ -275,6 +265,16 @@ class DashboardScreen extends StatelessWidget {
           _webHoldingsSection(context, provider, fmt, l),
           const SizedBox(height: 20),
           _webOrdersSection(context, provider, fmt, l),
+        ],
+        const SizedBox(height: 28),
+
+        // Portfolio overview + compliance section (above Quick Access)
+        if (desktop) ...[
+          IntrinsicHeight(child: _webRow2WithSharia(context, provider, l, onNavigateTo, fmt)),
+        ] else ...[
+          _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
+          const SizedBox(height: 14),
+          IntrinsicHeight(child: _webRow2(context, provider, l, onNavigateTo)),
         ],
         const SizedBox(height: 28),
 
@@ -384,6 +384,91 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  /// Desktop combined row: Portfolio Split | Sharia Score | 4 stat cards — all in one line above Quick Access
+  Widget _webRow2WithSharia(
+    BuildContext context,
+    AppProvider provider,
+    AppLocalizations l,
+    void Function(int)? onNavigateTo,
+    NumberFormat fmt,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Portfolio Split — flex:2
+        Expanded(
+          flex: 2,
+          child: AllocationCard(
+            provider: provider,
+            fmt: NumberFormat('#,##0.00', 'en'),
+          ),
+        ),
+        const SizedBox(width: 14),
+        // Sharia Score — flex:2
+        Expanded(
+          flex: 2,
+          child: _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
+        ),
+        const SizedBox(width: 14),
+        // Transactions — flex:1
+        Expanded(
+          flex: 1,
+          child: StatCard(
+            icon: Icons.swap_horiz_rounded,
+            label: l.transactions,
+            value: l.viewHistory,
+            color: const Color(0xFF22D3EE),
+            onTap: () => Navigator.of(context).push(
+              appRoute(
+                context,
+                WrappedScreen(
+                  child: const TransactionsScreen(),
+                  showMobileAppBar: false,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 14),
+        // Open Orders — flex:1
+        Expanded(
+          flex: 1,
+          child: StatCard(
+            icon: Icons.receipt_long_outlined,
+            label: l.openOrders,
+            value: '${provider.orders.where((o) => o.isPending).length}',
+            color: TradEtTheme.primaryLight,
+            onTap: onNavigateTo != null ? () => onNavigateTo(3) : null,
+          ),
+        ),
+        const SizedBox(width: 14),
+        // Holdings — flex:1
+        Expanded(
+          flex: 1,
+          child: StatCard(
+            icon: Icons.pie_chart_outline,
+            label: l.holdings,
+            value: '${provider.holdings.length} assets',
+            color: const Color(0xFF818CF8),
+            onTap: onNavigateTo != null ? () => onNavigateTo(2) : null,
+          ),
+        ),
+        const SizedBox(width: 14),
+        // Watchlist — flex:1
+        Expanded(
+          flex: 1,
+          child: StatCard(
+            icon: Icons.star_outline_rounded,
+            label: l.watchlist,
+            value: '${provider.watchlist.length} assets',
+            color: const Color(0xFFFBBF24),
+            onTap: onNavigateTo != null ? () => onNavigateTo(4) : null,
+          ),
         ),
       ],
     );
