@@ -108,7 +108,8 @@ class HeroTradeCard extends StatelessWidget {
     final wide = isWideScreen(context);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(
+          horizontal: wide ? 16 : 20, vertical: wide ? 12 : 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -118,214 +119,202 @@ class HeroTradeCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: TradEtTheme.positive.withValues(alpha: 0.2),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: TradEtTheme.positive.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Label row
+          // Label + Halal badge
           Row(
             children: [
               const Icon(Icons.account_balance_rounded,
-                  size: 14, color: TradEtTheme.textSecondary),
-              const SizedBox(width: 6),
-              const Text(
-                'Total Portfolio Value',
-                style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary),
-              ),
+                  size: 13, color: TradEtTheme.textSecondary),
+              const SizedBox(width: 5),
+              const Text('Total Portfolio Value',
+                  style: TextStyle(
+                      fontSize: 11, color: TradEtTheme.textSecondary)),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: TradEtTheme.positive.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: const Text('Halal',
                     style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 9,
                         fontWeight: FontWeight.w700,
                         color: TradEtTheme.positive)),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            '${fmt.format(totalValue)} ETB',
-            style: const TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: -0.8,
-            ),
-          ),
-          if (summary != null) ...[
-            const SizedBox(height: 3),
+          const SizedBox(height: 3),
+          // Value + P&L on same line on desktop to save vertical space
+          if (wide)
             Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
               children: [
+                Text('${fmt.format(totalValue)} ETB',
+                    style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: -0.5)),
+                if (summary != null) ...[
+                  const SizedBox(width: 10),
+                  Icon(
+                    totalPnl >= 0 ? Icons.trending_up : Icons.trending_down,
+                    size: 13,
+                    color: totalPnl >= 0
+                        ? TradEtTheme.positive
+                        : TradEtTheme.negative,
+                  ),
+                  const SizedBox(width: 3),
+                  Text(
+                    '${totalPnl >= 0 ? "+" : ""}${fmt.format(totalPnl)} (${pnlPct.toStringAsFixed(1)}%)',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: totalPnl >= 0
+                          ? TradEtTheme.positive
+                          : TradEtTheme.negative,
+                    ),
+                  ),
+                ],
+              ],
+            )
+          else ...[
+            Text('${fmt.format(totalValue)} ETB',
+                style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: -0.5)),
+            if (summary != null) ...[
+              const SizedBox(height: 2),
+              Row(children: [
                 Icon(
                   totalPnl >= 0 ? Icons.trending_up : Icons.trending_down,
-                  size: 14,
-                  color: totalPnl >= 0 ? TradEtTheme.positive : TradEtTheme.negative,
+                  size: 13,
+                  color: totalPnl >= 0
+                      ? TradEtTheme.positive
+                      : TradEtTheme.negative,
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 3),
                 Text(
                   '${totalPnl >= 0 ? "+" : ""}${fmt.format(totalPnl)} (${pnlPct.toStringAsFixed(1)}%)',
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: totalPnl >= 0 ? TradEtTheme.positive : TradEtTheme.negative,
-                  ),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: totalPnl >= 0
+                          ? TradEtTheme.positive
+                          : TradEtTheme.negative),
                 ),
+              ]),
+            ],
+          ],
+          const SizedBox(height: 8),
+          // Capital at Risk + optional cash (mobile) inline
+          Row(
+            children: [
+              const Icon(Icons.show_chart_rounded,
+                  size: 12, color: TradEtTheme.textMuted),
+              const SizedBox(width: 4),
+              const Text('Capital at Risk',
+                  style: TextStyle(
+                      fontSize: 11, color: TradEtTheme.textSecondary)),
+              const Spacer(),
+              Text('${fmt.format(holdingsValue)} ETB',
+                  style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white)),
+            ],
+          ),
+          if (!wide) ...[
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(Icons.account_balance_wallet_outlined,
+                    size: 12, color: TradEtTheme.textMuted),
+                const SizedBox(width: 4),
+                const Text('Available Cash',
+                    style: TextStyle(
+                        fontSize: 11, color: TradEtTheme.textSecondary)),
+                const Spacer(),
+                Text('${fmt.format(cashBalance)} ETB',
+                    style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white)),
               ],
             ),
           ],
           const SizedBox(height: 10),
-          // Capital at Risk row (replaces separate card on desktop)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.show_chart_rounded,
-                    size: 13, color: TradEtTheme.textMuted),
-                const SizedBox(width: 6),
-                const Text('Capital at Risk',
-                    style: TextStyle(
-                        fontSize: 11, color: TradEtTheme.textSecondary)),
-                const Spacer(),
-                Text(
-                  '${fmt.format(holdingsValue)} ETB',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // On mobile also show cash (desktop has separate CashBalanceCard)
-          if (!wide) ...[
-            const SizedBox(height: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.account_balance_wallet_outlined,
-                      size: 13, color: TradEtTheme.textMuted),
-                  const SizedBox(width: 6),
-                  const Text('Available Cash',
-                      style: TextStyle(
-                          fontSize: 11, color: TradEtTheme.textSecondary)),
-                  const Spacer(),
-                  Text(
-                    '${fmt.format(cashBalance)} ETB',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          const SizedBox(height: 14),
-          // CTA buttons
+          // CTA buttons — compact height
           Row(
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () {
-                    if (onNavigateTo != null) {
-                      onNavigateTo!(1); // Market
-                    }
-                  },
+                  onTap: () => onNavigateTo?.call(1),
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: Container(
-                      height: 40,
+                      height: 32,
                       decoration: BoxDecoration(
                         gradient: TradEtTheme.heroGradient,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: TradEtTheme.positive.withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.bolt_rounded, size: 16, color: Colors.white),
-                          SizedBox(width: 6),
-                          Text(
-                            'Trade Now',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          ),
+                          Icon(Icons.bolt_rounded,
+                              size: 14, color: Colors.white),
+                          SizedBox(width: 5),
+                          Text('Trade Now',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12)),
                         ],
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: GestureDetector(
-                  onTap: () {
-                    if (onNavigateTo != null) {
-                      onNavigateTo!(2); // Portfolio
-                    }
-                  },
+                  onTap: () => onNavigateTo?.call(2),
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: Container(
-                      height: 40,
+                      height: 32,
                       decoration: BoxDecoration(
                         color: TradEtTheme.surfaceLight,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: TradEtTheme.divider.withValues(alpha: 0.5),
-                        ),
+                            color:
+                                TradEtTheme.divider.withValues(alpha: 0.5)),
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.pie_chart_outline,
-                              size: 16, color: TradEtTheme.primaryLight),
-                          SizedBox(width: 6),
-                          Text(
-                            'Portfolio',
-                            style: TextStyle(
-                              color: TradEtTheme.primaryLight,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          ),
+                              size: 14,
+                              color: TradEtTheme.primaryLight),
+                          SizedBox(width: 5),
+                          Text('Portfolio',
+                              style: TextStyle(
+                                  color: TradEtTheme.primaryLight,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12)),
                         ],
                       ),
                     ),
@@ -596,7 +585,7 @@ class _CashBalanceCardState extends State<CashBalanceCard> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: TradEtTheme.cardBg,
         borderRadius: BorderRadius.circular(14),
@@ -610,13 +599,13 @@ class _CashBalanceCardState extends State<CashBalanceCard> {
           Row(
             children: [
               Icon(Icons.account_balance_wallet_outlined,
-                  size: 14, color: TradEtTheme.accent),
-              const SizedBox(width: 6),
+                  size: 13, color: TradEtTheme.accent),
+              const SizedBox(width: 5),
               Expanded(
                 child: Text(
                   l.cashBalance,
                   style: const TextStyle(
-                      fontSize: 12, color: TradEtTheme.textSecondary),
+                      fontSize: 11, color: TradEtTheme.textSecondary),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -626,17 +615,17 @@ class _CashBalanceCardState extends State<CashBalanceCard> {
                   _visible
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  size: 15,
+                  size: 14,
                   color: TradEtTheme.textMuted,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             _visible ? widget.value : '••••••',
             style: const TextStyle(
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
@@ -651,7 +640,7 @@ class _CashBalanceCardState extends State<CashBalanceCard> {
               overflow: TextOverflow.ellipsis,
             ),
           ],
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -660,7 +649,7 @@ class _CashBalanceCardState extends State<CashBalanceCard> {
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.symmetric(vertical: 4),
                       decoration: BoxDecoration(
                         color: TradEtTheme.positive.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
@@ -698,7 +687,7 @@ class _CashBalanceCardState extends State<CashBalanceCard> {
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.symmetric(vertical: 4),
                       decoration: BoxDecoration(
                         color: TradEtTheme.accent.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
