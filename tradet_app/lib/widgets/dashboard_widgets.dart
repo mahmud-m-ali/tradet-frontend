@@ -1979,13 +1979,6 @@ class _OpportunityRow extends StatelessWidget {
                   ],
                 ),
               ),
-              // Sparkline
-              if (asset.sparkline.length >= 2)
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child:
-                      MiniSparkline(data: asset.sparkline, height: 22, width: 44),
-                ),
               // Price + change
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -2136,67 +2129,122 @@ class _MoversSectionState extends State<MoversSection> {
 
 // ─── Top-level mover section builders (used by MoversSection widget) ───
 
-Widget topMoversSection(AppProvider provider, NumberFormat fmt) {
-  if (provider.assets.isNotEmpty) {
-    return SizedBox(
-      height: 110,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: getTopMovers(provider).length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final asset = getTopMovers(provider)[index];
-          return TopMoverCard(asset: asset, fmt: fmt);
-        },
-      ),
-    );
-  } else if (provider.assetsLoading) {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(20),
-        child: CircularProgressIndicator(color: TradEtTheme.positive),
-      ),
-    );
-  } else if (provider.assetsError != null) {
-    return ErrorRetryWidget(
-      message: provider.assetsError!,
-      onRetry: () => provider.loadAssets(),
+// 4-column grid for mobile movers — no sparklines, just icon + symbol + change%
+Widget _mobileMoversGrid(List<dynamic> assets) {
+  if (assets.isEmpty) {
+    return const Padding(
+      padding: EdgeInsets.all(16),
+      child: Text('No data', style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13)),
     );
   }
-  return const Padding(
-    padding: EdgeInsets.all(16),
-    child: Text(
-      'No market data available',
-      style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 4,
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 12,
+      childAspectRatio: 0.82,
     ),
+    itemCount: assets.length,
+    itemBuilder: (context, i) => _MoverGridItem(asset: assets[i]),
   );
 }
 
+Widget topMoversSection(AppProvider provider, NumberFormat fmt) {
+  if (provider.assetsLoading && provider.assets.isEmpty) {
+    return const Center(child: Padding(padding: EdgeInsets.all(20),
+        child: CircularProgressIndicator(color: TradEtTheme.positive)));
+  }
+  if (provider.assetsError != null && provider.assets.isEmpty) {
+    return ErrorRetryWidget(message: provider.assetsError!, onRetry: () => provider.loadAssets());
+  }
+  return _mobileMoversGrid(getTopMovers(provider));
+}
+
 Widget topLosersSection(AppProvider provider, NumberFormat fmt) {
-  if (provider.assets.isNotEmpty) {
-    final losers = getTopLosers(provider);
-    if (losers.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text(
-          'No losers today',
-          style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
-        ),
-      );
+  if (provider.assets.isEmpty) return const SizedBox.shrink();
+  return _mobileMoversGrid(getTopLosers(provider));
+}
+
+class _MoverGridItem extends StatelessWidget {
+  final dynamic asset;
+  const _MoverGridItem({required this.asset});
+
+  Color get _color {
+    final isUp = (asset.change24h ?? 0) >= 0;
+    return isUp ? TradEtTheme.positive : TradEtTheme.negative;
+  }
+
+  Color get _bgColor {
+    switch (asset.categoryName) {
+      case 'Islamic Banks': return TradEtTheme.positive;
+      case 'Takaful & Insurance': return TradEtTheme.accent;
+      case 'Sukuk': return const Color(0xFF22D3EE);
+      case 'Ethiopian Equities': return const Color(0xFFF472B6);
+      default: return const Color(0xFFFBBF24);
     }
-    return SizedBox(
-      height: 110,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: losers.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          return TopMoverCard(asset: losers[index], fmt: fmt);
-        },
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final change = asset.change24h;
+    final isUp = (change ?? 0) >= 0;
+    final symbol = (asset.symbol as String);
+    final initials = symbol.length >= 2 ? symbol.substring(0, 2) : symbol;
+
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(appRoute(context, TradeScreen(asset: asset))),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: _bgColor.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+                border: Border.all(color: _bgColor.withValues(alpha: 0.35), width: 1.5),
+              ),
+              alignment: Alignment.center,
+              child: Text(initials,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: _bgColor)),
+            ),
+            const SizedBox(height: 6),
+            Text(symbol,
+                style: const TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center),
+            if (change != null) ...[
+              const SizedBox(height: 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    isUp ? Icons.arrow_drop_up_rounded : Icons.arrow_drop_down_rounded,
+                    size: 14,
+                    color: _color,
+                  ),
+                  Text(
+                    '${change.abs().toStringAsFixed(2)}%',
+                    style: TextStyle(
+                        fontSize: 10, fontWeight: FontWeight.w600, color: _color),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
-  return const SizedBox.shrink();
 }
 
 Widget webTopMoversSection(
