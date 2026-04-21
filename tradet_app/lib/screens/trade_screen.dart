@@ -62,6 +62,206 @@ class _TradeScreenState extends State<TradeScreen> {
 
   double get _fee => _total * _kFeeRate;
 
+  void _showAlertSheet(BuildContext ctx, AppProvider prov, Asset asset) {
+    final priceCtrl = TextEditingController(
+        text: asset.price != null ? asset.price!.toStringAsFixed(2) : '');
+    String condition = 'above';
+
+    showModalBottomSheet(
+      context: ctx,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setSheetState) => Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+            decoration: const BoxDecoration(
+              color: Color(0xFF1A3A25),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Handle
+                Center(
+                  child: Container(
+                    width: 36, height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.add_alert_outlined,
+                        color: Color(0xFF8BAF97), size: 18),
+                    const SizedBox(width: 8),
+                    Text('Price Alert — ${asset.symbol}',
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white)),
+                  ],
+                ),
+                if (asset.price != null) ...[
+                  const SizedBox(height: 4),
+                  Text('Current: ${_fmt.format(asset.price!)} ETB',
+                      style: const TextStyle(
+                          fontSize: 12, color: Color(0xFF8BAF97))),
+                ],
+                const SizedBox(height: 16),
+                TextField(
+                  controller: priceCtrl,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  decoration: InputDecoration(
+                    labelText: 'Target Price (ETB)',
+                    suffixText: 'ETB',
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.06),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    labelStyle: const TextStyle(color: Color(0xFF8BAF97)),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setSheetState(() => condition = 'above'),
+                      child: Container(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: condition == 'above'
+                              ? TradEtTheme.positive.withValues(alpha: 0.18)
+                              : Colors.white.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: condition == 'above'
+                                ? TradEtTheme.positive
+                                : Colors.white24,
+                          ),
+                        ),
+                        child: Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.trending_up, size: 15,
+                                  color: condition == 'above'
+                                      ? TradEtTheme.positive
+                                      : const Color(0xFF8BAF97)),
+                              const SizedBox(width: 6),
+                              Text('Above',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: condition == 'above'
+                                        ? TradEtTheme.positive
+                                        : const Color(0xFF8BAF97),
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setSheetState(() => condition = 'below'),
+                      child: Container(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: condition == 'below'
+                              ? TradEtTheme.negative.withValues(alpha: 0.18)
+                              : Colors.white.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: condition == 'below'
+                                ? TradEtTheme.negative
+                                : Colors.white24,
+                          ),
+                        ),
+                        child: Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.trending_down, size: 15,
+                                  color: condition == 'below'
+                                      ? TradEtTheme.negative
+                                      : const Color(0xFF8BAF97)),
+                              const SizedBox(width: 6),
+                              Text('Below',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: condition == 'below'
+                                        ? TradEtTheme.negative
+                                        : const Color(0xFF8BAF97),
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ]),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: TradEtTheme.positive,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () async {
+                      final price = double.tryParse(priceCtrl.text);
+                      if (price == null) return;
+                      Navigator.pop(context);
+                      try {
+                        await prov.api.createAlert(
+                          assetId: asset.id,
+                          targetPrice: price,
+                          condition: condition,
+                        );
+                        if (ctx.mounted) {
+                          ScaffoldMessenger.of(ctx).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'Alert set for ${asset.symbol} at ${_fmt.format(price)} ETB'),
+                              backgroundColor: TradEtTheme.positive,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                          );
+                        }
+                      } catch (_) {}
+                    },
+                    child: const Text('Set Alert',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 15)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _onSliderChanged(double value) {
     setState(() {
       _sliderValue = value;
@@ -192,8 +392,7 @@ class _TradeScreenState extends State<TradeScreen> {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.add_alert_outlined, color: Color(0xFF8BAF97)),
-                            onPressed: () => Navigator.of(ctx).push(
-                                appRoute(ctx, const AlertsScreen())),
+                            onPressed: () => _showAlertSheet(ctx, prov, widget.asset),
                           ),
                           IconButton(
                             icon: Icon(

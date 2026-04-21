@@ -256,6 +256,17 @@ class HeroTradeCard extends StatelessWidget {
               ],
             ),
           ],
+          const SizedBox(height: 8),
+          // Compliance micro-badges
+          Row(
+            children: [
+              _MicroBadge(icon: Icons.verified_rounded, label: 'ECX', color: TradEtTheme.primaryLight),
+              const SizedBox(width: 8),
+              _MicroBadge(icon: Icons.star_rounded, label: 'Sharia', color: TradEtTheme.positive),
+              const SizedBox(width: 8),
+              _MicroBadge(icon: Icons.gavel_rounded, label: 'AAOIFI', color: TradEtTheme.accent),
+            ],
+          ),
           const SizedBox(height: 10),
           // CTA buttons — compact height
           Row(
@@ -329,7 +340,30 @@ class HeroTradeCard extends StatelessWidget {
   }
 }
 
-// ─── Trust / Compliance Strip ───
+// ─── Micro compliance badge (used inside HeroTradeCard) ───
+class _MicroBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  const _MicroBadge({required this.icon, required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 10, color: color.withValues(alpha: 0.8)),
+        const SizedBox(width: 3),
+        Text(label,
+            style: TextStyle(
+                fontSize: 9, fontWeight: FontWeight.w600,
+                color: color.withValues(alpha: 0.8))),
+      ],
+    );
+  }
+}
+
+// ─── Trust / Compliance Strip (kept for backward compat, no longer used in dashboard) ───
 class TrustStrip extends StatelessWidget {
   const TrustStrip({super.key});
 
@@ -933,7 +967,7 @@ class HoldingTile extends StatelessWidget {
     final isPositive = holding.pnl >= 0;
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: TradEtTheme.cardBg,
         borderRadius: BorderRadius.circular(14),
@@ -955,10 +989,7 @@ class HoldingTile extends StatelessWidget {
                 ),
                 Text(
                   '${holding.quantity} ${holding.unit}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: TradEtTheme.textMuted,
-                  ),
+                  style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
                 ),
               ],
             ),
@@ -969,24 +1000,73 @@ class HoldingTile extends StatelessWidget {
               Text(
                 '${fmt.format(holding.currentValue)} ETB',
                 style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                  color: Colors.white,
-                ),
+                    fontWeight: FontWeight.w700, fontSize: 13, color: Colors.white),
               ),
               Text(
                 '${isPositive ? "+" : ""}${fmt.format(holding.pnl)} (${holding.pnlPercentage.toStringAsFixed(1)}%)',
                 style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: isPositive
-                      ? TradEtTheme.positive
-                      : TradEtTheme.negative,
-                ),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: isPositive ? TradEtTheme.positive : TradEtTheme.negative),
+              ),
+              const SizedBox(height: 6),
+              // Quick-trade chips
+              Consumer<AppProvider>(
+                builder: (ctx, prov, _) {
+                  if (prov.assets.isEmpty) return const SizedBox.shrink();
+                  final matches = prov.assets.where(
+                    (a) => a.symbol == holding.symbol || a.id == holding.assetId);
+                  if (matches.isEmpty) return const SizedBox.shrink();
+                  final asset = matches.first;
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _TradeChip(
+                        label: 'Buy',
+                        color: TradEtTheme.positive,
+                        onTap: () => Navigator.of(ctx).push(appRoute(ctx, TradeScreen(asset: asset))),
+                      ),
+                      const SizedBox(width: 6),
+                      _TradeChip(
+                        label: 'Sell',
+                        color: TradEtTheme.negative,
+                        onTap: () => Navigator.of(ctx).push(appRoute(ctx, TradeScreen(asset: asset))),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _TradeChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  const _TradeChip({required this.label, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
+          ),
+          child: Text(label,
+              style: TextStyle(
+                  fontSize: 10, fontWeight: FontWeight.w700, color: color)),
+        ),
       ),
     );
   }
@@ -2496,4 +2576,391 @@ void showWithdrawSheet(BuildContext context) {
       },
     ),
   );
+}
+
+// ─── Yahoo Finance-style Market Strip ─────────────────────────────────────────
+// Category tabs + horizontal asset row. Replaces ExchangeRateTicker on dashboard.
+
+class MarketStrip extends StatefulWidget {
+  final AppProvider provider;
+  final NumberFormat fmt;
+  final void Function(int)? onNavigateTo;
+  const MarketStrip({super.key, required this.provider, required this.fmt, this.onNavigateTo});
+
+  @override
+  State<MarketStrip> createState() => _MarketStripState();
+}
+
+class _MarketStripState extends State<MarketStrip> {
+  String _category = 'all';
+
+  static const _categories = [
+    ('all', 'All'),
+    ('commodity', 'Commodities'),
+    ('equity', 'Equities'),
+    ('sukuk', 'Sukuk'),
+  ];
+
+  List<Asset> get _assets {
+    final src = widget.provider.assets.where((a) => a.isShariaCompliant).toList();
+    if (_category == 'all') return src;
+    return src.where((a) => a.categoryType == _category).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final wide = isWideScreen(context);
+    if (widget.provider.assetsLoading && widget.provider.assets.isEmpty) {
+      return const SizedBox(height: 60,
+          child: Center(child: CircularProgressIndicator(
+              strokeWidth: 2, color: TradEtTheme.positive)));
+    }
+    if (widget.provider.assets.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section header
+        Row(
+          children: [
+            const Icon(Icons.show_chart_rounded, size: 14, color: TradEtTheme.primaryLight),
+            const SizedBox(width: 6),
+            const Text('Market',
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white)),
+            const Spacer(),
+            GestureDetector(
+              onTap: () => widget.onNavigateTo?.call(1),
+              child: const Text('View All →',
+                  style: TextStyle(fontSize: 11, color: TradEtTheme.primaryLight)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        // Category pills
+        SizedBox(
+          height: 28,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: _categories.map((c) {
+              final selected = _category == c.$1;
+              return GestureDetector(
+                onTap: () => setState(() => _category = c.$1),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    margin: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? TradEtTheme.positive.withValues(alpha: 0.18)
+                          : TradEtTheme.surfaceLight,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: selected
+                            ? TradEtTheme.positive.withValues(alpha: 0.5)
+                            : TradEtTheme.divider.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Text(c.$2,
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                            color: selected ? TradEtTheme.positive : TradEtTheme.textSecondary)),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 10),
+        // Asset row
+        SizedBox(
+          height: 80,
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
+            ),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _assets.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (context, i) {
+                final a = _assets[i];
+                final isUp = (a.change24h ?? 0) >= 0;
+                return GestureDetector(
+                  onTap: () => Navigator.of(context).push(appRoute(context, TradeScreen(asset: a))),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      width: wide ? 160 : 130,
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.cardBg,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: TradEtTheme.divider.withValues(alpha: 0.25)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(a.symbol,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white)),
+                              ),
+                              if (a.change24h != null)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4, vertical: 1),
+                                  decoration: BoxDecoration(
+                                    color: (isUp ? TradEtTheme.positive : TradEtTheme.negative)
+                                        .withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    '${isUp ? "+" : ""}${a.change24h!.toStringAsFixed(2)}%',
+                                    style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w700,
+                                        color: isUp
+                                            ? TradEtTheme.positive
+                                            : TradEtTheme.negative),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  a.price != null
+                                      ? widget.fmt.format(a.price)
+                                      : '--',
+                                  style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (a.sparkline.length >= 2)
+                                MiniSparkline(
+                                  data: a.sparkline,
+                                  height: 24,
+                                  width: 40,
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Holdings + Orders Tabbed Card ────────────────────────────────────────────
+
+class HoldingsOrdersTabCard extends StatefulWidget {
+  final AppProvider provider;
+  final NumberFormat fmt;
+  final void Function(int)? onNavigateTo;
+  const HoldingsOrdersTabCard({
+    super.key,
+    required this.provider,
+    required this.fmt,
+    this.onNavigateTo,
+  });
+
+  @override
+  State<HoldingsOrdersTabCard> createState() => _HoldingsOrdersTabCardState();
+}
+
+class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
+  int _tab = 0; // 0 = Holdings, 1 = Orders
+
+  @override
+  Widget build(BuildContext context) {
+    final hasHoldings = widget.provider.holdings.isNotEmpty;
+    final hasOrders = widget.provider.orders.isNotEmpty;
+    final l = AppLocalizations.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Tab switcher
+        Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: TradEtTheme.surfaceLight,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Expanded(child: _tabBtn(l.yourHoldings, 0)),
+              const SizedBox(width: 3),
+              Expanded(child: _tabBtn(l.recentOrders, 1)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Content
+        if (_tab == 0) ...[
+          if (!hasHoldings) _emptyHoldings(context)
+          else ...[
+            ...widget.provider.holdings.take(3).map((h) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: HoldingTile(holding: h, fmt: widget.fmt),
+            )),
+            if (widget.provider.holdings.length > 3)
+              _viewAllBtn('View all holdings', () => widget.onNavigateTo?.call(2)),
+          ],
+        ] else ...[
+          if (!hasOrders) _emptyState(Icons.receipt_long_outlined, 'No recent orders')
+          else ...[
+            ...widget.provider.orders.take(3).map((o) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: OrderTile(order: o, fmt: widget.fmt),
+            )),
+            if (widget.provider.orders.length > 3)
+              _viewAllBtn('View all orders', () => widget.onNavigateTo?.call(3)),
+          ],
+        ],
+      ],
+    );
+  }
+
+  Widget _tabBtn(String label, int idx) {
+    final sel = _tab == idx;
+    return GestureDetector(
+      onTap: () => setState(() => _tab = idx),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(vertical: 7),
+          decoration: BoxDecoration(
+            color: sel ? TradEtTheme.cardBgLight : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(label,
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
+                    color: sel ? Colors.white : TradEtTheme.textMuted)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyHoldings(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: TradEtTheme.cardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+            color: TradEtTheme.positive.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.add_chart_rounded, size: 32, color: TradEtTheme.positive),
+          const SizedBox(height: 10),
+          const Text('Your portfolio is empty',
+              style: TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+          const SizedBox(height: 4),
+          const Text('Browse the market to place your first\nSharia-compliant trade',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary)),
+          const SizedBox(height: 14),
+          GestureDetector(
+            onTap: () => widget.onNavigateTo?.call(1),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: TradEtTheme.heroGradient,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text('Browse Market',
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emptyState(IconData icon, String msg) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: TradEtTheme.cardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.2)),
+      ),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(icon, size: 28, color: TradEtTheme.textMuted),
+            const SizedBox(height: 8),
+            Text(msg,
+                style: const TextStyle(
+                    fontSize: 12, color: TradEtTheme.textMuted)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _viewAllBtn(String label, VoidCallback? onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(label,
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: TradEtTheme.primaryLight,
+                      fontWeight: FontWeight.w600)),
+              const SizedBox(width: 4),
+              const Icon(Icons.arrow_forward_rounded,
+                  size: 13, color: TradEtTheme.primaryLight),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

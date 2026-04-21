@@ -48,85 +48,67 @@ class DashboardScreen extends StatelessWidget {
     AppLocalizations l,
     void Function(int)? onNavigateTo,
   ) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+    return Stack(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        ListView(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
           children: [
-            Expanded(child: _greeting(provider, l)),
-            const LanguageSelector(),
-            const SizedBox(width: 8),
-            HeaderIconButton(
-              icon: Icons.bar_chart_rounded,
-              color: TradEtTheme.primaryLight,
-              onTap: onNavigateTo != null
-                  ? () => onNavigateTo(9)
-                  : () => Navigator.of(context).push(
-                        appRoute(
-                          context,
-                          WrappedScreen(
-                            child: const AnalyticsScreen(),
-                            showMobileAppBar: false,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(child: _greeting(provider, l)),
+                const LanguageSelector(),
+                const SizedBox(width: 8),
+                HeaderIconButton(
+                  icon: Icons.bar_chart_rounded,
+                  color: TradEtTheme.primaryLight,
+                  onTap: onNavigateTo != null
+                      ? () => onNavigateTo(9)
+                      : () => Navigator.of(context).push(
+                            appRoute(
+                              context,
+                              WrappedScreen(
+                                child: const AnalyticsScreen(),
+                                showMobileAppBar: false,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                ),
+              ],
             ),
+            const SizedBox(height: 14),
+            // Yahoo Finance-style market strip
+            MarketStrip(provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
+            const SizedBox(height: 16),
+            // Hero: portfolio value + trust badges + CTAs
+            HeroTradeCard(
+                provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
+            const SizedBox(height: 20),
+            // Top Opportunities
+            TopOpportunitiesSection(provider: provider, fmt: fmt),
+            const SizedBox(height: 24),
+            // Market Momentum
+            MoversSection(provider: provider, fmt: fmt),
+            const SizedBox(height: 24),
+            // Holdings + Orders (tabbed)
+            HoldingsOrdersTabCard(
+                provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
+            const SizedBox(height: 24),
+            // Portfolio overview + compliance stats
+            _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
+            const SizedBox(height: 12),
+            _mobileStatsGrid(context, provider, fmt, l, onNavigateTo),
+            const SizedBox(height: 20),
+            const DisclaimerFooter(),
+            const SizedBox(height: 8),
           ],
         ),
-        const SizedBox(height: 12),
-        // Exchange rate ticker — right below greeting
-        ExchangeRateTicker(api: provider.api),
-        const SizedBox(height: 14),
-        // Hero: portfolio value + cash + CTAs
-        HeroTradeCard(
-            provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
-        const SizedBox(height: 10),
-        // Trust / compliance strip
-        const TrustStrip(),
-        const SizedBox(height: 20),
-        // Top Opportunities
-        TopOpportunitiesSection(provider: provider, fmt: fmt),
-        const SizedBox(height: 24),
-        // Market Momentum
-        MoversSection(provider: provider, fmt: fmt),
-        const SizedBox(height: 24),
-        if (provider.holdings.isNotEmpty) ...[
-          SectionHeader(title: l.yourHoldings),
-          const SizedBox(height: 12),
-          ...provider.holdings
-              .take(3)
-              .map(
-                (h) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: HoldingTile(holding: h, fmt: fmt),
-                ),
-              ),
-        ],
-        if (provider.orders.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          SectionHeader(title: l.recentOrders),
-          const SizedBox(height: 12),
-          ...provider.orders
-              .take(3)
-              .map(
-                (o) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: OrderTile(order: o, fmt: fmt),
-                ),
-              ),
-        ],
-        const SizedBox(height: 24),
-        // Portfolio overview + compliance section (above Quick Access)
-        _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
-        const SizedBox(height: 12),
-        _mobileStatsGrid(context, provider, fmt, l, onNavigateTo),
-        const SizedBox(height: 24),
-        // Utility shortcuts (bottom)
-        QuickAccessGrid(l: l),
-        const SizedBox(height: 20),
-        const DisclaimerFooter(),
-        const SizedBox(height: 8),
+        // Sticky Trade FAB
+        Positioned(
+          bottom: 24,
+          right: 20,
+          child: _TradeFab(onNavigateTo: onNavigateTo),
+        ),
       ],
     );
   }
@@ -190,12 +172,12 @@ class DashboardScreen extends StatelessWidget {
                   ),
           ],
         ),
-        const SizedBox(height: 12),
-        // Exchange rate ticker — right below greeting
-        ExchangeRateTicker(api: provider.api),
+        const SizedBox(height: 16),
+        // Yahoo Finance-style market strip
+        MarketStrip(provider: provider, fmt: fmt),
         const SizedBox(height: 16),
 
-        // Hero: portfolio value + capital at risk + CTAs (left)
+        // Hero: portfolio value + trust badges + CTAs (left)
         //        Cash balance (right) — same height via IntrinsicHeight
         if (desktop)
           IntrinsicHeight(
@@ -225,9 +207,6 @@ class DashboardScreen extends StatelessWidget {
         else
           HeroTradeCard(
               provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
-        const SizedBox(height: 12),
-        // Trust strip
-        const TrustStrip(),
         const SizedBox(height: 28),
 
         // Top Opportunities
@@ -243,26 +222,12 @@ class DashboardScreen extends StatelessWidget {
         ),
         const SizedBox(height: 28),
 
-        // Holdings + Orders side by side on desktop
-        if (desktop)
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: _webHoldingsSection(context, provider, fmt, l)),
-                const SizedBox(width: 20),
-                Expanded(child: _webOrdersSection(context, provider, fmt, l)),
-              ],
-            ),
-          )
-        else ...[
-          _webHoldingsSection(context, provider, fmt, l),
-          const SizedBox(height: 20),
-          _webOrdersSection(context, provider, fmt, l),
-        ],
+        // Holdings + Orders — tabbed card
+        HoldingsOrdersTabCard(
+            provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
         const SizedBox(height: 28),
 
-        // Portfolio overview + compliance section (above Quick Access)
+        // Portfolio overview + compliance section
         if (desktop) ...[
           IntrinsicHeight(child: _webRow2WithSharia(context, provider, l, onNavigateTo, fmt)),
         ] else ...[
@@ -270,10 +235,6 @@ class DashboardScreen extends StatelessWidget {
           const SizedBox(height: 14),
           IntrinsicHeight(child: _webRow2(context, provider, l, onNavigateTo)),
         ],
-        const SizedBox(height: 28),
-
-        // Utility shortcuts (bottom)
-        QuickAccessGrid(l: l),
         const SizedBox(height: 28),
         const DisclaimerFooter(),
         const SizedBox(height: 8),
@@ -284,6 +245,11 @@ class DashboardScreen extends StatelessWidget {
   // ─── Shared widgets ───
 
   Widget _greeting(AppProvider provider, AppLocalizations l) {
+    final pnl = provider.portfolioSummary?.totalPnl ?? 0;
+    final hasPnl = provider.portfolioSummary != null;
+    final pnlColor = pnl >= 0 ? TradEtTheme.positive : TradEtTheme.negative;
+    final fmt = NumberFormat('#,##0.00', 'en');
+
     return Row(
       children: [
         Expanded(
@@ -307,6 +273,27 @@ class DashboardScreen extends StatelessWidget {
                     letterSpacing: -0.5,
                   ),
                 ),
+              if (hasPnl) ...[
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Icon(
+                      pnl >= 0 ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+                      size: 12,
+                      color: pnlColor,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      '${pnl >= 0 ? "+" : ""}${fmt.format(pnl)} ETB today',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: pnlColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
@@ -761,6 +748,48 @@ class _ShariaComplianceScoreCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Sticky Trade FAB ─────────────────────────────────────────────────────────
+
+class _TradeFab extends StatelessWidget {
+  final void Function(int)? onNavigateTo;
+  const _TradeFab({this.onNavigateTo});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onNavigateTo?.call(1),
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 22),
+        decoration: BoxDecoration(
+          gradient: TradEtTheme.heroGradient,
+          borderRadius: BorderRadius.circular(26),
+          boxShadow: [
+            BoxShadow(
+              color: TradEtTheme.positive.withValues(alpha: 0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
+            SizedBox(width: 6),
+            Text('Trade',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    letterSpacing: 0.3)),
+          ],
+        ),
       ),
     );
   }

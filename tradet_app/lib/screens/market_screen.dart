@@ -9,6 +9,7 @@ import '../widgets/price_change.dart';
 import '../widgets/mini_chart.dart';
 import '../widgets/responsive_layout.dart';
 import '../widgets/data_source_badge.dart';
+import '../widgets/dashboard_widgets.dart' show ExchangeRateTicker;
 import 'trade_screen.dart';
 import '../widgets/disclaimer_footer.dart';
 
@@ -105,7 +106,13 @@ class _MarketScreenState extends State<MarketScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+            // Exchange rate ticker
+            Consumer<AppProvider>(
+              builder: (_, prov, __) =>
+                  ExchangeRateTicker(api: prov.api),
+            ),
+            const SizedBox(height: 12),
 
             // Search + filters
             Padding(
