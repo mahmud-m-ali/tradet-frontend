@@ -1147,66 +1147,69 @@ class _QuickActions extends StatelessWidget {
           final hasCash = provider.availableCashBalance > 0;
           final hasHolding = provider.holdings.any(
               (h) => h.assetId == asset.id || h.symbol == asset.symbol);
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Buy button
-              if (hasCash) ...[
-                _MktBtn('Buy', TradEtTheme.positive,
-                    () => Navigator.of(context).push(
-                        appRoute(context, TradeScreen(asset: asset)))),
-                const SizedBox(width: 6),
-              ],
-              // Sell button
-              if (hasHolding) ...[
-                _MktBtn('Sell', TradEtTheme.negative,
-                    () => Navigator.of(context).push(
-                        appRoute(context, TradeScreen(asset: asset)))),
-                const SizedBox(width: 4),
-              ],
-              // Watchlist star toggle — uses Listener to stop parent tap
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    if (inWatchlist) {
-                      provider.removeFromWatchlist(asset.id);
-                    } else {
-                      provider.addToWatchlist(asset.id);
-                    }
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(padding),
-                    child: Icon(
-                      inWatchlist
-                          ? Icons.star_rounded
-                          : Icons.star_outline_rounded,
-                      size: iconSize,
-                      color: inWatchlist
-                          ? const Color(0xFFFF8C00)
-                          : TradEtTheme.textMuted,
+          return SizedBox(
+            width: 160,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Buy button
+                if (hasCash) ...[
+                  _MktBtn('Buy', TradEtTheme.positive,
+                      () => Navigator.of(context).push(
+                          appRoute(context, TradeScreen(asset: asset)))),
+                  const SizedBox(width: 6),
+                ],
+                // Sell button
+                if (hasHolding) ...[
+                  _MktBtn('Sell', TradEtTheme.negative,
+                      () => Navigator.of(context).push(
+                          appRoute(context, TradeScreen(asset: asset)))),
+                  const SizedBox(width: 4),
+                ],
+                // Watchlist star toggle — uses Listener to stop parent tap
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      if (inWatchlist) {
+                        provider.removeFromWatchlist(asset.id);
+                      } else {
+                        provider.addToWatchlist(asset.id);
+                      }
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(padding),
+                      child: Icon(
+                        inWatchlist
+                            ? Icons.star_rounded
+                            : Icons.star_outline_rounded,
+                        size: iconSize,
+                        color: inWatchlist
+                            ? const Color(0xFFFF8C00)
+                            : TradEtTheme.textMuted,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              // Alert bell
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => _showCreateAlert(context),
-                  child: Padding(
-                    padding: EdgeInsets.all(padding),
-                    child: Icon(
-                      Icons.notifications_outlined,
-                      size: iconSize,
-                      color: TradEtTheme.textMuted,
+                // Alert bell
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => _showCreateAlert(context),
+                    child: Padding(
+                      padding: EdgeInsets.all(padding),
+                      child: Icon(
+                        Icons.notifications_outlined,
+                        size: iconSize,
+                        color: TradEtTheme.textMuted,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),

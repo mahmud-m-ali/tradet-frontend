@@ -84,6 +84,9 @@ class DashboardScreen extends StatelessWidget {
             // Top Opportunities
             TopOpportunitiesSection(provider: provider, fmt: fmt),
             const SizedBox(height: 24),
+            // Watchlist — priority access
+            WatchlistMiniSection(provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
+            const SizedBox(height: 24),
             // Market Momentum
             MoversSection(provider: provider, fmt: fmt),
             const SizedBox(height: 24),
@@ -91,10 +94,10 @@ class DashboardScreen extends StatelessWidget {
             HoldingsOrdersTabCard(
                 provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
             const SizedBox(height: 24),
-            // Portfolio overview + compliance stats
-            _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
-            const SizedBox(height: 12),
             _mobileStatsGrid(context, provider, fmt, l, onNavigateTo),
+            const SizedBox(height: 20),
+            // Sharia compliance score at bottom
+            _ShariaComplianceScoreCard(provider: provider, fmt: fmt),
             const SizedBox(height: 20),
             const DisclaimerFooter(),
             const SizedBox(height: 8),

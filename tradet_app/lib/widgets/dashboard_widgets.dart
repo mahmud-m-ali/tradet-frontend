@@ -1939,6 +1939,20 @@ class _OpportunityRow extends StatelessWidget {
           ),
           child: Row(
             children: [
+              // Logo circle
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: accentColor.withValues(alpha: 0.3)),
+                ),
+                alignment: Alignment.center,
+                child: Text(_assetEmoji(asset.symbol, asset.categoryName),
+                    style: const TextStyle(fontSize: 18)),
+              ),
+              const SizedBox(width: 10),
               // Symbol + name
               Expanded(
                 child: Column(
@@ -2156,12 +2170,12 @@ Widget topMoversSection(AppProvider provider, NumberFormat fmt) {
   if (provider.assetsError != null && provider.assets.isEmpty) {
     return ErrorRetryWidget(message: provider.assetsError!, onRetry: () => provider.loadAssets());
   }
-  return _mobileMoversGrid(getTopMovers(provider));
+  return _mobileMoversGrid(getTopMovers(provider).take(3).toList());
 }
 
 Widget topLosersSection(AppProvider provider, NumberFormat fmt) {
   if (provider.assets.isEmpty) return const SizedBox.shrink();
-  return _mobileMoversGrid(getTopLosers(provider));
+  return _mobileMoversGrid(getTopLosers(provider).take(3).toList());
 }
 
 class _MoverGridItem extends StatelessWidget {
@@ -2337,6 +2351,211 @@ List<dynamic> getTopLosers(AppProvider provider) {
       .toList()
     ..sort((a, b) => (a.change24h ?? 0).compareTo(b.change24h ?? 0));
   return losers.take(6).toList();
+}
+
+// ─── Watchlist Mini Section (Dashboard) ────────────────────────────────────
+
+class WatchlistMiniSection extends StatelessWidget {
+  final AppProvider provider;
+  final NumberFormat fmt;
+  final void Function(int)? onNavigateTo;
+
+  const WatchlistMiniSection({
+    super.key,
+    required this.provider,
+    required this.fmt,
+    this.onNavigateTo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final items = provider.watchlist.take(3).toList();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: TradEtTheme.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+            child: Row(
+              children: [
+                const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFF8C00)),
+                const SizedBox(width: 6),
+                const Expanded(
+                  child: Text('Watchlist',
+                      style: TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+                ),
+                GestureDetector(
+                  onTap: onNavigateTo != null
+                      ? () => onNavigateTo!(4)
+                      : null,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text('See all',
+                            style: TextStyle(fontSize: 12, color: TradEtTheme.primaryLight)),
+                        SizedBox(width: 2),
+                        Icon(Icons.chevron_right_rounded,
+                            size: 16, color: TradEtTheme.primaryLight),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
+          if (items.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Center(
+                child: Column(
+                  children: [
+                    const Icon(Icons.star_outline_rounded,
+                        size: 28, color: TradEtTheme.textMuted),
+                    const SizedBox(height: 6),
+                    const Text('No watchlist items',
+                        style: TextStyle(fontSize: 12, color: TradEtTheme.textMuted)),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: onNavigateTo != null ? () => onNavigateTo!(1) : null,
+                      child: const Text('Browse Market →',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: TradEtTheme.primaryLight,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            ...items.map((asset) => _WatchlistMiniRow(asset: asset, fmt: fmt)),
+        ],
+      ),
+    );
+  }
+}
+
+class _WatchlistMiniRow extends StatelessWidget {
+  final dynamic asset;
+  final NumberFormat fmt;
+  const _WatchlistMiniRow({required this.asset, required this.fmt});
+
+  @override
+  Widget build(BuildContext context) {
+    final isUp = (asset.change24h ?? 0) >= 0;
+    final emoji = _assetEmoji(
+        asset.symbol as String, asset.categoryName as String?);
+
+    Color bgColor;
+    switch (asset.categoryName) {
+      case 'Islamic Banks': bgColor = TradEtTheme.positive; break;
+      case 'Takaful & Insurance': bgColor = TradEtTheme.accent; break;
+      case 'Sukuk': bgColor = const Color(0xFF22D3EE); break;
+      case 'Ethiopian Equities': bgColor = const Color(0xFFF472B6); break;
+      default: bgColor = const Color(0xFFFBBF24);
+    }
+
+    return GestureDetector(
+      onTap: () => Navigator.of(context)
+          .push(appRoute(context, TradeScreen(asset: asset))),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: TradEtTheme.divider.withValues(alpha: 0.15)),
+            ),
+          ),
+          child: Row(
+            children: [
+              // Logo circle
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: bgColor.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: bgColor.withValues(alpha: 0.35)),
+                ),
+                alignment: Alignment.center,
+                child: Text(emoji, style: const TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(width: 12),
+              // Symbol + name
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(asset.symbol as String,
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white)),
+                    Text(asset.name as String,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 11, color: TradEtTheme.textMuted)),
+                  ],
+                ),
+              ),
+              // Price + change (fixed width for alignment)
+              SizedBox(
+                width: 90,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      asset.price != null ? fmt.format(asset.price) : '—',
+                      style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
+                    ),
+                    if (asset.change24h != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isUp
+                                ? Icons.arrow_drop_up_rounded
+                                : Icons.arrow_drop_down_rounded,
+                            size: 14,
+                            color: isUp ? TradEtTheme.positive : TradEtTheme.negative,
+                          ),
+                          Text(
+                            '${asset.change24h!.abs().toStringAsFixed(2)}%',
+                            style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: isUp
+                                    ? TradEtTheme.positive
+                                    : TradEtTheme.negative),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // ─── Deposit / Withdraw sheets ───
