@@ -77,9 +77,6 @@ class DashboardScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
-            // Yahoo Finance-style market strip
-            MarketStrip(provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
-            const SizedBox(height: 16),
             // Hero: portfolio value + trust badges + CTAs
             HeroTradeCard(
                 provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
