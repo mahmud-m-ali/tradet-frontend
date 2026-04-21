@@ -975,7 +975,9 @@ class HoldingTile extends StatelessWidget {
       ),
       child: Row(
         children: [
+          // Left: symbol + shares
           Expanded(
+            flex: 3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -994,49 +996,54 @@ class HoldingTile extends StatelessWidget {
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${fmt.format(holding.currentValue)} ETB',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w700, fontSize: 13, color: Colors.white),
-              ),
-              Text(
-                '${isPositive ? "+" : ""}${fmt.format(holding.pnl)} (${holding.pnlPercentage.toStringAsFixed(1)}%)',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: isPositive ? TradEtTheme.positive : TradEtTheme.negative),
-              ),
-              const SizedBox(height: 6),
-              // Quick-trade chips
-              Consumer<AppProvider>(
-                builder: (ctx, prov, _) {
-                  if (prov.assets.isEmpty) return const SizedBox.shrink();
-                  final matches = prov.assets.where(
-                    (a) => a.symbol == holding.symbol || a.id == holding.assetId);
-                  if (matches.isEmpty) return const SizedBox.shrink();
-                  final asset = matches.first;
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _TradeChip(
-                        label: 'Buy',
-                        color: TradEtTheme.positive,
-                        onTap: () => Navigator.of(ctx).push(appRoute(ctx, TradeScreen(asset: asset))),
-                      ),
-                      const SizedBox(width: 6),
-                      _TradeChip(
-                        label: 'Sell',
-                        color: TradEtTheme.negative,
-                        onTap: () => Navigator.of(ctx).push(appRoute(ctx, TradeScreen(asset: asset))),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
+          // Middle: value + PnL
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '${fmt.format(holding.currentValue)} ETB',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w700, fontSize: 13, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  '${isPositive ? "+" : ""}${fmt.format(holding.pnl)} (${holding.pnlPercentage.toStringAsFixed(1)}%)',
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: isPositive ? TradEtTheme.positive : TradEtTheme.negative),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          // Right: Buy/Sell chips
+          Consumer<AppProvider>(
+            builder: (ctx, prov, _) {
+              if (prov.assets.isEmpty) return const SizedBox.shrink();
+              final matches = prov.assets.where(
+                (a) => a.symbol == holding.symbol || a.id == holding.assetId);
+              if (matches.isEmpty) return const SizedBox.shrink();
+              final asset = matches.first;
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _TradeChip(
+                    label: 'Buy',
+                    color: TradEtTheme.positive,
+                    onTap: () => Navigator.of(ctx).push(appRoute(ctx, TradeScreen(asset: asset))),
+                  ),
+                  const SizedBox(width: 6),
+                  _TradeChip(
+                    label: 'Sell',
+                    color: TradEtTheme.negative,
+                    onTap: () => Navigator.of(ctx).push(appRoute(ctx, TradeScreen(asset: asset))),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -1670,7 +1677,9 @@ class ErrorRetryWidget extends StatelessWidget {
 
 // ─── Top Opportunities Section ───
 
-class TopOpportunitiesSection extends StatelessWidget {
+// ─── Top Opportunities: single tabbed card, each row has a Buy button ─────────
+
+class TopOpportunitiesSection extends StatefulWidget {
   final AppProvider provider;
   final NumberFormat fmt;
 
@@ -1681,224 +1690,349 @@ class TopOpportunitiesSection extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final assets = provider.assets
+  State<TopOpportunitiesSection> createState() =>
+      _TopOpportunitiesSectionState();
+}
+
+class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
+  int _tab = 0; // 0=Top Volume, 1=Trending, 2=ECX Listed
+
+  static const _tabs = [
+    (Icons.bar_chart_rounded, 'Top Volume'),
+    (Icons.trending_up_rounded, 'Trending'),
+    (Icons.verified_rounded, 'ECX Listed'),
+  ];
+
+  List<Asset> get _tabAssets {
+    final all = widget.provider.assets
         .where((a) => a.isShariaCompliant && _isLocal(a))
         .toList();
-    if (assets.isEmpty) return const SizedBox.shrink();
+    switch (_tab) {
+      case 0:
+        return ([...all]
+              ..sort((a, b) => (b.volume24h ?? 0).compareTo(a.volume24h ?? 0)))
+            .take(5)
+            .toList();
+      case 1:
+        return ([...all]..sort(
+                (a, b) => (b.change24h ?? 0).compareTo(a.change24h ?? 0)))
+            .where((a) => (a.change24h ?? 0) > 0)
+            .take(5)
+            .toList();
+      case 2:
+        return ([...all.where((a) => a.isEcxListed)]
+              ..sort((a, b) => (b.volume24h ?? 0).compareTo(a.volume24h ?? 0)))
+            .take(5)
+            .toList();
+      default:
+        return [];
+    }
+  }
 
-    // Top Volume — highest volume24h
-    final byVolume = [...assets]
-      ..sort((a, b) => (b.volume24h ?? 0).compareTo(a.volume24h ?? 0));
-    final topVolume = byVolume.take(3).toList();
+  List<Asset> _assetsForTab(int tab) {
+    final all = widget.provider.assets
+        .where((a) => a.isShariaCompliant && _isLocal(a))
+        .toList();
+    switch (tab) {
+      case 0:
+        return ([...all]
+              ..sort((a, b) => (b.volume24h ?? 0).compareTo(a.volume24h ?? 0)))
+            .take(5)
+            .toList();
+      case 1:
+        return ([...all]..sort(
+                (a, b) => (b.change24h ?? 0).compareTo(a.change24h ?? 0)))
+            .where((a) => (a.change24h ?? 0) > 0)
+            .take(5)
+            .toList();
+      case 2:
+        return ([...all.where((a) => a.isEcxListed)]
+              ..sort((a, b) => (b.volume24h ?? 0).compareTo(a.volume24h ?? 0)))
+            .take(5)
+            .toList();
+      default:
+        return [];
+    }
+  }
 
-    // Trending — highest positive change24h
-    final byChange = [...assets]
-      ..sort((a, b) => (b.change24h ?? 0).compareTo(a.change24h ?? 0));
-    final trending = byChange.where((a) => (a.change24h ?? 0) > 0).take(3).toList();
+  static const _tabColors = [
+    TradEtTheme.primaryLight,
+    TradEtTheme.positive,
+    TradEtTheme.accent,
+  ];
 
-    // Popular — ECX-listed with high volume
-    final popular = [...assets.where((a) => a.isEcxListed)]
-      ..sort((a, b) => (b.volume24h ?? 0).compareTo(a.volume24h ?? 0));
-    final topPopular = popular.take(3).toList();
-
-    final categories = [
-      _OpportunityCategory(
-        label: 'Top Volume',
-        icon: Icons.show_chart_rounded,
-        color: TradEtTheme.primaryLight,
-        assets: topVolume,
-      ),
-      _OpportunityCategory(
-        label: 'Trending',
-        icon: Icons.trending_up_rounded,
-        color: TradEtTheme.positive,
-        assets: trending,
-      ),
-      _OpportunityCategory(
-        label: 'ECX Listed',
-        icon: Icons.verified_rounded,
-        color: TradEtTheme.accent,
-        assets: topPopular,
-      ),
-    ];
-
-    final wide = isWideScreen(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Top Opportunities',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            letterSpacing: -0.3,
-          ),
-        ),
-        const SizedBox(height: 12),
-        // On wide screens: 3 equal-width cards in a Row
-        // On mobile: horizontal scroll with fixed-width cards
-        if (wide)
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (int i = 0; i < categories.length; i++) ...[
-                  if (i > 0) const SizedBox(width: 14),
-                  Expanded(
-                    child: _OpportunityCategoryCard(
-                        category: categories[i], fmt: fmt),
+  Widget _buildDesktopLayout() {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: List.generate(3, (i) {
+          final assets = _assetsForTab(i);
+          final color = _tabColors[i];
+          return Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: TradEtTheme.cardBg,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: color.withValues(alpha: 0.2)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
+                    child: Row(
+                      children: [
+                        Icon(_tabs[i].$1, size: 14, color: color),
+                        const SizedBox(width: 6),
+                        Text(_tabs[i].$2,
+                            style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: color)),
+                      ],
+                    ),
                   ),
+                  const SizedBox(height: 8),
+                  Divider(
+                      height: 1,
+                      color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                  if (assets.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(
+                          child: Text('No data',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: TradEtTheme.textMuted))),
+                    )
+                  else
+                    ...assets.map((a) =>
+                        _OpportunityRow(asset: a, fmt: widget.fmt, accentColor: color)),
                 ],
-              ],
-            ),
-          )
-        else
-          SizedBox(
-            height: 160,
-            child: ScrollConfiguration(
-              behavior: ScrollConfiguration.of(context).copyWith(
-                dragDevices: {
-                  PointerDeviceKind.touch,
-                  PointerDeviceKind.mouse,
-                },
-              ),
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: categories.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (context, i) =>
-                    _OpportunityCategoryCard(category: categories[i], fmt: fmt),
               ),
             ),
-          ),
-      ],
+          );
+        })
+            .expand((w) => [w, const SizedBox(width: 12)])
+            .toList()
+          ..removeLast(),
+      ),
     );
   }
-}
-
-class _OpportunityCategory {
-  final String label;
-  final IconData icon;
-  final Color color;
-  final List<Asset> assets;
-  const _OpportunityCategory({
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.assets,
-  });
-}
-
-class _OpportunityCategoryCard extends StatelessWidget {
-  final _OpportunityCategory category;
-  final NumberFormat fmt;
-  const _OpportunityCategoryCard({
-    required this.category,
-    required this.fmt,
-  });
 
   @override
   Widget build(BuildContext context) {
+    if (widget.provider.assets.isEmpty) return const SizedBox.shrink();
+    final wide = isWideScreen(context);
+    if (wide) return _buildDesktopLayout();
+
+    final assets = _tabAssets;
+    final tabColor = [
+      TradEtTheme.primaryLight,
+      TradEtTheme.positive,
+      TradEtTheme.accent,
+    ][_tab];
+
     return Container(
-      width: 220,
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: TradEtTheme.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: category.color.withValues(alpha: 0.25),
-        ),
+        border: Border.all(color: tabColor.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          // Header + tab row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+            child: Row(
+              children: [
+                const Text('Top Opportunities',
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white)),
+                const Spacer(),
+                // Tab pills
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: TradEtTheme.surfaceLight,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(_tabs.length, (i) {
+                      final sel = _tab == i;
+                      final color = [
+                        TradEtTheme.primaryLight,
+                        TradEtTheme.positive,
+                        TradEtTheme.accent,
+                      ][i];
+                      return GestureDetector(
+                        onTap: () => setState(() => _tab = i),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 160),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: sel
+                                  ? color.withValues(alpha: 0.18)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(7),
+                              border: sel
+                                  ? Border.all(
+                                      color: color.withValues(alpha: 0.4))
+                                  : null,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(_tabs[i].$1,
+                                    size: 12,
+                                    color: sel ? color : TradEtTheme.textMuted),
+                                const SizedBox(width: 4),
+                                Text(_tabs[i].$2,
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: sel
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: sel
+                                            ? color
+                                            : TradEtTheme.textMuted)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
+          // Asset rows
+          if (assets.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Center(
+                  child: Text('No data',
+                      style: TextStyle(
+                          fontSize: 12, color: TradEtTheme.textMuted))),
+            )
+          else
+            ...assets.map((asset) => _OpportunityRow(
+                  asset: asset,
+                  fmt: widget.fmt,
+                  accentColor: tabColor,
+                )),
+        ],
+      ),
+    );
+  }
+}
+
+class _OpportunityRow extends StatelessWidget {
+  final Asset asset;
+  final NumberFormat fmt;
+  final Color accentColor;
+  const _OpportunityRow(
+      {required this.asset, required this.fmt, required this.accentColor});
+
+  @override
+  Widget build(BuildContext context) {
+    final isUp = (asset.change24h ?? 0) >= 0;
+    return GestureDetector(
+      onTap: () => Navigator.of(context)
+          .push(appRoute(context, TradeScreen(asset: asset))),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                  color: TradEtTheme.divider.withValues(alpha: 0.2)),
+            ),
+          ),
+          child: Row(
             children: [
-              Icon(category.icon, color: category.color, size: 16),
-              const SizedBox(width: 6),
-              Text(
-                category.label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: category.color,
-                  letterSpacing: 0.3,
+              // Symbol + name
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(asset.symbol,
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white)),
+                    Text(asset.name,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 10, color: TradEtTheme.textMuted)),
+                  ],
+                ),
+              ),
+              // Sparkline
+              if (asset.sparkline.length >= 2)
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child:
+                      MiniSparkline(data: asset.sparkline, height: 22, width: 44),
+                ),
+              // Price + change
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    asset.price != null ? fmt.format(asset.price) : '--',
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white),
+                  ),
+                  if (asset.change24h != null)
+                    Text(
+                      '${isUp ? "+" : ""}${asset.change24h!.toStringAsFixed(2)}%',
+                      style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color:
+                              isUp ? TradEtTheme.positive : TradEtTheme.negative),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 10),
+              // Buy button
+              GestureDetector(
+                onTap: () => Navigator.of(context)
+                    .push(appRoute(context, TradeScreen(asset: asset))),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      gradient: TradEtTheme.heroGradient,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text('Buy',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white)),
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: category.assets.isEmpty
-                  ? [
-                      const Text('No data',
-                          style: TextStyle(
-                              color: TradEtTheme.textMuted, fontSize: 11)),
-                    ]
-                  : category.assets
-                      .map((asset) => GestureDetector(
-                            onTap: () => Navigator.of(context).push(
-                              appRoute(context, TradeScreen(asset: asset)),
-                            ),
-                            child: MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      asset.symbol,
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Text(
-                                    asset.price != null
-                                        ? fmt.format(asset.price!)
-                                        : '--',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: TradEtTheme.textSecondary,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: ((asset.change24h ?? 0) >= 0
-                                              ? TradEtTheme.positive
-                                              : TradEtTheme.negative)
-                                          .withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      '${(asset.change24h ?? 0) >= 0 ? '+' : ''}${(asset.change24h ?? 0).toStringAsFixed(1)}%',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                        color: (asset.change24h ?? 0) >= 0
-                                            ? TradEtTheme.positive
-                                            : TradEtTheme.negative,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ))
-                      .toList(),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -2777,18 +2911,24 @@ class _MarketStripState extends State<MarketStrip> {
               ),
             ),
             const SizedBox(width: 4),
-            // Prev / Next arrows
-            _ArrowBtn(
-              icon: Icons.chevron_left_rounded,
-              enabled: hasPrev,
-              onTap: () => setState(() => _page--),
-            ),
+            // Prev / Next arrows — only shown when usable
+            if (hasPrev)
+              _ArrowBtn(
+                icon: Icons.chevron_left_rounded,
+                enabled: true,
+                onTap: () => setState(() => _page--),
+              )
+            else
+              const SizedBox(width: 28, height: 28),
             const SizedBox(width: 2),
-            _ArrowBtn(
-              icon: Icons.chevron_right_rounded,
-              enabled: hasNext,
-              onTap: () => setState(() => _page++),
-            ),
+            if (hasNext)
+              _ArrowBtn(
+                icon: Icons.chevron_right_rounded,
+                enabled: true,
+                onTap: () => setState(() => _page++),
+              )
+            else
+              const SizedBox(width: 28, height: 28),
           ],
         );
       }),
