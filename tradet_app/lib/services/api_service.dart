@@ -174,6 +174,24 @@ class ApiService {
     }
   }
 
+  /// Helper: make PUT request
+  Future<http.Response> _put(
+    String path, {
+    Map<String, dynamic>? body,
+  }) async {
+    try {
+      return await http
+          .put(
+            Uri.parse('$baseUrl$path'),
+            headers: await _headers,
+            body: body != null ? jsonEncode(body) : null,
+          )
+          .timeout(_timeout);
+    } catch (e) {
+      throw ApiException(_friendlyError(e), userMessage: _friendlyError(e));
+    }
+  }
+
   /// Helper: make DELETE request
   Future<http.Response> _delete(String path) async {
     try {
@@ -279,6 +297,29 @@ class ApiService {
     final data = jsonDecode(response.body);
     await CacheService.set('profile', data, ttl: const Duration(minutes: 10));
     return User.fromJson(data);
+  }
+
+  /// Saves user preferences to the server (avatar_color, profile_image).
+  /// Silently returns false if the backend doesn't support this endpoint.
+  Future<bool> savePreferences(Map<String, dynamic> prefs) async {
+    try {
+      final response = await _put('/auth/preferences', body: prefs);
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Loads user preferences from the server.
+  /// Returns null if the backend doesn't support this endpoint.
+  Future<Map<String, dynamic>?> loadPreferences() async {
+    try {
+      final response = await _get('/auth/preferences');
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+    } catch (_) {}
+    return null;
   }
 
   // === MARKET ===

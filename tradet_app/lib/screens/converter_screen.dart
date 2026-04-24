@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../models/models.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
+import '../widgets/disclaimer_footer.dart';
 import '../widgets/responsive_layout.dart';
 import '../widgets/dashboard_widgets.dart' show ExchangeRateTicker;
 
@@ -248,6 +249,10 @@ class _ConverterScreenState extends State<ConverterScreen> {
               'Rates sourced from National Bank of Ethiopia',
               style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
             )),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(0, 8, 0, 16),
+              child: DisclaimerFooter(),
+            ),
           ],
         ),
       ),

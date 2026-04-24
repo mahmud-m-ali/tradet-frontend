@@ -44,7 +44,6 @@ class AppLockService {
   static const _wealthAuthMethodKey = 'tradet_wealth_auth_method'; // 'biometric' | 'pin' | 'any'
 
   static Future<bool> isWealthProtectionEnabled() async {
-    if (kIsWeb) return false;
     final v = await _storage.read(key: _wealthProtectionKey);
     return v == 'true';
   }
@@ -63,20 +62,55 @@ class AppLockService {
     await _storage.write(key: _wealthAuthMethodKey, value: method);
   }
 
+  // ── Session & Lock Timeouts ─────────────────────────────────────────
+
+  static const _sessionTimeoutKey = 'tradet_session_timeout_min'; // default 10
+  static const _appLockDelayKey   = 'tradet_app_lock_delay_sec';  // default 60
+
+  /// Session timeout in minutes. Allowed: 5, 10, 15. INSA max = 15.
+  static Future<int> getSessionTimeoutMinutes() async {
+    final v = await _storage.read(key: _sessionTimeoutKey);
+    final parsed = int.tryParse(v ?? '');
+    if (parsed != null && [5, 10, 15].contains(parsed)) return parsed;
+    return 10;
+  }
+
+  static Future<void> setSessionTimeoutMinutes(int minutes) async {
+    assert([5, 10, 15].contains(minutes));
+    await _storage.write(key: _sessionTimeoutKey, value: minutes.toString());
+  }
+
+  /// App lock delay in seconds. Allowed: 30, 60, 120. INSA max = 60 for compliance.
+  static Future<int> getAppLockDelaySecs() async {
+    final v = await _storage.read(key: _appLockDelayKey);
+    final parsed = int.tryParse(v ?? '');
+    if (parsed != null && [30, 60, 120].contains(parsed)) return parsed;
+    return 60;
+  }
+
+  static Future<void> setAppLockDelaySecs(int secs) async {
+    assert([30, 60, 120].contains(secs));
+    await _storage.write(key: _appLockDelayKey, value: secs.toString());
+  }
+
   // ── Biometric ───────────────────────────────────────────────────────
 
   static Future<bool> isBiometricAvailable() async {
     if (kIsWeb) return false;
     try {
-      final canCheck = await _auth.canCheckBiometrics;
       final isDeviceSupported = await _auth.isDeviceSupported();
-      return canCheck && isDeviceSupported;
+      if (!isDeviceSupported) return false;
+      // canCheckBiometrics is true if biometrics are enrolled
+      final canCheck = await _auth.canCheckBiometrics;
+      return canCheck;
     } catch (_) {
       return false;
     }
   }
 
   /// Attempt biometric auth. Returns true on success.
+  /// Uses biometricOnly: false so Android shows fingerprint/face dialog
+  /// and falls back to device PIN/pattern if biometric fails.
   static Future<bool> authenticateWithBiometric() async {
     if (kIsWeb) return true;
     try {
@@ -85,10 +119,22 @@ class AppLockService {
         options: const AuthenticationOptions(
           stickyAuth: true,
           biometricOnly: false,
+          useErrorDialogs: true,
+          sensitiveTransaction: false,
         ),
       );
     } catch (_) {
       return false;
+    }
+  }
+
+  /// Returns the list of available biometric types on the device.
+  static Future<List<BiometricType>> getAvailableBiometrics() async {
+    if (kIsWeb) return [];
+    try {
+      return await _auth.getAvailableBiometrics();
+    } catch (_) {
+      return [];
     }
   }
 }

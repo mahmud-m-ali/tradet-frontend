@@ -46,7 +46,6 @@ List<_NavItem> _mobileNavItems(AppLocalizations l) => [
   _NavItem(Icons.candlestick_chart_outlined, Icons.candlestick_chart, l.market),
   _NavItem(Icons.pie_chart_outline, Icons.pie_chart, l.portfolio),
   _NavItem(Icons.receipt_long_outlined, Icons.receipt_long, l.orders),
-  _NavItem(Icons.more_horiz, Icons.more_horiz, l.more),
 ];
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -86,12 +85,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return _buildMobileLayout();
   }
 
-  // ─── Mobile: Bottom nav (5 items) + "More" bottom sheet ───
+  // ─── Mobile: Bottom nav (4 items) ───
   Widget _buildMobileLayout() {
     final l = AppLocalizations.of(context);
     final navItems = _mobileNavItems(l);
-    // If current index is beyond the 4 core tabs, show the screen but highlight "More"
-    final navIndex = _currentIndex < 4 ? _currentIndex : 4;
+    final navIndex = _currentIndex.clamp(0, 3);
 
     final isDemoMode = context.watch<AppProvider>().isDemoMode;
     return Scaffold(
@@ -143,100 +141,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: NavigationBar(
           selectedIndex: navIndex,
-          onDestinationSelected: (i) {
-            if (i == 4) {
-              _showMoreSheet();
-            } else {
-              setState(() => _currentIndex = i);
-            }
-          },
+          onDestinationSelected: (i) => setState(() => _currentIndex = i),
           destinations: navItems.map((item) => NavigationDestination(
             icon: Icon(item.icon, color: TradEtTheme.textMuted),
             selectedIcon: Icon(item.selectedIcon, color: TradEtTheme.positive),
             label: item.label,
           )).toList(),
-        ),
-      ),
-    );
-  }
-
-  void _showMoreSheet() {
-    final l = AppLocalizations.of(context);
-    final moreItems = [
-      _MoreItem(Icons.star_rounded, l.watchlist, 4),
-      _MoreItem(Icons.notifications, l.priceAlertsTitle, 5),
-      _MoreItem(Icons.newspaper, l.newsFeedTitle, 6),
-      _MoreItem(Icons.volunteer_activism, l.zakatCalculatorTitle, 7),
-      _MoreItem(Icons.currency_exchange, l.currencyConverter, 8),
-      _MoreItem(Icons.bar_chart, l.analytics, 9),
-      _MoreItem(Icons.swap_horiz, l.transactions, 10),
-      _MoreItem(Icons.person, l.profile, 11),
-    ];
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: TradEtTheme.cardBg,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40, height: 4,
-              decoration: BoxDecoration(
-                color: TradEtTheme.divider,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(l.moreFeatures, style: const TextStyle(fontSize: 18,
-                fontWeight: FontWeight.w800, color: Colors.white)),
-            const SizedBox(height: 16),
-            GridView.count(
-              crossAxisCount: 4,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              children: moreItems.map((item) => _buildMoreTile(item)).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMoreTile(_MoreItem item) {
-    final isSelected = _currentIndex == item.index;
-    return GestureDetector(
-      onTap: () {
-        Navigator.pop(context);
-        setState(() => _currentIndex = item.index);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: isSelected
-              ? TradEtTheme.primaryLight.withValues(alpha: 0.15)
-              : TradEtTheme.surfaceLight,
-          borderRadius: BorderRadius.circular(14),
-          border: isSelected
-              ? Border.all(color: TradEtTheme.primaryLight.withValues(alpha: 0.3))
-              : null,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(item.icon, size: 26,
-                color: isSelected ? TradEtTheme.positive : TradEtTheme.textSecondary),
-            const SizedBox(height: 6),
-            Text(item.label, style: TextStyle(fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? TradEtTheme.positive : TradEtTheme.textSecondary),
-                textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
-          ],
         ),
       ),
     );
@@ -315,13 +225,6 @@ class _NavItem {
   final IconData selectedIcon;
   final String label;
   const _NavItem(this.icon, this.selectedIcon, this.label);
-}
-
-class _MoreItem {
-  final IconData icon;
-  final String label;
-  final int index;
-  const _MoreItem(this.icon, this.label, this.index);
 }
 
 class AppWebSidebar extends StatelessWidget {

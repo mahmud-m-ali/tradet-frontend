@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/app_lock_service.dart';
 import '../theme.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/responsive_layout.dart';
 
 class SecurityScreen extends StatefulWidget {
   const SecurityScreen({super.key});
@@ -17,6 +18,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
   String _authMethod = 'any'; // 'biometric' | 'pin' | 'any'
   bool _biometricAvailable = false;
   bool _pinSet = false;
+  int _sessionTimeoutMins = 10;
+  int _appLockDelaySecs = 60;
 
   @override
   void initState() {
@@ -29,12 +32,16 @@ class _SecurityScreenState extends State<SecurityScreen> {
     final method = await AppLockService.getWealthAuthMethod();
     final biometric = await AppLockService.isBiometricAvailable();
     final pin = await AppLockService.hasPin();
+    final sessionMins = await AppLockService.getSessionTimeoutMinutes();
+    final lockSecs = await AppLockService.getAppLockDelaySecs();
     if (mounted) {
       setState(() {
         _wealthProtectionEnabled = enabled;
         _authMethod = method;
         _biometricAvailable = biometric;
         _pinSet = pin;
+        _sessionTimeoutMins = sessionMins;
+        _appLockDelaySecs = lockSecs;
         _loading = false;
       });
     }
@@ -117,12 +124,13 @@ class _SecurityScreenState extends State<SecurityScreen> {
       padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: Colors.white, size: 20),
-            onPressed: () => Navigator.pop(context),
-          ),
-          const SizedBox(width: 4),
+          if (!isWideScreen(context))
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+              onPressed: () => Navigator.pop(context),
+            ),
+          if (!isWideScreen(context))
+            const SizedBox(width: 4),
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
@@ -141,7 +149,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: Colors.white)),
-              const Text('ደህንነት • Protect your account',
+              const Text('Protect your account',
                   style: TextStyle(
                       fontSize: 11, color: TradEtTheme.textSecondary)),
             ],
@@ -203,9 +211,6 @@ class _SecurityScreenState extends State<SecurityScreen> {
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: Colors.white)),
-                    const Text('የሀብት ጥበቃ',
-                        style: TextStyle(
-                            fontSize: 10, color: TradEtTheme.textMuted)),
                     const SizedBox(height: 4),
                     Row(
                       children: [
@@ -236,7 +241,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
               ),
               Switch(
                 value: _wealthProtectionEnabled,
-                onChanged: kIsWeb ? null : _toggleWealthProtection,
+                onChanged: _toggleWealthProtection,
                 activeTrackColor: TradEtTheme.positive,
                 activeThumbColor: Colors.white,
               ),
@@ -275,7 +280,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Biometric & PIN auth is only available on the mobile app.',
+                      'Biometric auth requires the mobile app. PIN-based protection works on web.',
                       style: TextStyle(
                           fontSize: 11, color: TradEtTheme.textSecondary),
                     ),
@@ -528,7 +533,23 @@ class _SecurityScreenState extends State<SecurityScreen> {
                         : TradEtTheme.accent),
               ),
             ),
-            onTap: kIsWeb ? null : () => _showSetPinDialog(),
+            onTap: () => _showSetPinDialog(),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline_rounded, size: 11, color: TradEtTheme.textMuted),
+                const SizedBox(width: 5),
+                const Expanded(
+                  child: Text(
+                    'PIN is stored on this device only. Set a PIN on each device you use.',
+                    style: TextStyle(fontSize: 10, color: TradEtTheme.textMuted),
+                  ),
+                ),
+              ],
+            ),
           ),
           Divider(
               height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
@@ -554,8 +575,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
               kIsWeb
                   ? 'Available on mobile only'
                   : _biometricAvailable
-                      ? 'Fingerprint / Face ID available'
-                      : 'Not available on this device',
+                      ? 'Fingerprint / Face ID enrolled'
+                      : 'Go to Android Settings → Security → Fingerprint',
               style: const TextStyle(
                   fontSize: 11, color: TradEtTheme.textMuted),
             ),
@@ -573,23 +594,24 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 kIsWeb
                     ? 'Web'
                     : _biometricAvailable
-                        ? 'Ready'
-                        : 'Unavailable',
+                        ? 'Verify'
+                        : 'Set up',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: (_biometricAvailable && !kIsWeb
                         ? TradEtTheme.positive
-                        : TradEtTheme.textMuted)),
+                        : TradEtTheme.accent)),
               ),
             ),
+            onTap: kIsWeb ? null : () => _handleBiometricTap(),
           ),
         ],
       ),
     );
   }
 
-  // ─── Session info card (read-only) ──────────────────────────────────
+  // ─── Session protection card (configurable) ─────────────────────────
 
   Widget _sessionInfoCard() {
     return Container(
@@ -602,6 +624,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header
           Row(
             children: [
               Container(
@@ -622,50 +645,173 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),
-                  Text('INSA CSMS enforced settings',
-                      style:
-                          TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
+                  Text('Configurable within INSA CSMS bounds',
+                      style: TextStyle(
+                          fontSize: 10, color: TradEtTheme.textMuted)),
                 ],
               ),
             ],
           ),
+          const SizedBox(height: 20),
+
+          // Session Timeout
+          _timeoutSection(
+            icon: Icons.hourglass_top_rounded,
+            color: const Color(0xFF22D3EE),
+            label: 'Session Timeout',
+            sublabel: 'Auto-logout after inactivity',
+            options: const [5, 10, 15],
+            labels: const ['5 min', '10 min', '15 min'],
+            selected: _sessionTimeoutMins,
+            onSelect: (v) async {
+              await AppLockService.setSessionTimeoutMinutes(v);
+              if (mounted) setState(() => _sessionTimeoutMins = v);
+            },
+          ),
+          const SizedBox(height: 18),
+
+          // App Lock Delay
+          _timeoutSection(
+            icon: Icons.screen_lock_portrait_rounded,
+            color: TradEtTheme.accent,
+            label: 'App Lock Delay',
+            sublabel: 'Lock screen after backgrounding',
+            options: const [30, 60, 120],
+            labels: const ['30 sec', '1 min', '2 min'],
+            selected: _appLockDelaySecs,
+            onSelect: (v) async {
+              await AppLockService.setAppLockDelaySecs(v);
+              if (mounted) setState(() => _appLockDelaySecs = v);
+            },
+          ),
+          const SizedBox(height: 18),
+
+          Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
           const SizedBox(height: 16),
-          _infoRow(Icons.hourglass_top_rounded, 'Session timeout',
-              '10 min inactivity', const Color(0xFF22D3EE)),
-          const SizedBox(height: 10),
-          _infoRow(Icons.screen_lock_portrait_rounded, 'App lock',
-              '60 sec in background', TradEtTheme.accent),
-          const SizedBox(height: 10),
-          _infoRow(Icons.block_rounded, 'Account lockout',
-              '5 failed attempts → 15 min block', TradEtTheme.negative),
+
+          // Account lockout — INSA mandated, read-only
+          Row(
+            children: [
+              Container(
+                width: 32, height: 32,
+                decoration: BoxDecoration(
+                  color: TradEtTheme.negative.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.block_rounded,
+                    size: 15, color: TradEtTheme.negative),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Account Lockout',
+                        style: TextStyle(
+                            fontSize: 12, color: TradEtTheme.textSecondary)),
+                    Text('5 failed attempts → 15 min block',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white)),
+                  ],
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: TradEtTheme.negative.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                      color: TradEtTheme.negative.withValues(alpha: 0.25)),
+                ),
+                child: const Text('INSA Mandated',
+                    style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w600,
+                        color: TradEtTheme.negative)),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _infoRow(IconData icon, String label, String value, Color color) {
-    return Row(
+  Widget _timeoutSection({
+    required IconData icon,
+    required Color color,
+    required String label,
+    required String sublabel,
+    required List<int> options,
+    required List<String> labels,
+    required int selected,
+    required Future<void> Function(int) onSelect,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, size: 15, color: color),
+        Row(
+          children: [
+            Container(
+              width: 32, height: 32,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, size: 15, color: color),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white)),
+                Text(sublabel,
+                    style: const TextStyle(
+                        fontSize: 10, color: TradEtTheme.textMuted)),
+              ],
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(label,
-              style: const TextStyle(
-                  fontSize: 12, color: TradEtTheme.textSecondary)),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          children: List.generate(options.length, (i) {
+            final isSelected = options[i] == selected;
+            return GestureDetector(
+              onTap: () => onSelect(options[i]),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? color.withValues(alpha: 0.15)
+                      : TradEtTheme.surfaceLight.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isSelected
+                        ? color.withValues(alpha: 0.5)
+                        : TradEtTheme.divider.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Text(
+                  labels[i],
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight:
+                        isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected ? color : TradEtTheme.textSecondary,
+                  ),
+                ),
+              ),
+            );
+          }),
         ),
-        Text(value,
-            style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Colors.white)),
       ],
     );
   }
@@ -703,6 +849,30 @@ class _SecurityScreenState extends State<SecurityScreen> {
   }
 
   // ─── Helpers ─────────────────────────────────────────────────────────
+
+  Future<void> _handleBiometricTap() async {
+    if (!_biometricAvailable) {
+      // Guide to Android settings
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Go to Android Settings → Security → Fingerprint to enroll your biometrics.'),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 4),
+        ),
+      );
+      return;
+    }
+    // Test biometric auth
+    final success = await AppLockService.authenticateWithBiometric();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(success ? 'Biometric authentication successful!' : 'Biometric authentication failed.'),
+        backgroundColor: success ? TradEtTheme.positive : TradEtTheme.negative,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   String _methodLabel(String method, bool biometricAvailable) {
     switch (method) {

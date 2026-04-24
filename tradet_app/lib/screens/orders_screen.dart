@@ -749,9 +749,10 @@ class _OrderCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header row: BUY/SELL badge + symbol + status
+          // Header row: BUY/SELL badge + symbol + asset name + status
           Row(
             children: [
+              // BUY/SELL badge
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -769,33 +770,38 @@ class _OrderCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
-              Builder(builder: (ctx) {
-                final asset = context.read<AppProvider>().assets
-                    .where((a) => a.symbol == order.symbol)
-                    .firstOrNull;
-                return GestureDetector(
-                  onTap: asset != null
-                      ? () => Navigator.of(context).push(appRoute(context, TradeScreen(asset: asset)))
-                      : null,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(order.symbol,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              color: asset != null ? TradEtTheme.primaryLight : Colors.white,
-                              decoration: asset != null ? TextDecoration.underline : TextDecoration.none,
-                              decorationColor: TradEtTheme.primaryLight)),
-                      const SizedBox(width: 6),
-                      Text(order.assetName,
-                          style: const TextStyle(fontSize: 12, color: TradEtTheme.textMuted),
-                          overflow: TextOverflow.ellipsis),
-                    ],
-                  ),
-                );
-              }),
+              const SizedBox(width: 8),
+              // Symbol + asset name — takes remaining space
+              Expanded(
+                child: Builder(builder: (ctx) {
+                  final asset = context.read<AppProvider>().assets
+                      .where((a) => a.symbol == order.symbol)
+                      .firstOrNull;
+                  return GestureDetector(
+                    onTap: asset != null
+                        ? () => Navigator.of(context).push(appRoute(context, TradeScreen(asset: asset)))
+                        : null,
+                    child: Row(
+                      children: [
+                        Text(order.symbol,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                                color: asset != null ? TradEtTheme.primaryLight : Colors.white,
+                                decoration: asset != null ? TextDecoration.underline : TextDecoration.none,
+                                decorationColor: TradEtTheme.primaryLight)),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(order.assetName,
+                              style: const TextStyle(fontSize: 12, color: TradEtTheme.textMuted),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
               const SizedBox(width: 8),
               _statusBadge(order.orderStatus),
             ],

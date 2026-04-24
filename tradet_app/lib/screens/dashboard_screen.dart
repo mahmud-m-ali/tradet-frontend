@@ -57,8 +57,27 @@ class DashboardScreen extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(child: _greeting(provider, l)),
-                const LanguageSelector(),
+                _ProfileAvatar(
+                  user: provider.user,
+                  onTap: () => onNavigateTo != null
+                      ? onNavigateTo(11)
+                      : Navigator.of(context).push(
+                          appRoute(context,
+                              const WrappedScreen(child: ProfileScreen(), showMobileAppBar: false)),
+                        ),
+                ),
+                const Spacer(),
+                HeaderIconButton(
+                  icon: Icons.notifications_outlined,
+                  color: const Color(0xFFFBBF24),
+                  onTap: () => onNavigateTo?.call(5),
+                ),
+                const SizedBox(width: 8),
+                HeaderIconButton(
+                  icon: Icons.currency_exchange_outlined,
+                  color: const Color(0xFF22D3EE),
+                  onTap: () => onNavigateTo?.call(8),
+                ),
                 const SizedBox(width: 8),
                 HeaderIconButton(
                   icon: Icons.bar_chart_rounded,
@@ -74,16 +93,6 @@ class DashboardScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                ),
-                const SizedBox(width: 8),
-                _ProfileAvatar(
-                  user: provider.user,
-                  onTap: () => onNavigateTo != null
-                      ? onNavigateTo(11)
-                      : Navigator.of(context).push(
-                          appRoute(context,
-                              const WrappedScreen(child: ProfileScreen(), showMobileAppBar: false)),
-                        ),
                 ),
               ],
             ),
@@ -391,6 +400,30 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: StatCard(
+                icon: Icons.volunteer_activism_outlined,
+                label: l.zakatCalculatorTitle,
+                value: 'Calculator',
+                color: const Color(0xFF34D399),
+                onTap: onNavigateTo != null ? () => onNavigateTo(7) : null,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: StatCard(
+                icon: Icons.newspaper_outlined,
+                label: l.newsFeedTitle,
+                value: 'Latest news',
+                color: const Color(0xFFF97316),
+                onTap: onNavigateTo != null ? () => onNavigateTo(6) : null,
               ),
             ),
           ],
@@ -857,74 +890,69 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
     final isVerified = widget.user?.kycStatus == 'verified';
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovering = true),
-      onExit: (_) => setState(() => _hovering = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [
-                TradEtTheme.primary,
-                TradEtTheme.primaryLight,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            border: Border.all(
-              color: _hovering
-                  ? TradEtTheme.positive
-                  : TradEtTheme.primaryLight.withValues(alpha: 0.5),
-              width: 2,
-            ),
-            boxShadow: _hovering
-                ? [
-                    BoxShadow(
-                      color: TradEtTheme.primary.withValues(alpha: 0.4),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-                    )
-                  ]
-                : [],
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: Text(
-                  initial,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
+    return Consumer<AppProvider>(
+      builder: (context, prov, _) {
+        final imgBytes = prov.profileImageBytes;
+        return MouseRegion(
+          cursor: SystemMouseCursors.click,
+          onEnter: (_) => setState(() => _hovering = true),
+          onExit: (_) => setState(() => _hovering = false),
+          child: GestureDetector(
+            onTap: widget.onTap,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: imgBytes == null ? LinearGradient(
+                  colors: [TradEtTheme.primary, TradEtTheme.primaryLight],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ) : null,
+                border: Border.all(
+                  color: _hovering
+                      ? TradEtTheme.positive
+                      : TradEtTheme.primaryLight.withValues(alpha: 0.5),
+                  width: 2,
                 ),
+                boxShadow: _hovering
+                    ? [BoxShadow(color: TradEtTheme.primary.withValues(alpha: 0.4), blurRadius: 10, offset: const Offset(0, 3))]
+                    : [],
               ),
-              // KYC verified dot
-              if (isVerified)
-                Positioned(
-                  bottom: 1,
-                  right: 1,
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: TradEtTheme.positive,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: TradEtTheme.primaryDark, width: 1.5),
-                    ),
+              child: Stack(
+                children: [
+                  ClipOval(
+                    child: imgBytes != null
+                        ? Image.memory(imgBytes, width: 38, height: 38, fit: BoxFit.cover)
+                        : Center(
+                            child: Text(
+                              initial,
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
+                            ),
+                          ),
                   ),
-                ),
-            ],
+                  // KYC verified dot
+                  if (isVerified)
+                    Positioned(
+                      bottom: 1,
+                      right: 1,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: TradEtTheme.positive,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: TradEtTheme.primaryDark, width: 1.5),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

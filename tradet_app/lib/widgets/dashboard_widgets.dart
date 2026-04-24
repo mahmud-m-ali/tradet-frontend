@@ -19,6 +19,7 @@ import '../screens/converter_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/corporate_events_screen.dart';
+import '../utils/security_challenge.dart';
 
 // ─── Web Section Card ───
 class WebSectionCard extends StatelessWidget {
@@ -3015,6 +3016,15 @@ void showWithdrawSheet(BuildContext context) {
                         ),
                       );
                       return;
+                    }
+                    // Auth required for withdrawals ≥ 5,000 ETB
+                    if (amount >= kWealthProtectionWithdrawalThreshold) {
+                      final authed = await challengeTransactionAuth(
+                        context,
+                        reason:
+                            'Authenticate to withdraw ${amount.toStringAsFixed(2)} ETB',
+                      );
+                      if (!authed) return;
                     }
                     Navigator.pop(ctx);
                     final result = await context.read<AppProvider>().withdraw(

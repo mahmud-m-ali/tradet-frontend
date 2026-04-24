@@ -5,6 +5,7 @@ import '../models/models.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
 import '../white_label.dart';
+import '../widgets/disclaimer_footer.dart';
 import '../widgets/responsive_layout.dart';
 
 class NewsScreen extends StatefulWidget {
@@ -166,6 +167,10 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                 itemBuilder: (ctx, i) => _buildArticleCard(_articles[i]),
                               ),
                             ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 4, 20, 16),
+              child: DisclaimerFooter(),
             ),
           ],
         ),

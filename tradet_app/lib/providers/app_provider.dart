@@ -1,4 +1,6 @@
 /// Global state provider — manages auth, market data, portfolio, orders, and preferences.
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
@@ -40,14 +42,38 @@ class AppProvider extends ChangeNotifier {
   Locale get locale => _locale;
   String get langCode => _locale.languageCode;
 
-  /// Loads both theme mode and locale from persistent storage.
+  /// Loads both theme mode and locale from persistent storage,
+  /// then tries to pull avatar/image preferences from the server.
   Future<void> loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     final mode = prefs.getString('theme_mode') ?? 'dark';
     _themeMode = mode == 'light' ? ThemeMode.light : ThemeMode.dark;
     final lang = prefs.getString('locale') ?? 'en';
     _locale = Locale(lang);
+    _avatarColorIndex = prefs.getInt('avatar_color_index') ?? 0;
+    _profileImageBase64 = prefs.getString('profile_image_b64');
     notifyListeners();
+
+    // Try to pull synced preferences from server (silently fails if not supported)
+    try {
+      final serverPrefs = await _api.loadPreferences();
+      if (serverPrefs != null) {
+        bool changed = false;
+        final serverColor = serverPrefs['avatar_color_index'] as int?;
+        if (serverColor != null && serverColor != _avatarColorIndex) {
+          _avatarColorIndex = serverColor;
+          await prefs.setInt('avatar_color_index', serverColor);
+          changed = true;
+        }
+        final serverImage = serverPrefs['profile_image_b64'] as String?;
+        if (serverImage != null && serverImage != _profileImageBase64 && serverImage.isNotEmpty) {
+          _profileImageBase64 = serverImage;
+          await prefs.setString('profile_image_b64', serverImage);
+          changed = true;
+        }
+        if (changed) notifyListeners();
+      }
+    } catch (_) {}
   }
 
   Future<void> loadThemePreference() async {
@@ -78,6 +104,41 @@ class AppProvider extends ChangeNotifier {
   /// Legacy toggle kept for backward compat (cycles en→am→en)
   Future<void> toggleLocale() async {
     await setLocale(_locale.languageCode == 'en' ? 'am' : 'en');
+  }
+
+  int _avatarColorIndex = 0;
+  int get avatarColorIndex => _avatarColorIndex;
+
+  Future<void> setAvatarColorIndex(int index) async {
+    _avatarColorIndex = index;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('avatar_color_index', index);
+    notifyListeners();
+    // Sync to server (silently fails if endpoint not supported)
+    _api.savePreferences({'avatar_color_index': index}).ignore();
+  }
+
+  // Profile image
+  String? _profileImageBase64;
+  Uint8List? get profileImageBytes =>
+      _profileImageBase64 != null ? base64Decode(_profileImageBase64!) : null;
+
+  Future<void> setProfileImage(Uint8List bytes) async {
+    _profileImageBase64 = base64Encode(bytes);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('profile_image_b64', _profileImageBase64!);
+    notifyListeners();
+    // Sync to server (silently fails if endpoint not supported)
+    _api.savePreferences({'profile_image_b64': _profileImageBase64}).ignore();
+  }
+
+  Future<void> clearProfileImage() async {
+    _profileImageBase64 = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('profile_image_b64');
+    notifyListeners();
+    // Sync removal to server
+    _api.savePreferences({'profile_image_b64': ''}).ignore();
   }
 
   User? _user;
@@ -182,6 +243,8 @@ class AppProvider extends ChangeNotifier {
     if (_isLoggedIn) {
       try {
         _user = await _api.getProfile();
+        // Pull server-synced preferences (avatar/image) after auth
+        loadPreferences();
       } catch (e) {
         // If 401, try refresh token
         if (e is ApiException && e.statusCode == 401) {
@@ -190,6 +253,7 @@ class AppProvider extends ChangeNotifier {
             try {
               _user = await _api.getProfile();
               notifyListeners();
+              loadPreferences();
               return;
             } catch (_) {}
           }
@@ -254,6 +318,8 @@ class AppProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         SecurityLogService.record(SecurityEvent.loginSuccess, userId: email);
+        // Re-load preferences after login so server prefs (avatar/image) sync
+        loadPreferences();
         return true;
       }
       _error = result['error'] ?? 'Login failed';

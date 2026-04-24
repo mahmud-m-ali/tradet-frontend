@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
+import '../widgets/disclaimer_footer.dart';
 import '../widgets/responsive_layout.dart';
 import 'trade_screen.dart';
 
@@ -245,6 +246,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
               child: _loading
                   ? const Center(child: CircularProgressIndicator(color: TradEtTheme.positive))
                   : _buildAlertList(wide),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 4, 20, 16),
+              child: DisclaimerFooter(),
             ),
           ],
         ),

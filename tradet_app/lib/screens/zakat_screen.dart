@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
+import '../widgets/disclaimer_footer.dart';
 import '../widgets/responsive_layout.dart';
 
 class ZakatScreen extends StatefulWidget {
@@ -138,6 +139,10 @@ class _ZakatScreenState extends State<ZakatScreen> {
               const SizedBox(height: 24),
               _buildResultCard(),
             ],
+            const Padding(
+              padding: EdgeInsets.fromLTRB(0, 8, 0, 16),
+              child: DisclaimerFooter(),
+            ),
           ],
         ),
       ),

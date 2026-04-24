@@ -212,14 +212,22 @@ class _InactivityWrapper extends StatefulWidget {
 }
 
 class _InactivityWrapperState extends State<_InactivityWrapper> {
-  /// Session timeout duration enforced per INSA CSMS §8a.
-  static const _timeoutDuration = Duration(minutes: 10);
+  /// Session timeout — loaded from AppLockService (default 10 min, INSA max 15 min).
+  Duration _timeoutDuration = const Duration(minutes: 10);
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _resetTimer();
+    _loadAndStart();
+  }
+
+  Future<void> _loadAndStart() async {
+    final mins = await AppLockService.getSessionTimeoutMinutes();
+    if (mounted) {
+      _timeoutDuration = Duration(minutes: mins);
+      _resetTimer();
+    }
   }
 
   @override
@@ -277,8 +285,8 @@ class _AppLockWrapper extends StatefulWidget {
 
 class _AppLockWrapperState extends State<_AppLockWrapper>
     with WidgetsBindingObserver {
-  /// Minimum background time before the lock screen is required.
-  static const _backgroundThreshold = Duration(seconds: 60);
+  /// Background threshold — loaded from AppLockService (default 60s).
+  Duration _backgroundThreshold = const Duration(seconds: 60);
   DateTime? _backgroundedAt;
   bool _locked = false;
   bool _pinEnabled = false;
@@ -287,7 +295,7 @@ class _AppLockWrapperState extends State<_AppLockWrapper>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _checkPinEnabled();
+    _loadSettings();
   }
 
   @override
@@ -296,10 +304,16 @@ class _AppLockWrapperState extends State<_AppLockWrapper>
     super.dispose();
   }
 
-  Future<void> _checkPinEnabled() async {
+  Future<void> _loadSettings() async {
     if (kIsWeb) return;
     final enabled = await AppLockService.isEnabled();
-    if (mounted) setState(() => _pinEnabled = enabled);
+    final secs = await AppLockService.getAppLockDelaySecs();
+    if (mounted) {
+      setState(() {
+        _pinEnabled = enabled;
+        _backgroundThreshold = Duration(seconds: secs);
+      });
+    }
   }
 
   @override

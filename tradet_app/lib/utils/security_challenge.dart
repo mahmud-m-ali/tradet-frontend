@@ -8,26 +8,34 @@ const double kWealthProtectionWithdrawalThreshold = 5000.0;
 
 /// Challenge the user to authenticate for a sensitive financial action.
 ///
-/// Returns true if:
-/// - Running on web (biometrics/PIN not applicable)
-/// - Wealth protection is disabled
-/// - The user successfully authenticates
+/// Auth is ALWAYS required for orders, payments, and withdrawals.
+/// The Wealth Protection settings control which method (biometric/PIN/any);
+/// they do NOT gate whether auth is required.
 ///
-/// Returns false if the user cancels or fails authentication.
+/// Returns true if the user successfully authenticates.
+/// Returns false if:
+///   - No auth method is configured (shows setup prompt)
+///   - The user cancels or fails authentication
 Future<bool> challengeTransactionAuth(
   BuildContext context, {
   String reason = 'Authenticate to continue',
 }) async {
-  if (kIsWeb) return true;
+  final pinSet = await AppLockService.hasPin();
+  final biometricAvailable =
+      kIsWeb ? false : await AppLockService.isBiometricAvailable();
 
-  final enabled = await AppLockService.isWealthProtectionEnabled();
-  if (!enabled) return true;
+  // No auth method set up at all → prompt user to configure one
+  if (!pinSet && !biometricAvailable) {
+    if (!context.mounted) return false;
+    _showNoAuthMethodDialog(context);
+    return false;
+  }
 
+  // Preferred method from settings (biometric / pin / any)
   final method = await AppLockService.getWealthAuthMethod();
-  final biometricAvailable = await AppLockService.isBiometricAvailable();
 
-  // Try biometric first if the method allows it
-  if ((method == 'biometric' || method == 'any') && biometricAvailable) {
+  // Biometric (mobile only)
+  if (!kIsWeb && (method == 'biometric' || method == 'any') && biometricAvailable) {
     final success = await AppLockService.authenticateWithBiometric();
     if (success) return true;
     // biometric-only mode and it failed → deny
@@ -35,19 +43,60 @@ Future<bool> challengeTransactionAuth(
     // 'any' mode → fall through to PIN
   }
 
-  // PIN challenge
-  if (method == 'pin' || method == 'any') {
-    final pinSet = await AppLockService.hasPin();
-    // No PIN configured yet → allow gracefully (user hasn't set one up)
-    if (!pinSet) return true;
+  // PIN — works on both mobile and web
+  if (!pinSet) {
+    // Biometric was the only option and already failed above; or method == 'pin'
+    // but no PIN is set. Prompt user to set one up.
     if (!context.mounted) return false;
-    return _showPinChallengeDialog(context);
+    _showNoAuthMethodDialog(context);
+    return false;
   }
 
-  return false;
+  if (!context.mounted) return false;
+  return _showPinChallengeDialog(context, reason: reason);
 }
 
-Future<bool> _showPinChallengeDialog(BuildContext context) async {
+/// Shown when no auth method (PIN or biometrics) is configured.
+void _showNoAuthMethodDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: TradEtTheme.cardBg,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: TradEtTheme.warning.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.lock_open_rounded,
+                color: TradEtTheme.warning, size: 18),
+          ),
+          const SizedBox(width: 12),
+          const Text('Security Required',
+              style: TextStyle(color: Colors.white, fontSize: 16)),
+        ],
+      ),
+      content: const Text(
+        'A security PIN is required to authorize transactions.\n\n'
+        'Go to Profile → Security → App Lock to set up your PIN.',
+        style: TextStyle(color: TradEtTheme.textSecondary, fontSize: 13, height: 1.5),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: const Text('OK',
+              style: TextStyle(color: TradEtTheme.accent)),
+        ),
+      ],
+    ),
+  );
+}
+
+Future<bool> _showPinChallengeDialog(BuildContext context,
+    {String reason = 'Authenticate to continue'}) async {
   final ctrl = TextEditingController();
   var attempts = 0;
   var authResult = false;
@@ -73,7 +122,8 @@ Future<bool> _showPinChallengeDialog(BuildContext context) async {
 
         return AlertDialog(
           backgroundColor: TradEtTheme.cardBg,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
               Container(
@@ -92,10 +142,14 @@ Future<bool> _showPinChallengeDialog(BuildContext context) async {
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text('Enter your security PIN to confirm this action',
-                  style: TextStyle(
-                      color: TradEtTheme.textSecondary, fontSize: 13)),
+              Text(reason,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      color: TradEtTheme.textSecondary,
+                      fontSize: 13,
+                      height: 1.4)),
               const SizedBox(height: 20),
               TextField(
                 controller: ctrl,
@@ -109,8 +163,8 @@ Future<bool> _showPinChallengeDialog(BuildContext context) async {
                 decoration: const InputDecoration(
                   counterText: '',
                   hintText: '• • • •',
-                  hintStyle: TextStyle(
-                      color: TradEtTheme.textMuted, letterSpacing: 8),
+                  hintStyle:
+                      TextStyle(color: TradEtTheme.textMuted, letterSpacing: 8),
                 ),
                 onChanged: (v) {
                   if (v.length == 4) checkPin();
@@ -122,6 +176,13 @@ Future<bool> _showPinChallengeDialog(BuildContext context) async {
                   '${3 - attempts} attempt(s) remaining',
                   style: const TextStyle(
                       color: TradEtTheme.negative, fontSize: 11),
+                ),
+              ],
+              if (attempts >= 3) ...[
+                const SizedBox(height: 10),
+                const Text(
+                  'Too many failed attempts',
+                  style: TextStyle(color: TradEtTheme.negative, fontSize: 11),
                 ),
               ],
             ],

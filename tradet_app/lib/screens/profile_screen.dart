@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import '../utils/web_file_picker.dart';
 import '../l10n/app_localizations.dart';
 import '../models/models.dart';
 import '../providers/app_provider.dart';
@@ -46,7 +50,7 @@ class ProfileScreen extends StatelessWidget {
         const Text('Profile',
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800,
                 color: Colors.white, letterSpacing: -0.5)),
-        const Text('መገለጫ • Account settings',
+        const Text('Account settings',
             style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
         const SizedBox(height: 24),
 
@@ -115,25 +119,45 @@ class ProfileScreen extends StatelessWidget {
       child: Row(
         children: [
           // Avatar
-          Container(
-            width: 80, height: 80,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 3),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+          Consumer<AppProvider>(
+            builder: (context, prov, _) {
+              const avatarColors = [
+                Color(0xFF0F6B3C), Color(0xFF1D4ED8), Color(0xFF7C3AED),
+                Color(0xFFB45309), Color(0xFF0D9488), Color(0xFF9D174D),
+              ];
+              final bg = avatarColors[prov.avatarColorIndex % avatarColors.length];
+              final imgBytes = prov.profileImageBytes;
+              return GestureDetector(
+                onTap: () => _showAvatarOptions(context, prov),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 80, height: 80,
+                        decoration: BoxDecoration(
+                          color: bg,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 3),
+                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 4))],
+                        ),
+                        child: imgBytes != null
+                            ? ClipOval(child: Image.memory(imgBytes, width: 80, height: 80, fit: BoxFit.cover))
+                            : Center(child: Text(initial, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: Colors.white))),
+                      ),
+                      Positioned(
+                        bottom: 0, right: 0,
+                        child: Container(
+                          width: 24, height: 24,
+                          decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(color: bg, width: 2)),
+                          child: Icon(Icons.camera_alt, size: 12, color: bg),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-            child: Center(
-              child: Text(initial,
-                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700,
-                      color: Colors.white)),
-            ),
+              );
+            },
           ),
           const SizedBox(width: 24),
           // Name & email
@@ -273,7 +297,7 @@ class ProfileScreen extends StatelessWidget {
                   Text('Compliance',
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,
                           color: Colors.white)),
-                  Text('ቁጥጥር',
+                  Text('Standards & certification',
                       style: TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
                 ],
               ),
@@ -356,7 +380,7 @@ class ProfileScreen extends StatelessWidget {
                   Text('Preferences',
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,
                           color: Colors.white)),
-                  Text('ምርጫዎች',
+                  Text('Settings & preferences',
                       style: TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
                 ],
               ),
@@ -389,38 +413,45 @@ class ProfileScreen extends StatelessWidget {
           _webSettingRow(
             icon: Icons.notifications_outlined,
             title: 'Notifications',
-            subtitle: 'ማሳወቂያ • Manage alerts',
+            subtitle: 'Manage price & order alerts',
             color: TradEtTheme.accent,
             trailing: const Icon(Icons.chevron_right_rounded,
                 color: TradEtTheme.textMuted, size: 20),
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Notification preferences — coming soon'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            ),
           ),
           Divider(height: 24, color: TradEtTheme.divider.withValues(alpha: 0.2)),
           // Security
-          MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const SecurityScreen())),
-              child: _webSettingRow(
-                icon: Icons.shield_outlined,
-                title: 'Security',
-                subtitle: 'ደህንነት • Wealth protection & PIN',
-                color: const Color(0xFF22D3EE),
-                trailing: const Icon(Icons.chevron_right_rounded,
-                    color: TradEtTheme.textMuted, size: 20),
-              ),
-            ),
+          _webSettingRow(
+            icon: Icons.shield_outlined,
+            title: 'Security',
+            subtitle: 'Wealth protection & PIN',
+            color: const Color(0xFF22D3EE),
+            trailing: const Icon(Icons.chevron_right_rounded,
+                color: TradEtTheme.textMuted, size: 20),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const SecurityScreen())),
           ),
           Divider(height: 24, color: TradEtTheme.divider.withValues(alpha: 0.2)),
           // Help
           _webSettingRow(
             icon: Icons.help_outline_rounded,
             title: 'Help',
-            subtitle: 'እርዳታ • FAQ & Support',
+            subtitle: 'FAQ & Support',
             color: TradEtTheme.positive,
             trailing: const Icon(Icons.chevron_right_rounded,
                 color: TradEtTheme.textMuted, size: 20),
             isLast: true,
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Help & FAQ — coming soon'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            ),
           ),
         ],
       ),
@@ -434,8 +465,9 @@ class ProfileScreen extends StatelessWidget {
     required Color color,
     required Widget trailing,
     bool isLast = false,
+    VoidCallback? onTap,
   }) {
-    return Row(
+    final row = Row(
       children: [
         Container(
           width: 36, height: 36,
@@ -460,6 +492,17 @@ class ProfileScreen extends StatelessWidget {
         trailing,
       ],
     );
+    if (onTap != null) {
+      return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          child: row,
+        ),
+      );
+    }
+    return row;
   }
 
   Widget _webAccountCard(BuildContext context, AppProvider provider, dynamic user) {
@@ -557,7 +600,7 @@ class ProfileScreen extends StatelessWidget {
                       Text('Account',
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,
                               color: Colors.white)),
-                      Text('መለያ',
+                      Text('Your information',
                           style: TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
                     ],
                   ),
@@ -639,7 +682,7 @@ class ProfileScreen extends StatelessWidget {
         const Text('Profile',
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800,
                 color: Colors.white, letterSpacing: -0.5)),
-        const Text('መገለጫ • Account settings',
+        const Text('Account settings',
             style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
         const SizedBox(height: 24),
         _userCard(user),
@@ -687,20 +730,44 @@ class ProfileScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Container(
-            width: 72, height: 72,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
-            ),
-            child: Center(
-              child: Text(
-                user?.fullName.isNotEmpty == true ? user!.fullName[0].toUpperCase() : '?',
-                style: const TextStyle(
-                    fontSize: 30, fontWeight: FontWeight.w700, color: Colors.white),
-              ),
-            ),
+          Consumer<AppProvider>(
+            builder: (context, prov, _) {
+              final avatarColors = [
+                const Color(0xFF0F6B3C), const Color(0xFF1D4ED8), const Color(0xFF7C3AED),
+                const Color(0xFFB45309), const Color(0xFF0D9488), const Color(0xFF9D174D),
+              ];
+              final bg = avatarColors[prov.avatarColorIndex % avatarColors.length];
+              final imgBytes = prov.profileImageBytes;
+              return GestureDetector(
+                onTap: () => _showAvatarOptions(context, prov),
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 72, height: 72,
+                      decoration: BoxDecoration(
+                        color: bg,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+                      ),
+                      child: imgBytes != null
+                          ? ClipOval(child: Image.memory(imgBytes, width: 72, height: 72, fit: BoxFit.cover))
+                          : Center(child: Text(
+                              user?.fullName.isNotEmpty == true ? user!.fullName[0].toUpperCase() : '?',
+                              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: Colors.white),
+                            )),
+                    ),
+                    Positioned(
+                      bottom: 0, right: 0,
+                      child: Container(
+                        width: 22, height: 22,
+                        decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(color: bg, width: 2)),
+                        child: Icon(Icons.camera_alt, size: 11, color: bg),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
           const SizedBox(height: 14),
           Text(user?.fullName ?? 'User',
@@ -955,9 +1022,16 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                leading: Icon(
-                  provider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                  color: TradEtTheme.accent, size: 22,
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: TradEtTheme.surfaceLight,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    provider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                    color: TradEtTheme.accent, size: 20,
+                  ),
                 ),
                 title: Text(AppLocalizations.of(context).theme,
                     style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
@@ -971,7 +1045,15 @@ class ProfileScreen extends StatelessWidget {
               ),
               Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
               ListTile(
-                leading: const Icon(Icons.language_rounded, color: TradEtTheme.accent, size: 22),
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: TradEtTheme.surfaceLight,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.language_rounded,
+                      color: TradEtTheme.accent, size: 20),
+                ),
                 title: Text(AppLocalizations.of(context).language,
                     style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                 subtitle: Text(AppLocalizations.languageNames[provider.langCode] ?? 'English',
@@ -980,16 +1062,22 @@ class ProfileScreen extends StatelessWidget {
               ),
               Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
               _settingsTile(
-                  Icons.notifications_outlined, AppLocalizations.of(context).notifications, 'Manage alerts', () {}),
+                  Icons.notifications_outlined, AppLocalizations.of(context).notifications, 'Manage price & order alerts',
+                  () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Notification preferences — coming soon'), behavior: SnackBarBehavior.floating),
+                  )),
               Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
               _settingsTile(
-                  Icons.shield_outlined, AppLocalizations.of(context).security, 'ደህንነት • Wealth protection & PIN',
+                  Icons.shield_outlined, AppLocalizations.of(context).security, 'Wealth protection & PIN',
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SecurityScreen()))),
               Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
               _appLockTile(context),
               Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
               _settingsTile(
-                  Icons.help_outline_rounded, AppLocalizations.of(context).help, 'FAQ & Support', () {}),
+                  Icons.help_outline_rounded, AppLocalizations.of(context).help, 'FAQ & Support',
+                  () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Help & FAQ — coming soon'), behavior: SnackBarBehavior.floating),
+                  )),
             ],
           ),
         );
@@ -1003,10 +1091,17 @@ class ProfileScreen extends StatelessWidget {
       builder: (ctx, snap) {
         final enabled = snap.data ?? false;
         return ListTile(
-          leading: Icon(
-            enabled ? Icons.lock_rounded : Icons.lock_open_rounded,
-            color: enabled ? TradEtTheme.positive : TradEtTheme.accent,
-            size: 22,
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: TradEtTheme.surfaceLight,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              enabled ? Icons.lock_rounded : Icons.lock_open_rounded,
+              color: enabled ? TradEtTheme.positive : TradEtTheme.accent,
+              size: 20,
+            ),
           ),
           title: Text(AppLocalizations.of(context).appLock,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
@@ -1114,6 +1209,126 @@ class ProfileScreen extends StatelessWidget {
             child: const Text('Save PIN'),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _pickProfileImage(BuildContext context, AppProvider provider) async {
+    try {
+      Uint8List? bytes;
+      if (kIsWeb) {
+        bytes = await pickImageFromWeb();
+      } else {
+        final picker = ImagePicker();
+        final picked = await picker.pickImage(
+          source: ImageSource.gallery,
+          maxWidth: 400,
+          maxHeight: 400,
+          imageQuality: 85,
+        );
+        if (picked != null) bytes = await picked.readAsBytes();
+      }
+      if (bytes != null) await provider.setProfileImage(bytes);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not load image: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void _showAvatarOptions(BuildContext context, AppProvider provider) {
+    const avatarColors = [
+      Color(0xFF0F6B3C), Color(0xFF1D4ED8), Color(0xFF7C3AED),
+      Color(0xFFB45309), Color(0xFF0D9488), Color(0xFF9D174D),
+    ];
+    const colorLabels = ['Green', 'Blue', 'Purple', 'Amber', 'Teal', 'Rose'];
+    final hasPhoto = provider.profileImageBytes != null;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1A2F22),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('Profile Photo', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.photo_library_rounded, color: Color(0xFF34D399)),
+              title: const Text('Upload Photo', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickProfileImage(context, provider);
+              },
+            ),
+            const Divider(color: Color(0xFF2D4A38), height: 1),
+            const SizedBox(height: 8),
+            const Text('Choose Avatar Color', style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13)),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 12, runSpacing: 12,
+              children: List.generate(avatarColors.length, (i) {
+                final selected = provider.avatarColorIndex == i;
+                return GestureDetector(
+                  onTap: () {
+                    provider.setAvatarColorIndex(i);
+                    Navigator.pop(ctx);
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 44, height: 44,
+                        decoration: BoxDecoration(
+                          color: avatarColors[i],
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: selected ? Colors.white : Colors.transparent,
+                            width: 3,
+                          ),
+                        ),
+                        child: selected ? const Icon(Icons.check, color: Colors.white, size: 18) : null,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(colorLabels[i], style: const TextStyle(fontSize: 10, color: Color(0xFF9CA3AF))),
+                    ],
+                  ),
+                );
+              }),
+            ),
+            if (hasPhoto) ...[
+              const SizedBox(height: 8),
+              const Divider(color: Color(0xFF2D4A38), height: 1),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                title: const Text('Remove Photo', style: TextStyle(color: Colors.redAccent)),
+                onTap: () {
+                  provider.clearProfileImage();
+                  Navigator.pop(ctx);
+                },
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -1254,7 +1469,7 @@ class ProfileScreen extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('ማንነት ማረጋገጫ • Identity verification',
+              const Text('Identity verification',
                   style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -1530,7 +1745,7 @@ class _PaymentMethodsSectionState extends State<_PaymentMethodsSection> {
                         Text('Payment Methods',
                             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,
                                 color: Colors.white)),
-                        Text('የባንክ ሒሳቦች • Linked accounts',
+                        Text('Linked accounts',
                             style: TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
                       ],
                     ),

@@ -114,95 +114,74 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                       final asset = watchlist[i];
                       final change = asset.change24h ?? 0.0;
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                              appRoute(context, TradeScreen(asset: asset)));
-                        },
-                        child: MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
-                            decoration: BoxDecoration(
-                              color: TradEtTheme.cardBg,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                  color: TradEtTheme.divider
-                                      .withValues(alpha: 0.3)),
-                            ),
-                            child: Row(
-                              children: [
-                                // Emoji logo
-                                Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    color: TradEtTheme.surfaceLight,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    assetEmoji(asset.symbol,
-                                        asset.categoryName),
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                // Name + symbol
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(asset.symbol,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 15,
-                                              color: Colors.white)),
-                                      Text(asset.name,
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              color:
-                                                  TradEtTheme.textSecondary),
-                                          overflow: TextOverflow.ellipsis),
-                                    ],
-                                  ),
-                                ),
-                                // Price + change
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      asset.price != null
-                                          ? '${fmt.format(asset.price!)} ETB'
-                                          : '--',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 14,
-                                          color: Colors.white),
-                                    ),
-                                    PriceChange(
-                                        change: change.toDouble(),
-                                        fontSize: 11),
-                                  ],
-                                ),
-                                const SizedBox(width: 4),
-                                // Remove button
-                                GestureDetector(
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        decoration: BoxDecoration(
+                          color: TradEtTheme.cardBg,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            // Tappable left area — navigate to trade
+                            Expanded(
+                              child: MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
                                   behavior: HitTestBehavior.opaque,
-                                  onTap: () => provider
-                                      .removeFromWatchlist(asset.id),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(8),
-                                    child: Icon(Icons.star_rounded,
-                                        color: Color(0xFFFF8C00), size: 22),
+                                  onTap: () => Navigator.of(context).push(appRoute(context, TradeScreen(asset: asset))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                    child: Row(
+                                      children: [
+                                        // Emoji logo
+                                        Container(
+                                          width: 44, height: 44,
+                                          decoration: BoxDecoration(color: TradEtTheme.surfaceLight, shape: BoxShape.circle),
+                                          alignment: Alignment.center,
+                                          child: Text(assetEmoji(asset.symbol, asset.categoryName), style: const TextStyle(fontSize: 20)),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        // Name + symbol
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(asset.symbol, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                                              Text(asset.name, style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary), overflow: TextOverflow.ellipsis),
+                                            ],
+                                          ),
+                                        ),
+                                        // Price + change
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              asset.price != null ? '${fmt.format(asset.price!)} ETB' : '--',
+                                              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white),
+                                            ),
+                                            PriceChange(change: change.toDouble(), fontSize: 11),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                            // Star remove button — completely separate tap area
+                            MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () => provider.removeFromWatchlist(asset.id),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                                  child: Icon(Icons.star_rounded, color: Color(0xFFFF8C00), size: 22),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },
