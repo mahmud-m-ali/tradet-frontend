@@ -10,7 +10,7 @@
 
 ```
 TradEt/
-  tradet_app/          ← Flutter app (web + mobile)
+  tradet-frontend/     ← Flutter app (web + mobile) — github.com/mahmud-m-ali/tradet-frontend
     lib/
       main.dart        ← Entry point, session timeout, app lock wrappers
       white_label.dart ← Branding config — change here to white-label for a bank
@@ -23,6 +23,7 @@ TradEt/
       widgets/         ← Reusable components
       models/models.dart
       l10n/app_localizations.dart  ← Amharic + English strings
+  tradet-backend/      ← Python/Flask API — github.com/mahmud-m-ali/tradet-backend
 ```
 
 ## Flutter Binary
@@ -125,7 +126,7 @@ location / {
 Deploy steps:
 ```bash
 flutter build web --release
-rsync -avz --delete tradet_app/build/web/ user@tradet.amber.et:/var/www/tradet/
+rsync -avz --delete tradet-frontend/build/web/ user@tradet.amber.et:/var/www/tradet/
 ```
 
 ## Dependencies (pubspec.yaml highlights)
