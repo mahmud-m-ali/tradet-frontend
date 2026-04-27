@@ -62,7 +62,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                                 letterSpacing: -0.5)),
                         Consumer<AppProvider>(
                           builder: (_, p, __) => Text(
-                            '${l.followedMarkets} • ${p.watchlist.length} ${l.assetsTracked}',
+                            '${p.watchlist.length} ${l.assetsTracked}',
                             style: const TextStyle(
                                 fontSize: 13,
                                 color: TradEtTheme.textSecondary),
@@ -74,38 +74,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
-            // "Add to watchlist" button
-            Padding(
-              padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 0),
-              child: GestureDetector(
-                onTap: () => context.read<AppProvider>().navigateGlobal(1),
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: TradEtTheme.positive.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: TradEtTheme.positive.withValues(alpha: 0.35)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.add_rounded, color: TradEtTheme.positive, size: 18),
-                        const SizedBox(width: 8),
-                        Text(l.addToWatchlist,
-                            style: const TextStyle(
-                                color: TradEtTheme.positive,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             // ── List ──
             Expanded(
@@ -178,11 +147,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Row(children: [
-                                                Text(asset.symbol, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
-                                                const SizedBox(width: 5),
-                                                const Text('🇪🇹', style: TextStyle(fontSize: 11)),
-                                              ]),
+                                              Text(asset.symbol, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
                                               Text(asset.name, style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary), overflow: TextOverflow.ellipsis),
                                             ],
                                           ),

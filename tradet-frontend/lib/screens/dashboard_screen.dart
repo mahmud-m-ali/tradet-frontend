@@ -49,10 +49,12 @@ class DashboardScreen extends StatelessWidget {
     AppLocalizations l,
     void Function(int)? onNavigateTo,
   ) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+    return Stack(
       children: [
-        Row(
+        ListView(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _ProfileAvatar(
@@ -98,9 +100,6 @@ class DashboardScreen extends StatelessWidget {
             // Hero: portfolio value + trust badges + CTAs
             HeroTradeCard(
                 provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
-            const SizedBox(height: 14),
-            // Quick action tiles: Trade, Add Money, Withdraw, More
-            QuickActionsRow(onNavigateTo: onNavigateTo),
             const SizedBox(height: 20),
             // Top Opportunities
             TopOpportunitiesSection(provider: provider, fmt: fmt),
@@ -111,28 +110,6 @@ class DashboardScreen extends StatelessWidget {
             // Market Momentum
             MoversSection(provider: provider, fmt: fmt),
             const SizedBox(height: 24),
-            // Brokerage account section
-            Row(
-              children: [
-                const Icon(Icons.account_balance_rounded,
-                    size: 15, color: TradEtTheme.textSecondary),
-                const SizedBox(width: 6),
-                Text(l.brokerageAccount,
-                    style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white)),
-                const Spacer(),
-                Text(
-                  '${fmt.format(provider.availableCashBalance)} ETB',
-                  style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: TradEtTheme.positive),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
             // Holdings + Orders (tabbed)
             HoldingsOrdersTabCard(
                 provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
@@ -143,7 +120,15 @@ class DashboardScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const DisclaimerFooter(),
             const SizedBox(height: 8),
-        ],
+          ],
+        ),
+        // Sticky Trade FAB
+        Positioned(
+          bottom: 24,
+          right: 20,
+          child: _TradeFab(onNavigateTo: onNavigateTo),
+        ),
+      ],
     );
   }
 
@@ -285,28 +270,6 @@ class DashboardScreen extends StatelessWidget {
         ),
         const SizedBox(height: 28),
 
-        // Brokerage account section header
-        Row(
-          children: [
-            const Icon(Icons.account_balance_rounded,
-                size: 15, color: TradEtTheme.textSecondary),
-            const SizedBox(width: 6),
-            Text(l.brokerageAccount,
-                style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white)),
-            const Spacer(),
-            Text(
-              '${fmt.format(provider.availableCashBalance)} ETB',
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: TradEtTheme.positive),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
         // Holdings + Orders — tabbed card
         HoldingsOrdersTabCard(
             provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
@@ -996,3 +959,42 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
 
 // ─── Sticky Trade FAB ─────────────────────────────────────────────────────────
 
+class _TradeFab extends StatelessWidget {
+  final void Function(int)? onNavigateTo;
+  const _TradeFab({this.onNavigateTo});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onNavigateTo?.call(1),
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 22),
+        decoration: BoxDecoration(
+          gradient: TradEtTheme.heroGradient,
+          borderRadius: BorderRadius.circular(26),
+          boxShadow: [
+            BoxShadow(
+              color: TradEtTheme.positive.withValues(alpha: 0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
+            SizedBox(width: 6),
+            Text('Trade Now',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    letterSpacing: 0.3)),
+          ],
+        ),
+      ),
+    );
+  }
+}

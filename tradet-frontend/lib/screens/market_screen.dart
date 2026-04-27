@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../models/models.dart';
 import '../theme.dart';
@@ -84,31 +83,21 @@ class _MarketScreenState extends State<MarketScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          _shariaOnly
-                              ? AppLocalizations.of(context).shariaCompliantStocks
-                              : AppLocalizations.of(context).market,
-                          style: const TextStyle(
+                        const Text(
+                          'Market',
+                          style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                             letterSpacing: -0.5,
                           ),
                         ),
-                        Consumer<AppProvider>(
-                          builder: (_, p, __) {
-                            final l = AppLocalizations.of(context);
-                            final invested = p.holdings.length;
-                            return Text(
-                              _shariaOnly && invested > 0
-                                  ? '${l.investedIn} $invested assets'
-                                  : 'ገበያ • ${_getFilterLabel()}',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: TradEtTheme.textSecondary,
-                              ),
-                            );
-                          },
+                        Text(
+                          'ገበያ • ${_getFilterLabel()}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: TradEtTheme.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -750,17 +739,11 @@ class _CategoryAssetRow extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(asset.symbol,
-                            style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white)),
-                        const SizedBox(width: 4),
-                        const Text('🇪🇹', style: TextStyle(fontSize: 10)),
-                      ],
-                    ),
+                    Text(asset.symbol,
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white)),
                     Text(asset.name,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -975,8 +958,6 @@ class _WebAssetRowState extends State<_WebAssetRow> {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Text('🇪🇹', style: TextStyle(fontSize: 11)),
-                        const SizedBox(width: 4),
                         ShariaBadge(
                           isCompliant: asset.isShariaCompliant,
                           complianceLevel: asset.complianceLevel,
@@ -1190,20 +1171,14 @@ class _AssetCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        asset.symbol,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(width: 4),
-                      const Text('🇪🇹', style: TextStyle(fontSize: 10)),
-                    ],
+                  Text(
+                    asset.symbol,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
