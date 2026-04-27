@@ -4,6 +4,7 @@ import '../services/app_lock_service.dart';
 import '../theme.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/responsive_layout.dart';
+import '../widgets/security_log_section.dart';
 
 class SecurityScreen extends StatefulWidget {
   const SecurityScreen({super.key});
@@ -109,6 +110,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
 
                           // ── Compliance note ────────────────────────────
                           _complianceNote(),
+                          const SizedBox(height: 16),
+
+                          // ── Security Audit Log ─────────────────────────
+                          const SecurityLogSection(),
                         ],
                       ),
               ),

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../models/models.dart';
+import '../utils/ethiopian_date.dart';
 import '../theme.dart';
 import '../widgets/responsive_layout.dart';
 import '../widgets/disclaimer_footer.dart';
@@ -399,7 +400,9 @@ class _MobileTxCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis),
                 ],
                 const SizedBox(height: 2),
-                Text(tx.createdAt,
+                Text(
+                    EthiopianDate.formatIso(tx.createdAt,
+                        context.read<AppProvider>().langCode),
                     style: const TextStyle(fontSize: 10,
                         color: TradEtTheme.textMuted)),
               ],
@@ -491,7 +494,9 @@ class _WebTxRow extends StatelessWidget {
           ),
           Expanded(
             flex: 1,
-            child: Text(tx.createdAt,
+            child: Text(
+                EthiopianDate.formatIso(tx.createdAt,
+                    context.read<AppProvider>().langCode),
                 style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
                 textAlign: TextAlign.right),
           ),

@@ -2121,7 +2121,7 @@ class _MoversSectionState extends State<MoversSection> {
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: _tab(l.topMovers, true)),
+                    Expanded(child: _tab(l.topGainers, true)),
                     const SizedBox(width: 3),
                     Expanded(child: _tab(l.topLosers, false)),
                   ],
@@ -2155,8 +2155,8 @@ class _MoversSectionState extends State<MoversSection> {
             children: [
               const Icon(Icons.show_chart_rounded, size: 18, color: TradEtTheme.positive),
               const SizedBox(width: 8),
-              const Text('Top Movers',
-                  style: TextStyle(
+              Text(l.topMovers,
+                  style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Colors.white)),
