@@ -100,6 +100,14 @@ class AppLocalizations {
   String get tradeNow => _t({'en': 'Trade', 'am': 'ይነግዱ', 'ti': 'ነግድ', 'om': 'Gurguri', 'so': 'Ganacsasho', 'gur': 'ይነግዱ'});
   String get addMoney => _t({'en': 'Add Money', 'am': 'ገንዘብ ጨምር', 'ti': 'ገንዘብ ወስኽ', 'om': 'Maallaqa Dabalii', 'so': 'Ku dar lacag', 'gur': 'ገንዘብ ጨምር'});
   String get followedMarkets => _t({'en': 'Followed Markets', 'am': 'የሚከታተሏቸው ገበያዎች', 'ti': 'ዝስዓብካዮም ዕዳጋታት', 'om': 'Gabaalee Hordofaman', 'so': 'Suuqyada la raacayo', 'gur': 'የሚከታተሏቸው ገቢያዎች'});
+  String get wallet => _t({'en': 'Wallet', 'am': 'ቦርሳ', 'ti': 'ቦርሳ', 'om': 'Beesii', 'so': 'Boorsada', 'gur': 'ቦርሳ'});
+  String get totalFund => _t({'en': 'Total Fund', 'am': 'ጠቅላላ ፈንድ', 'ti': 'ጠቕላሊ ፈንድ', 'om': 'Waligaa Maallaqa', 'so': 'Wadarta Dhaqaalaha', 'gur': 'ጠቅላላ ፈንድ'});
+  String get exchange => _t({'en': 'Exchange', 'am': 'ምንዛሬ', 'ti': 'ምቅይያር', 'om': 'Jijjiiri', 'so': 'Beddel', 'gur': 'ምንዛሬ'});
+  String get investments => _t({'en': 'Investments', 'am': 'ኢንቨስትመንቶች', 'ti': 'ምዋዓለ-ሃብቲ', 'om': 'Maallaqni Buusame', 'so': 'Maalgashiga', 'gur': 'ኢንቨስትሜንት'});
+  String get addToWatchlist => _t({'en': 'Add to watchlist', 'am': 'ወደ ዝርዝር ጨምር', 'ti': 'ናብ ዝርዝር ወስኽ', 'om': 'Galmee hordoffii irratti dabali', 'so': 'U kudar liiska', 'gur': 'ወደ ዝርዝር ጨምር'});
+  String get brokerageAccount => _t({'en': 'Brokerage account', 'am': 'የደላላ ሒሳብ', 'ti': 'ናይ ደላሊ ሕሳብ', 'om': 'Herrega Daldalaa', 'so': 'Xisaabta Dalaggaha', 'gur': 'የደላላ ሒሳብ'});
+  String get shariaCompliantStocks => _t({'en': 'Sharia compliant stocks', 'am': 'ሸሪዓ ተገዢ አክሲዮኖች', 'ti': 'ሸሪዓ ዝኽተሉ ኣክስዮናት', 'om': "Aksiyoonii Shari'aa hordofu", 'so': 'Sahamaha ku habboon Shariicada', 'gur': 'ሸሪዓ ተስማሚ አክሲዮን'});
+  String get investedIn => _t({'en': 'Invested in', 'am': 'ኢንቨስት ተደርጓል', 'ti': 'ኢንቨስት ተገይሩ', 'om': 'Keessa buufame', 'so': 'Lagu maalgeliyey', 'gur': 'ኢንቨስት ተደርጓል'});
 
   // ─── Market ──────────────────────────────────────
   String get market => _t({'en': 'Market', 'am': 'ገበያ', 'ti': 'ዕዳጋ', 'om': 'Gabaa', 'so': 'Suuqa', 'gur': 'ገቢያ'});

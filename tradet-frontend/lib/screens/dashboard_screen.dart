@@ -111,6 +111,28 @@ class DashboardScreen extends StatelessWidget {
             // Market Momentum
             MoversSection(provider: provider, fmt: fmt),
             const SizedBox(height: 24),
+            // Brokerage account section
+            Row(
+              children: [
+                const Icon(Icons.account_balance_rounded,
+                    size: 15, color: TradEtTheme.textSecondary),
+                const SizedBox(width: 6),
+                Text(l.brokerageAccount,
+                    style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white)),
+                const Spacer(),
+                Text(
+                  '${fmt.format(provider.availableCashBalance)} ETB',
+                  style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: TradEtTheme.positive),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
             // Holdings + Orders (tabbed)
             HoldingsOrdersTabCard(
                 provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),
@@ -263,6 +285,28 @@ class DashboardScreen extends StatelessWidget {
         ),
         const SizedBox(height: 28),
 
+        // Brokerage account section header
+        Row(
+          children: [
+            const Icon(Icons.account_balance_rounded,
+                size: 15, color: TradEtTheme.textSecondary),
+            const SizedBox(width: 6),
+            Text(l.brokerageAccount,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white)),
+            const Spacer(),
+            Text(
+              '${fmt.format(provider.availableCashBalance)} ETB',
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: TradEtTheme.positive),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
         // Holdings + Orders — tabbed card
         HoldingsOrdersTabCard(
             provider: provider, fmt: fmt, onNavigateTo: onNavigateTo),

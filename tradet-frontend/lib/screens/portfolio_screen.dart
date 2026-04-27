@@ -51,13 +51,13 @@ class PortfolioScreen extends StatelessWidget {
                   // Header
                   Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Portfolio',
-                              style: TextStyle(
+                              l.wallet,
+                              style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
@@ -65,8 +65,8 @@ class PortfolioScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'ፖርትፎሊዮ • Your holdings',
-                              style: TextStyle(
+                              'ቦርሳ • ${l.investments}',
+                              style: const TextStyle(
                                 fontSize: 13,
                                 color: TradEtTheme.textSecondary,
                               ),
@@ -186,14 +186,16 @@ class PortfolioScreen extends StatelessWidget {
                   else
                     _balanceCard(context, summary, fmt),
                   const SizedBox(height: 14),
+                  _currencySection(context, summary, fmt),
+                  const SizedBox(height: 14),
                   _PortfolioSplitCard(summary: summary),
                   const SizedBox(height: 14),
                   _ShariaScoreCard(holdings: provider.holdings),
                   const SizedBox(height: 24),
 
-                  // Holdings header
+                  // Investments header
                   Text(
-                    l.holdings,
+                    l.investments,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -264,7 +266,7 @@ class PortfolioScreen extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Total Value',
+                l.totalFund,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 13,
@@ -278,20 +280,20 @@ class PortfolioScreen extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text(
-                  'ETB',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('🇪🇹', style: TextStyle(fontSize: 12)),
+                    SizedBox(width: 4),
+                    Text('ETB', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
-            fmt.format(totalEtb),
+            '${fmt.format(totalEtb)} Br.',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 34,
@@ -362,80 +364,81 @@ class PortfolioScreen extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => _showDepositSheet(context),
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.add_circle_outline,
-                            color: Colors.white,
-                            size: 17,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            l.deposit,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              Expanded(child: _walletActionBtn(context, Icons.add_circle_outline, l.addMoney, () => _showDepositSheet(context))),
+              const SizedBox(width: 8),
+              Expanded(child: _walletActionBtn(context, Icons.currency_exchange_outlined, l.exchange, () {
+                context.read<AppProvider>().navigateGlobal(8);
+              })),
+              const SizedBox(width: 8),
+              Expanded(child: _walletActionBtn(context, Icons.remove_circle_outline, l.withdraw, () => _showWithdrawSheet(context))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _walletActionBtn(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: Colors.white, size: 18),
+              const SizedBox(height: 4),
+              Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 11)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _currencySection(BuildContext context, dynamic summary, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
+    final cashBalance = (summary?.cashBalance ?? 0) as double;
+    final totalValue = (summary?.totalPortfolioValue ?? 0) as double;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: TradEtTheme.cardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l.currency, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Text('🇪🇹', style: TextStyle(fontSize: 22)),
               const SizedBox(width: 10),
               Expanded(
-                child: GestureDetector(
-                  onTap: () => _showWithdrawSheet(context),
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.remove_circle_outline,
-                            color: Colors.white,
-                            size: 17,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            l.withdraw,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Ethiopian Birr', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+                    const Text('ETB', style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
+                  ],
                 ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(fmt.format(totalValue), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+                  Text(l.cashBalance + ': ' + fmt.format(cashBalance),
+                      style: const TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
+                ],
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../models/models.dart';
 import '../theme.dart';
@@ -83,21 +84,31 @@ class _MarketScreenState extends State<MarketScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Market',
-                          style: TextStyle(
+                        Text(
+                          _shariaOnly
+                              ? AppLocalizations.of(context).shariaCompliantStocks
+                              : AppLocalizations.of(context).market,
+                          style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                             letterSpacing: -0.5,
                           ),
                         ),
-                        Text(
-                          'ገበያ • ${_getFilterLabel()}',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: TradEtTheme.textSecondary,
-                          ),
+                        Consumer<AppProvider>(
+                          builder: (_, p, __) {
+                            final l = AppLocalizations.of(context);
+                            final invested = p.holdings.length;
+                            return Text(
+                              _shariaOnly && invested > 0
+                                  ? '${l.investedIn} $invested assets'
+                                  : 'ገበያ • ${_getFilterLabel()}',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: TradEtTheme.textSecondary,
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),

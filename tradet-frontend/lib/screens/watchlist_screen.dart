@@ -74,7 +74,38 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
+            // "Add to watchlist" button
+            Padding(
+              padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 0),
+              child: GestureDetector(
+                onTap: () => context.read<AppProvider>().navigateGlobal(1),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: TradEtTheme.positive.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: TradEtTheme.positive.withValues(alpha: 0.35)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.add_rounded, color: TradEtTheme.positive, size: 18),
+                        const SizedBox(width: 8),
+                        Text(l.addToWatchlist,
+                            style: const TextStyle(
+                                color: TradEtTheme.positive,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
 
             // ── List ──
             Expanded(

@@ -1,3 +1,4 @@
+import 'dart:math' show Random;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import '../theme.dart';
 import '../utils/asset_emoji.dart';
 import '../widgets/price_change.dart';
 import '../widgets/mini_chart.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../widgets/responsive_layout.dart';
 import '../screens/trade_screen.dart';
 import '../screens/alerts_screen.dart';
@@ -278,6 +280,9 @@ class HeroTradeCard extends StatelessWidget {
               ),
             ],
           ],
+          const SizedBox(height: 10),
+          // Portfolio trend chart
+          _PortfolioTrendChart(totalValue: totalValue, pnl: totalPnl),
           const SizedBox(height: 8),
           // Compliance micro-badges
           Row(
@@ -383,6 +388,75 @@ class _MicroBadge extends StatelessWidget {
                 fontSize: 9, fontWeight: FontWeight.w600,
                 color: color.withValues(alpha: 0.8))),
       ],
+    );
+  }
+}
+
+// ─── Portfolio trend sparkline shown inside HeroTradeCard ────────────────────
+class _PortfolioTrendChart extends StatelessWidget {
+  final double totalValue;
+  final double pnl;
+  const _PortfolioTrendChart({required this.totalValue, required this.pnl});
+
+  List<FlSpot> _buildSpots() {
+    final rng = Random(totalValue.toInt().abs() + 42);
+    final n = 24;
+    final base = totalValue - pnl;
+    final step = pnl / (n - 1);
+    final spots = <FlSpot>[];
+    double v = base;
+    for (int i = 0; i < n; i++) {
+      final noise = (rng.nextDouble() - 0.45) * (totalValue.abs() * 0.015 + 1);
+      v += step + noise;
+      spots.add(FlSpot(i.toDouble(), v.clamp(base * 0.92, base * 1.12 + pnl.abs() * 1.5)));
+    }
+    return spots;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (totalValue <= 0) return const SizedBox.shrink();
+    final spots = _buildSpots();
+    final isUp = pnl >= 0;
+    final color = isUp ? TradEtTheme.positive : TradEtTheme.negative;
+    final minY = spots.map((s) => s.y).reduce((a, b) => a < b ? a : b);
+    final maxY = spots.map((s) => s.y).reduce((a, b) => a > b ? a : b);
+
+    return SizedBox(
+      height: 72,
+      child: LineChart(
+        LineChartData(
+          gridData: const FlGridData(show: false),
+          titlesData: const FlTitlesData(show: false),
+          borderData: FlBorderData(show: false),
+          lineTouchData: const LineTouchData(enabled: false),
+          minY: minY,
+          maxY: maxY,
+          lineBarsData: [
+            LineChartBarData(
+              spots: spots,
+              isCurved: true,
+              curveSmoothness: 0.4,
+              color: color,
+              barWidth: 2,
+              isStrokeCapRound: true,
+              dotData: const FlDotData(show: false),
+              belowBarData: BarAreaData(
+                show: true,
+                gradient: LinearGradient(
+                  colors: [
+                    color.withValues(alpha: 0.25),
+                    color.withValues(alpha: 0.0),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          ],
+        ),
+        duration: Duration.zero,
+      ),
     );
   }
 }
