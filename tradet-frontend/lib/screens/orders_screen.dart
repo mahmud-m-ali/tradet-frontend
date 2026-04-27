@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/app_provider.dart';
 import '../models/models.dart';
+import '../utils/ethiopian_date.dart';
 import '../widgets/export_sheet.dart';
 import '../theme.dart';
 import '../widgets/responsive_layout.dart';
@@ -500,8 +501,14 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                 borderRadius: const BorderRadius.vertical(bottom: Radius.circular(14)),
               ),
               child: ListView.builder(
-                itemCount: provider.orders.length,
+                itemCount: provider.orders.length + 1,
                 itemBuilder: (context, index) {
+                  if (index == provider.orders.length) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: DisclaimerFooter(),
+                    );
+                  }
                   final order = provider.orders[index];
                   return _WebOrderRow(order: order, fmt: fmt, isEven: index.isEven);
                 },
@@ -708,7 +715,9 @@ class _WebOrderRowState extends State<_WebOrderRow> {
             // Date
             Expanded(
               flex: 1,
-              child: Text(order.createdAt,
+              child: Text(
+                  EthiopianDate.formatIso(order.createdAt,
+                      context.read<AppProvider>().langCode),
                   style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
                   textAlign: TextAlign.right),
             ),
@@ -833,7 +842,9 @@ class _OrderCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(order.createdAt,
+          Text(
+              EthiopianDate.formatIso(order.createdAt,
+                  context.read<AppProvider>().langCode),
               style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
           if (order.isPending) ...[
             const SizedBox(height: 8),

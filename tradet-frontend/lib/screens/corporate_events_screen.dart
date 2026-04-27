@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
 import '../utils/asset_emoji.dart';
+import '../widgets/responsive_layout.dart';
 
 // ─── Model ───────────────────────────────────────────────────────────────────
 
@@ -264,21 +265,51 @@ class CorporateEventsScreen extends StatefulWidget {
 }
 
 class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
-  int _tab = 0; // 0 = My Events, 1 = All Events
+  int _tab = 0;
   String _search = '';
   CorporateEventType? _filterType;
+  final ScrollController _scrollController = ScrollController();
+  final Map<String, GlobalKey> _monthKeys = {};
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToNextEvent());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToNextEvent() {
+    final now = DateTime.now();
+    final allEvents = corporateEvents;
+    if (allEvents.isEmpty) return;
+    final next = allEvents.firstWhere(
+      (e) => !e.date.isBefore(now.subtract(const Duration(days: 1))),
+      orElse: () => allEvents.last,
+    );
+    final targetMonth = DateFormat('MMMM yyyy').format(next.date);
+    final key = _monthKeys[targetMonth];
+    if (key?.currentContext != null) {
+      Scrollable.ensureVisible(
+        key!.currentContext!,
+        alignment: 0.0,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOut,
+      );
+    }
+  }
 
   List<CorporateEvent> _filtered(Set<String> mySymbols) {
     var list = corporateEvents;
-
-    // My events: only events for assets user holds, plus market holidays
     if (_tab == 0) {
       list = list
           .where((e) => e.isMarketEvent || mySymbols.contains(e.assetSymbol))
           .toList();
     }
-
-    // Search filter
     if (_search.isNotEmpty) {
       final q = _search.toLowerCase();
       list = list
@@ -288,12 +319,9 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
               (e.detail?.toLowerCase().contains(q) ?? false))
           .toList();
     }
-
-    // Type filter
     if (_filterType != null) {
       list = list.where((e) => e.type == _filterType).toList();
     }
-
     return list;
   }
 
@@ -303,7 +331,7 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
     final mySymbols =
         provider.holdings.map((h) => h.symbol).toSet().cast<String>();
     final filtered = _filtered(mySymbols);
-    final wide = MediaQuery.of(context).size.width >= 900;
+    final wide = isWideScreen(context);
 
     // Group by month
     final Map<String, List<CorporateEvent>> grouped = {};
@@ -312,6 +340,150 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
       grouped.putIfAbsent(key, () => []).add(e);
     }
 
+    // Build month widgets with GlobalKeys for scroll targeting
+    final monthWidgets = grouped.entries.map((entry) {
+      _monthKeys.putIfAbsent(entry.key, () => GlobalKey());
+      return _MonthGroup(
+        key: _monthKeys[entry.key],
+        month: entry.key,
+        events: entry.value,
+        mySymbols: mySymbols,
+      );
+    }).toList();
+
+    // Scrollable content body
+    Widget listBody = filtered.isEmpty
+        ? _empty()
+        : SingleChildScrollView(
+            controller: _scrollController,
+            padding: EdgeInsets.symmetric(
+              horizontal: wide ? 0 : 16,
+              vertical: 12,
+            ),
+            child: Column(children: monthWidgets),
+          );
+
+    // Search + tabs + list
+    Widget content = Column(
+      children: [
+        Container(
+          color: TradEtTheme.surface,
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+          child: TextField(
+            onChanged: (v) => setState(() => _search = v),
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+            decoration: InputDecoration(
+              hintText: 'Search events...',
+              hintStyle: const TextStyle(color: TradEtTheme.textMuted),
+              prefixIcon: const Icon(Icons.search_rounded,
+                  color: TradEtTheme.textMuted, size: 20),
+              filled: true,
+              fillColor: TradEtTheme.cardBg,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+        Container(
+          color: TradEtTheme.surface,
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: TradEtTheme.cardBg,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                _tabBtn('My events', 0),
+                const SizedBox(width: 3),
+                _tabBtn('All events', 1),
+              ],
+            ),
+          ),
+        ),
+        Expanded(child: listBody),
+      ],
+    );
+
+    // Action buttons shared between both layouts
+    final actions = <Widget>[
+      IconButton(
+        icon: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: _filterType != null
+                ? TradEtTheme.accent.withValues(alpha: 0.2)
+                : TradEtTheme.cardBg,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.filter_list_rounded,
+              size: 18,
+              color:
+                  _filterType != null ? TradEtTheme.accent : Colors.white),
+        ),
+        onPressed: _showFilterSheet,
+      ),
+      IconButton(
+        icon: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: TradEtTheme.cardBg,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.calendar_today_rounded,
+              size: 16, color: Colors.white),
+        ),
+        onPressed: _scrollToNextEvent,
+      ),
+      const SizedBox(width: 8),
+    ];
+
+    // ── Desktop layout: no AppBar, sidebar provided by HomeScreen ──────────
+    if (wide) {
+      return Scaffold(
+        backgroundColor: TradEtTheme.surface,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 8, 12),
+              child: Row(
+                children: [
+                  const Text('Corporate Events',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white)),
+                  const Spacer(),
+                  ...actions,
+                ],
+              ),
+            ),
+            Divider(
+                height: 1,
+                color: TradEtTheme.divider.withValues(alpha: 0.3)),
+            Expanded(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 900),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: content,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // ── Mobile layout: AppBar with back button ─────────────────────────────
     return Scaffold(
       backgroundColor: TradEtTheme.surface,
       appBar: AppBar(
@@ -335,104 +507,11 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
                 fontWeight: FontWeight.w700,
                 color: Colors.white)),
         centerTitle: true,
-        actions: [
-          // Filter button
-          IconButton(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: _filterType != null
-                    ? TradEtTheme.accent.withValues(alpha: 0.2)
-                    : TradEtTheme.cardBg,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.filter_list_rounded,
-                  size: 18,
-                  color: _filterType != null
-                      ? TradEtTheme.accent
-                      : Colors.white),
-            ),
-            onPressed: _showFilterSheet,
-          ),
-          // Calendar button (scrolls to today)
-          IconButton(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: TradEtTheme.cardBg,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.calendar_today_rounded,
-                  size: 16, color: Colors.white),
-            ),
-            onPressed: _scrollToToday,
-          ),
-          const SizedBox(width: 8),
-        ],
+        actions: actions,
       ),
-      body: Column(
-        children: [
-          // Search bar
-          Container(
-            color: TradEtTheme.surface,
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: TextField(
-              onChanged: (v) => setState(() => _search = v),
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              decoration: InputDecoration(
-                hintText: 'Search events...',
-                hintStyle: const TextStyle(color: TradEtTheme.textMuted),
-                prefixIcon: const Icon(Icons.search_rounded,
-                    color: TradEtTheme.textMuted, size: 20),
-                filled: true,
-                fillColor: TradEtTheme.cardBg,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-
-          // My / All tab toggle
-          Container(
-            color: TradEtTheme.surface,
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                color: TradEtTheme.cardBg,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  _tabBtn('My events', 0),
-                  const SizedBox(width: 3),
-                  _tabBtn('All events', 1),
-                ],
-              ),
-            ),
-          ),
-
-          // Content
-          Expanded(
-            child: filtered.isEmpty
-                ? _empty()
-                : ListView.builder(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: wide ? 40 : 16, vertical: 12),
-                    itemCount: grouped.length,
-                    itemBuilder: (ctx, i) {
-                      final month = grouped.keys.elementAt(i);
-                      final events = grouped[month]!;
-                      return _MonthGroup(
-                          month: month, events: events, mySymbols: mySymbols);
-                    },
-                  ),
-          ),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: content,
       ),
     );
   }
@@ -565,10 +644,7 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
     );
   }
 
-  void _scrollToToday() {
-    // Implemented by scrolling to the current month group — simple setState re-trigger
-    setState(() {});
-  }
+  void _scrollToToday() => _scrollToNextEvent();
 }
 
 // ─── Month group widget ───────────────────────────────────────────────────────
@@ -578,7 +654,7 @@ class _MonthGroup extends StatelessWidget {
   final List<CorporateEvent> events;
   final Set<String> mySymbols;
   const _MonthGroup(
-      {required this.month, required this.events, required this.mySymbols});
+      {super.key, required this.month, required this.events, required this.mySymbols});
 
   @override
   Widget build(BuildContext context) {

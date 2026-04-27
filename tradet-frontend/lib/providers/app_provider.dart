@@ -121,7 +121,9 @@ class AppProvider extends ChangeNotifier {
   // Profile image
   String? _profileImageBase64;
   Uint8List? get profileImageBytes =>
-      _profileImageBase64 != null ? base64Decode(_profileImageBase64!) : null;
+      (!isDemoMode && _profileImageBase64 != null)
+          ? base64Decode(_profileImageBase64!)
+          : null;
 
   Future<void> setProfileImage(Uint8List bytes) async {
     _profileImageBase64 = base64Encode(bytes);

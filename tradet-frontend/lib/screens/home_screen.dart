@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
 import '../white_label.dart';
+import '../widgets/language_selector.dart';
 import '../widgets/responsive_layout.dart';
 import 'dashboard_screen.dart';
 import 'market_screen.dart';
@@ -18,6 +19,7 @@ import 'alerts_screen.dart';
 import 'converter_screen.dart';
 import 'analytics_screen.dart';
 import 'transactions_screen.dart';
+import 'corporate_events_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -64,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const AnalyticsScreen(),
     const TransactionsScreen(),
     const ProfileScreen(),
+    const CorporateEventsScreen(), // index 12 — accessed from dashboard card on desktop
   ];
 
   @override
@@ -209,8 +212,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 // Vertical divider
                 Container(width: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                // Main content
-                Expanded(child: _screens[_currentIndex]),
+                // Main content with top bar
+                Expanded(
+                  child: Column(
+                    children: [
+                      _WebTopBar(
+                        onProfileTap: () => setState(() => _currentIndex = 11),
+                      ),
+                      Expanded(child: _screens[_currentIndex]),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -333,80 +345,6 @@ class AppWebSidebar extends StatelessWidget {
             ),
           ),
 
-          // User info — tapping navigates to Profile
-          Consumer<AppProvider>(
-            builder: (context, provider, _) {
-              final user = provider.user;
-              if (user == null) return const SizedBox.shrink();
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: () => onTap(11),
-                    child: Container(
-                  padding: EdgeInsets.all(isExpanded ? 12 : 8),
-                  decoration: BoxDecoration(
-                    color: currentIndex == 11
-                        ? TradEtTheme.primaryLight.withValues(alpha: 0.15)
-                        : TradEtTheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: currentIndex == 11
-                        ? Border.all(
-                            color: TradEtTheme.primaryLight.withValues(alpha: 0.2))
-                        : null,
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 16,
-                        backgroundColor: TradEtTheme.primaryLight.withValues(alpha: 0.3),
-                        child: Text(
-                          user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : '?',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                      if (isExpanded) ...[
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                user.fullName.split(' ').first,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                user.email,
-                                style: const TextStyle(
-                                  color: TradEtTheme.textMuted,
-                                  fontSize: 10,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),       // Container
-              ),         // GestureDetector
-            ),           // MouseRegion
-          );
-            },
-          ),
-          const SizedBox(height: 8),
-
           // Logout
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -500,6 +438,64 @@ class _SidebarItemState extends State<_SidebarItem> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ─── Desktop top bar (profile avatar + language selector) ───────────────────
+
+class _WebTopBar extends StatelessWidget {
+  final VoidCallback onProfileTap;
+
+  const _WebTopBar({required this.onProfileTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 52,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: BoxDecoration(
+        color: TradEtTheme.primaryDark,
+        border: Border(
+          bottom: BorderSide(color: TradEtTheme.divider.withValues(alpha: 0.25)),
+        ),
+      ),
+      child: Row(
+        children: [
+          const Spacer(),
+          // Language selector
+          const LanguageSelector(),
+          const SizedBox(width: 12),
+          // Vertical divider
+          Container(width: 1, height: 24,
+              color: TradEtTheme.divider.withValues(alpha: 0.4)),
+          const SizedBox(width: 12),
+          // Profile avatar
+          Consumer<AppProvider>(
+            builder: (context, provider, _) {
+              final user = provider.user;
+              final initials = (user?.fullName.isNotEmpty == true)
+                  ? user!.fullName[0].toUpperCase()
+                  : '?';
+              return MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: onProfileTap,
+                  child: CircleAvatar(
+                    radius: 17,
+                    backgroundColor: TradEtTheme.primaryLight.withValues(alpha: 0.35),
+                    child: Text(initials,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13)),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
