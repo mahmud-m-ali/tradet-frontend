@@ -548,6 +548,189 @@ class PortfolioCard extends StatelessWidget {
   }
 }
 
+// ─── Quick Action Tiles Row (mobile dashboard) ────────────────────────────────
+class QuickActionsRow extends StatelessWidget {
+  final void Function(int)? onNavigateTo;
+  const QuickActionsRow({super.key, this.onNavigateTo});
+
+  void _showMoreSheet(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final nav = onNavigateTo;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: TradEtTheme.cardBg,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36, height: 4,
+                decoration: BoxDecoration(
+                  color: TradEtTheme.divider,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(l.more,
+                  style: const TextStyle(
+                      color: Colors.white, fontSize: 16,
+                      fontWeight: FontWeight.w700)),
+              const SizedBox(height: 16),
+              GridView.count(
+                crossAxisCount: 3,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                childAspectRatio: 1.1,
+                children: [
+                  _MoreTile(icon: Icons.notifications_outlined, label: l.priceAlertsTitle, color: const Color(0xFFFBBF24), onTap: () { Navigator.pop(context); nav?.call(5); }),
+                  _MoreTile(icon: Icons.newspaper_outlined, label: l.newsFeedTitle, color: const Color(0xFFF97316), onTap: () { Navigator.pop(context); nav?.call(6); }),
+                  _MoreTile(icon: Icons.volunteer_activism_outlined, label: l.zakatCalculatorTitle, color: const Color(0xFF34D399), onTap: () { Navigator.pop(context); nav?.call(7); }),
+                  _MoreTile(icon: Icons.currency_exchange_outlined, label: l.currencyConverter, color: const Color(0xFF22D3EE), onTap: () { Navigator.pop(context); nav?.call(8); }),
+                  _MoreTile(icon: Icons.bar_chart_outlined, label: l.analytics, color: const Color(0xFF818CF8), onTap: () { Navigator.pop(context); nav?.call(9); }),
+                  _MoreTile(icon: Icons.swap_horiz_outlined, label: l.transactions, color: TradEtTheme.primaryLight, onTap: () { Navigator.pop(context); nav?.call(10); }),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Row(
+      children: [
+        _QATile(
+          icon: Icons.bolt_rounded,
+          label: l.tradeNow,
+          gradient: TradEtTheme.heroGradient,
+          onTap: () => onNavigateTo?.call(1),
+        ),
+        const SizedBox(width: 10),
+        _QATile(
+          icon: Icons.add_circle_outline_rounded,
+          label: l.addMoney,
+          color: TradEtTheme.positive,
+          onTap: () => showDepositSheet(context),
+        ),
+        const SizedBox(width: 10),
+        _QATile(
+          icon: Icons.arrow_circle_up_outlined,
+          label: l.withdraw,
+          color: TradEtTheme.accent,
+          onTap: () => showWithdrawSheet(context),
+        ),
+        const SizedBox(width: 10),
+        _QATile(
+          icon: Icons.apps_rounded,
+          label: l.more,
+          color: const Color(0xFF818CF8),
+          onTap: () => _showMoreSheet(context),
+        ),
+      ],
+    );
+  }
+}
+
+class _QATile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Gradient? gradient;
+  final Color? color;
+  final VoidCallback onTap;
+
+  const _QATile({
+    required this.icon,
+    required this.label,
+    this.gradient,
+    this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              gradient: gradient,
+              color: gradient == null ? color!.withValues(alpha: 0.1) : null,
+              borderRadius: BorderRadius.circular(14),
+              border: gradient == null
+                  ? Border.all(color: color!.withValues(alpha: 0.3))
+                  : null,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon,
+                    color: gradient != null ? Colors.white : color, size: 22),
+                const SizedBox(height: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: gradient != null ? Colors.white : color,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MoreTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  const _MoreTile({required this.icon, required this.label, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(height: 6),
+            Text(label,
+                style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class StatCard extends StatelessWidget {
   final IconData icon;
   final String label;
