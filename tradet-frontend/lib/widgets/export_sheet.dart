@@ -8,6 +8,7 @@ import 'package:excel/excel.dart' as xl;
 import '../theme.dart';
 import '../widgets/responsive_layout.dart';
 import '../utils/download_helper.dart';
+import '../l10n/app_localizations.dart';
 
 // ─── Public entry point ──────────────────────────────────────────────────────
 
@@ -79,9 +80,11 @@ class _ExportContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final fmt = NumberFormat('#,##0.00', 'en');
     final now = DateFormat('yyyy-MM-dd_HH-mm').format(DateTime.now());
     final baseName = title.toLowerCase().replaceAll(' ', '_');
+    final complianceFooter = l.exportComplianceFooter;
 
     return Container(
       decoration: BoxDecoration(
@@ -112,7 +115,7 @@ class _ExportContent extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Export $title',
+                    Text(l.exportTitle(title),
                         style: const TextStyle(fontSize: 18,
                             fontWeight: FontWeight.w700, color: Colors.white)),
                     if (subtitle != null)
@@ -141,11 +144,11 @@ class _ExportContent extends StatelessWidget {
             badgeText: 'PDF',
             icon: Icons.picture_as_pdf_rounded,
             iconColor: Colors.white,
-            title: 'PDF Document',
-            subtitle: 'Formal statement, ready to print or share',
+            title: l.pdfDocument,
+            subtitle: l.pdfDocumentSubtitle,
             onTap: () {
               Navigator.pop(context);
-              _exportPdf(headers, rows, pdfTitle, now, baseName, fmt);
+              _exportPdf(headers, rows, pdfTitle, now, baseName, fmt, complianceFooter);
             },
           ),
           const SizedBox(height: 10),
@@ -158,8 +161,8 @@ class _ExportContent extends StatelessWidget {
             badgeText: 'XLS',
             icon: Icons.grid_on_rounded,
             iconColor: Colors.white,
-            title: 'Excel Spreadsheet (.xlsx)',
-            subtitle: 'Open directly in Microsoft Excel',
+            title: l.excelSpreadsheet,
+            subtitle: l.excelSubtitle,
             onTap: () {
               Navigator.pop(context);
               _exportExcel(headers, rows, title, baseName, now);
@@ -175,8 +178,8 @@ class _ExportContent extends StatelessWidget {
             badgeText: 'CSV',
             icon: Icons.table_rows_outlined,
             iconColor: Colors.white,
-            title: 'CSV File',
-            subtitle: 'Plain text, compatible with any spreadsheet',
+            title: l.csvFile,
+            subtitle: l.csvSubtitle,
             onTap: () {
               Navigator.pop(context);
               _exportCsv(headers, rows, baseName, now);
@@ -195,6 +198,7 @@ class _ExportContent extends StatelessWidget {
     String now,
     String baseName,
     NumberFormat fmt,
+    String complianceFooter,
   ) async {
     final doc = pw.Document();
 
@@ -239,9 +243,7 @@ class _ExportContent extends StatelessWidget {
           ),
           pw.SizedBox(height: 16),
           pw.Text(
-            'Sharia Board Compliance Certified — AAOIFI Standards Applied  |  '
-            'ECX & NBE Compliant  |  No Riba (interest) instruments  |  '
-            'INSA CSMS Guideline v1.0',
+            complianceFooter,
             style: const pw.TextStyle(fontSize: 7, color: PdfColors.grey600),
           ),
         ],

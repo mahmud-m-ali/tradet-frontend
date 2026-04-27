@@ -97,7 +97,7 @@ class _TradeScreenState extends State<TradeScreen> {
                     const Icon(Icons.add_alert_outlined,
                         color: Color(0xFF8BAF97), size: 18),
                     const SizedBox(width: 8),
-                    Text('Price Alert — ${asset.symbol}',
+                    Text(AppLocalizations.of(context).priceAlertFor(asset.symbol),
                         style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -106,7 +106,7 @@ class _TradeScreenState extends State<TradeScreen> {
                 ),
                 if (asset.price != null) ...[
                   const SizedBox(height: 4),
-                  Text('Current: ${_fmt.format(asset.price!)} ETB',
+                  Text(AppLocalizations.of(context).currentPriceDisplay(_fmt.format(asset.price!)),
                       style: const TextStyle(
                           fontSize: 12, color: Color(0xFF8BAF97))),
                 ],
@@ -117,7 +117,7 @@ class _TradeScreenState extends State<TradeScreen> {
                       const TextInputType.numberWithOptions(decimal: true),
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                   decoration: InputDecoration(
-                    labelText: 'Target Price (ETB)',
+                    labelText: AppLocalizations.of(context).targetPriceEtb,
                     suffixText: 'ETB',
                     filled: true,
                     fillColor: Colors.white.withValues(alpha: 0.06),
@@ -156,7 +156,7 @@ class _TradeScreenState extends State<TradeScreen> {
                                       ? TradEtTheme.positive
                                       : const Color(0xFF8BAF97)),
                               const SizedBox(width: 6),
-                              Text('Above',
+                              Text(AppLocalizations.of(context).above,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     color: condition == 'above'
@@ -196,7 +196,7 @@ class _TradeScreenState extends State<TradeScreen> {
                                       ? TradEtTheme.negative
                                       : const Color(0xFF8BAF97)),
                               const SizedBox(width: 6),
-                              Text('Below',
+                              Text(AppLocalizations.of(context).below,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     color: condition == 'below'
@@ -234,8 +234,7 @@ class _TradeScreenState extends State<TradeScreen> {
                         if (ctx.mounted) {
                           ScaffoldMessenger.of(ctx).showSnackBar(
                             SnackBar(
-                              content: Text(
-                                  'Alert set for ${asset.symbol} at ${_fmt.format(price)} ETB'),
+                              content: Text(AppLocalizations.of(context).alertSet(asset.symbol, _fmt.format(price))),
                               backgroundColor: TradEtTheme.positive,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
@@ -245,7 +244,7 @@ class _TradeScreenState extends State<TradeScreen> {
                         }
                       } catch (_) {}
                     },
-                    child: const Text('Set Alert',
+                    child: Text(AppLocalizations.of(context).setAlert,
                         style: TextStyle(
                             fontWeight: FontWeight.w700, fontSize: 15)),
                   ),
@@ -266,12 +265,13 @@ class _TradeScreenState extends State<TradeScreen> {
   }
 
   Future<void> _placeOrder() async {
+    final l = AppLocalizations.of(context);
     final qty = double.tryParse(_qtyController.text);
     final price = double.tryParse(_priceController.text);
     if (qty == null || qty <= 0 || price == null || price <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Enter valid quantity and price'),
+          content: Text(l.enterValidQtyPrice),
           backgroundColor: TradEtTheme.negative,
         ),
       );
@@ -299,7 +299,7 @@ class _TradeScreenState extends State<TradeScreen> {
     final authed = await challengeTransactionAuth(
       context,
       reason:
-          'Authenticate to ${_isBuy ? "buy" : "sell"} ${widget.asset.symbol}',
+          _isBuy ? AppLocalizations.of(context).authenticateToBuy(widget.asset.symbol) : AppLocalizations.of(context).authenticateToSell(widget.asset.symbol),
     );
     if (!authed || !mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -326,8 +326,8 @@ class _TradeScreenState extends State<TradeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(isLimit
-              ? 'Limit order placed (pending fill)'
-              : 'Order filled! Fee: ${_fmt.format(result['fee_amount'])} ETB'),
+              ? l.limitOrderPlaced
+              : l.orderFilled(_fmt.format(result['fee_amount']))),
           backgroundColor: TradEtTheme.positive,
         ),
       );
@@ -335,7 +335,7 @@ class _TradeScreenState extends State<TradeScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result['error'] ?? 'Order failed'),
+          content: Text(result['error'] ?? l.orderFailed),
           backgroundColor: TradEtTheme.negative,
         ),
       );
@@ -488,11 +488,11 @@ class _TradeScreenState extends State<TradeScreen> {
             dividerColor: TradEtTheme.divider.withValues(alpha: 0.3),
             labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             unselectedLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            tabs: const [
-              Tab(text: 'Overview'),
-              Tab(text: 'Financials'),
-              Tab(text: 'News'),
-              Tab(text: 'Order book'),
+            tabs: [
+              Tab(text: AppLocalizations.of(context).overview),
+              Tab(text: AppLocalizations.of(context).financials),
+              Tab(text: AppLocalizations.of(context).newsTab),
+              Tab(text: AppLocalizations.of(context).orderBook),
             ],
           ),
           // Tab content
@@ -544,13 +544,14 @@ class _TradeScreenState extends State<TradeScreen> {
 
   // Tab 2: asset information table + AAOIFI sharia detail
   Widget _financialsTab(Asset asset) {
+    final l = AppLocalizations.of(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Asset Information',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+          Text(l.assetInformation,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
@@ -559,17 +560,17 @@ class _TradeScreenState extends State<TradeScreen> {
             ),
             child: Column(
               children: [
-                _mobileDetailRow('Symbol', asset.symbol, first: true),
-                _mobileDetailRow('Name', asset.name),
-                if (asset.nameAm != null) _mobileDetailRow('Amharic', asset.nameAm!),
-                _mobileDetailRow('Category', asset.categoryName ?? '—'),
-                _mobileDetailRow('Unit', asset.unit),
-                _mobileDetailRow('Min Trade', '${asset.minTradeQty}'),
-                _mobileDetailRow('Max Trade', '${asset.maxTradeQty}'),
-                _mobileDetailRow('24h Volume',
+                _mobileDetailRow(l.symbol, asset.symbol, first: true),
+                _mobileDetailRow(l.nameLabel, asset.name),
+                if (asset.nameAm != null) _mobileDetailRow(l.amharicName, asset.nameAm!),
+                _mobileDetailRow(l.categoryLabel, asset.categoryName ?? '—'),
+                _mobileDetailRow(l.unitLabel, asset.unit),
+                _mobileDetailRow(l.minTrade, '${asset.minTradeQty}'),
+                _mobileDetailRow(l.maxTrade, '${asset.maxTradeQty}'),
+                _mobileDetailRow(l.volume24h,
                     asset.volume24h != null ? _fmt.format(asset.volume24h) : '—'),
-                _mobileDetailRow('Sharia', asset.isShariaCompliant ? 'Compliant' : 'N/A'),
-                _mobileDetailRow('ECX Listed', asset.isEcxListed ? 'Yes' : 'No', last: true),
+                _mobileDetailRow(l.shariaLabel, asset.isShariaCompliant ? l.compliant : l.notApplicable),
+                _mobileDetailRow(l.ecxListed, asset.isEcxListed ? l.yes : l.no, last: true),
               ],
             ),
           ),
@@ -581,6 +582,7 @@ class _TradeScreenState extends State<TradeScreen> {
   }
 
   Widget _shariaScreeningCard(Asset asset) {
+    final l = AppLocalizations.of(context);
     final screening = asset.shariaScreening;
     final color = asset.complianceLevel == 'halal'
         ? TradEtTheme.positive
@@ -610,8 +612,8 @@ class _TradeScreenState extends State<TradeScreen> {
             ),
             child: Icon(Icons.verified_rounded, color: color, size: 18),
           ),
-          title: const Text('AAOIFI Sharia Screening',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+          title: Text(l.aaaoifiShariaScreening,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
           subtitle: Text(
             ruling.toString().toUpperCase(),
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
@@ -623,16 +625,16 @@ class _TradeScreenState extends State<TradeScreen> {
             const SizedBox(height: 12),
             // Debt ratio bar
             _screeningMetric(
-              label: 'Debt-to-Assets Ratio',
-              threshold: '< 30% (AAOIFI)',
+              label: l.debtToAssetsRatio,
+              threshold: l.debtToAssetsThreshold,
               value: debtRatio != null ? (debtRatio as num).toDouble() : null,
               thresholdValue: 0.30,
             ),
             const SizedBox(height: 10),
             // Haram revenue bar
             _screeningMetric(
-              label: 'Haram Revenue Ratio',
-              threshold: '< 5% (AAOIFI)',
+              label: l.haramRevenueRatio,
+              threshold: l.haramRevenueThreshold,
               value: haramRevenue != null ? (haramRevenue as num).toDouble() : null,
               thresholdValue: 0.05,
             ),
@@ -643,10 +645,9 @@ class _TradeScreenState extends State<TradeScreen> {
                 color: TradEtTheme.positive.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                'Screened in accordance with AAOIFI Sharia Standard No. 21 — '
-                'Financial Paper (Shares and Bonds). ECX & NBE regulated.',
-                style: TextStyle(fontSize: 10, color: TradEtTheme.textSecondary, height: 1.5),
+              child: Text(
+                l.aaoifiScreeningNote,
+                style: const TextStyle(fontSize: 10, color: TradEtTheme.textSecondary, height: 1.5),
               ),
             ),
           ],
@@ -716,6 +717,7 @@ class _TradeScreenState extends State<TradeScreen> {
 
   // Tab 3: news (placeholder)
   Widget _newsTab(Asset asset) {
+    final l = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -723,11 +725,11 @@ class _TradeScreenState extends State<TradeScreen> {
           Icon(Icons.newspaper_outlined, size: 52,
               color: TradEtTheme.textMuted.withValues(alpha: 0.4)),
           const SizedBox(height: 16),
-          Text('News for ${asset.symbol}',
+          Text(l.newsForSymbol(asset.symbol),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 6),
-          const Text('Asset-specific news coming soon',
-              style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+          Text(l.newsForAsset,
+              style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
         ],
       ),
     );
@@ -743,18 +745,23 @@ class _TradeScreenState extends State<TradeScreen> {
 
         if (orders.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.receipt_long_outlined, size: 52,
-                    color: TradEtTheme.textMuted.withValues(alpha: 0.4)),
-                const SizedBox(height: 16),
-                Text('No orders for ${asset.symbol}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
-                const SizedBox(height: 6),
-                const Text('Your orders for this asset appear here',
-                    style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
-              ],
+            child: Builder(
+              builder: (ctx) {
+                final l = AppLocalizations.of(ctx);
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.receipt_long_outlined, size: 52,
+                        color: TradEtTheme.textMuted.withValues(alpha: 0.4)),
+                    const SizedBox(height: 16),
+                    Text(l.noOrdersForAsset(asset.symbol),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+                    const SizedBox(height: 6),
+                    Text(l.yourOrdersAppearHere,
+                        style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+                  ],
+                );
+              },
             ),
           );
         }
@@ -792,11 +799,16 @@ class _TradeScreenState extends State<TradeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${isBuy ? 'Buy' : 'Sell'} · ${o.executionType.toUpperCase()}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w700, fontSize: 13,
-                              color: isBuy ? TradEtTheme.positive : TradEtTheme.negative),
+                        Builder(
+                          builder: (ctx) {
+                            final l = AppLocalizations.of(ctx);
+                            return Text(
+                              '${isBuy ? l.buy : l.sell} · ${o.executionType.toUpperCase()}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700, fontSize: 13,
+                                  color: isBuy ? TradEtTheme.positive : TradEtTheme.negative),
+                            );
+                          },
                         ),
                         Text('${o.quantity} ${asset.unit} @ ${_fmt.format(o.price)} ETB',
                             style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary)),
@@ -983,13 +995,13 @@ class _TradeScreenState extends State<TradeScreen> {
       ),
       child: Row(
         children: [
-          _stat('Bid', asset.bidPrice),
+          _stat(AppLocalizations.of(context).bid, asset.bidPrice),
           _divider(),
-          _stat('Ask', asset.askPrice),
+          _stat(AppLocalizations.of(context).ask, asset.askPrice),
           _divider(),
-          _stat('High', asset.high24h),
+          _stat(AppLocalizations.of(context).high, asset.high24h),
           _divider(),
-          _stat('Low', asset.low24h),
+          _stat(AppLocalizations.of(context).low, asset.low24h),
         ],
       ),
     );
@@ -1056,23 +1068,22 @@ class _TradeScreenState extends State<TradeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Identity Verification Required',
-                            style: TextStyle(
+                        Text(AppLocalizations.of(context).identityVerificationRequired,
+                            style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                                 color: TradEtTheme.warning)),
                         const SizedBox(height: 4),
-                        const Text(
-                            'Complete KYC verification to start trading. This is required by NBE regulations.',
-                            style: TextStyle(fontSize: 11, color: TradEtTheme.textSecondary)),
+                        Text(AppLocalizations.of(context).kycRequiredDescription,
+                            style: const TextStyle(fontSize: 11, color: TradEtTheme.textSecondary)),
                         const SizedBox(height: 8),
                         GestureDetector(
                           onTap: () {
                             Navigator.of(context).pop();
                             provider.navigateGlobal(11); // Profile screen
                           },
-                          child: const Text('Complete Verification →',
-                              style: TextStyle(
+                          child: Text(AppLocalizations.of(context).completeVerification,
+                              style: const TextStyle(
                                   fontSize: 12,
                                   color: TradEtTheme.warning,
                                   fontWeight: FontWeight.w600)),
@@ -1090,6 +1101,7 @@ class _TradeScreenState extends State<TradeScreen> {
   }
 
   Widget _webAssetDetails(Asset asset) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1100,23 +1112,23 @@ class _TradeScreenState extends State<TradeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Asset Information',
-              style: TextStyle(
+          Text(l.assetInformation,
+              style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),
           const SizedBox(height: 14),
-          _detailRow('Symbol', asset.symbol),
-          _detailRow('Name', asset.name),
-          if (asset.nameAm != null) _detailRow('Amharic', asset.nameAm!),
-          _detailRow('Category', asset.categoryName ?? '--'),
-          _detailRow('Unit', asset.unit),
-          _detailRow('Min Trade', '${asset.minTradeQty}'),
-          _detailRow('Max Trade', '${asset.maxTradeQty}'),
-          _detailRow('24h Volume',
+          _detailRow(l.symbol, asset.symbol),
+          _detailRow(l.nameLabel, asset.name),
+          if (asset.nameAm != null) _detailRow(l.amharicName, asset.nameAm!),
+          _detailRow(l.categoryLabel, asset.categoryName ?? '--'),
+          _detailRow(l.unitLabel, asset.unit),
+          _detailRow(l.minTrade, '${asset.minTradeQty}'),
+          _detailRow(l.maxTrade, '${asset.maxTradeQty}'),
+          _detailRow(l.volume24h,
               asset.volume24h != null ? _fmt.format(asset.volume24h) : '--'),
-          _detailRow('Sharia', asset.isShariaCompliant ? 'Compliant' : 'N/A'),
-          _detailRow('ECX Listed', asset.isEcxListed ? 'Yes' : 'No'),
+          _detailRow(l.shariaLabel, asset.isShariaCompliant ? l.compliant : l.notApplicable),
+          _detailRow(l.ecxListed, asset.isEcxListed ? l.yes : l.no),
         ],
       ),
     );
@@ -1285,8 +1297,8 @@ class _TradeScreenState extends State<TradeScreen> {
               children: [
                 Text(
                     _isBuy
-                        ? 'Cash: ${_fmt.format(cashBalance)} ETB'
-                        : 'Holdings: ${holdingQty > 0 ? holdingQty.toStringAsFixed(holdingQty == holdingQty.roundToDouble() ? 0 : 1) : "0"}',
+                        ? AppLocalizations.of(context).cashAvailableLabel(_fmt.format(cashBalance))
+                        : AppLocalizations.of(context).holdingsQtyLabel(holdingQty > 0 ? holdingQty.toStringAsFixed(holdingQty == holdingQty.roundToDouble() ? 0 : 1) : '0'),
                     style: TextStyle(
                         fontSize: 10,
                         color: !_isBuy && holdingQty <= 0 ? TradEtTheme.negative : TradEtTheme.textMuted)),
@@ -1322,8 +1334,8 @@ class _TradeScreenState extends State<TradeScreen> {
       children: [
         Row(
           children: [
-            const Text('Price per unit (ETB)',
-                style: TextStyle(
+            Text(AppLocalizations.of(context).pricePerUnitEtb,
+                style: const TextStyle(
                     color: TradEtTheme.textSecondary,
                     fontSize: 13,
                     fontWeight: FontWeight.w500)),
@@ -1335,8 +1347,8 @@ class _TradeScreenState extends State<TradeScreen> {
                   color: TradEtTheme.accent.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text('Market price',
-                    style: TextStyle(
+                child: Text(AppLocalizations.of(context).marketPriceLabel,
+                    style: const TextStyle(
                         color: TradEtTheme.accent,
                         fontSize: 10,
                         fontWeight: FontWeight.w600)),
@@ -1365,7 +1377,7 @@ class _TradeScreenState extends State<TradeScreen> {
               size: 20,
               color: isMarket ? TradEtTheme.textMuted : null,
             ),
-            helperText: isMarket ? 'Filled at best available market price' : null,
+            helperText: isMarket ? AppLocalizations.of(context).filledAtMarketPrice : null,
             helperStyle: const TextStyle(
                 color: TradEtTheme.textMuted, fontSize: 11),
           ),
@@ -1375,9 +1387,9 @@ class _TradeScreenState extends State<TradeScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              _quickPriceButton('Bid', asset.bidPrice ?? asset.price!),
-              _quickPriceButton('Market', asset.price!),
-              _quickPriceButton('Ask', asset.askPrice ?? asset.price!),
+              _quickPriceButton(AppLocalizations.of(context).bid, asset.bidPrice ?? asset.price!),
+              _quickPriceButton(AppLocalizations.of(context).market, asset.price!),
+              _quickPriceButton(AppLocalizations.of(context).ask, asset.askPrice ?? asset.price!),
             ],
           ),
         ],
@@ -1394,22 +1406,22 @@ class _TradeScreenState extends State<TradeScreen> {
       ),
       child: Column(
         children: [
-          _summaryRow('Subtotal', '${_fmt.format(_total)} ETB'),
+          _summaryRow(AppLocalizations.of(context).subtotal, '${_fmt.format(_total)} ETB'),
           const SizedBox(height: 6),
-          _summaryRow('Fee (1.5% flat)', '${_fmt.format(_fee)} ETB'),
+          _summaryRow(AppLocalizations.of(context).feeFlat, '${_fmt.format(_fee)} ETB'),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Divider(
                 color: TradEtTheme.divider.withValues(alpha: 0.3)),
           ),
           _summaryRow(
-            'Total',
+            AppLocalizations.of(context).total,
             '${_fmt.format(_total + (_isBuy ? _fee : -_fee))} ETB',
             bold: true,
           ),
           const SizedBox(height: 6),
-          const Text('No interest (Riba-free) — flat commission',
-              style: TextStyle(
+          Text(AppLocalizations.of(context).ribaFreeLabel,
+              style: const TextStyle(
                   fontSize: 11,
                   color: TradEtTheme.positive,
                   fontWeight: FontWeight.w500)),
@@ -1435,7 +1447,7 @@ class _TradeScreenState extends State<TradeScreen> {
             ? null
             : (widget.asset.tradingSession!['reason'] as String?)?.isNotEmpty == true
                 ? widget.asset.tradingSession!['reason'] as String
-                : 'ECX session closed. Trading is only permitted during official ECX sessions.';
+                : AppLocalizations.of(context).ecxSessionClosedFallback;
         final bool kycVerified = provider.user?.kycStatus == 'verified';
         final bool canTrade;
         final String? disabledReason;
@@ -1444,7 +1456,7 @@ class _TradeScreenState extends State<TradeScreen> {
           disabledReason = null;
         } else if (!kycVerified) {
           canTrade = false;
-          disabledReason = 'Identity verification (KYC) required before trading.';
+          disabledReason = AppLocalizations.of(context).kycBeforeTrading;
         } else if (!sessionOpen) {
           canTrade = false;
           disabledReason = sessionReason;
@@ -1682,18 +1694,18 @@ class _ConfirmSheet extends StatelessWidget {
                   color: Colors.white)),
           ],
           const SizedBox(height: 20),
-          _row('Asset', asset.symbol),
-          _row('Type', isBuy ? AppLocalizations.of(context).buy : AppLocalizations.of(context).sell),
-          _row('Quantity', '$qty ${asset.unit}'),
-          _row('Price', '${fmt.format(price)} ETB'),
+          _row(AppLocalizations.of(context).asset, asset.symbol),
+          _row(AppLocalizations.of(context).type, isBuy ? AppLocalizations.of(context).buy : AppLocalizations.of(context).sell),
+          _row(AppLocalizations.of(context).quantity, '$qty ${asset.unit}'),
+          _row(AppLocalizations.of(context).price, '${fmt.format(price)} ETB'),
           Divider(color: TradEtTheme.divider, height: 24),
-          _row('Subtotal', '${fmt.format(total)} ETB'),
-          _row('Fee (1.5%)', '${fmt.format(fee)} ETB'),
-          _row('Total', '${fmt.format(total + (isBuy ? fee : -fee))} ETB',
+          _row(AppLocalizations.of(context).subtotal, '${fmt.format(total)} ETB'),
+          _row(AppLocalizations.of(context).feeShort, '${fmt.format(fee)} ETB'),
+          _row(AppLocalizations.of(context).total, '${fmt.format(total + (isBuy ? fee : -fee))} ETB',
               bold: true),
           const SizedBox(height: 6),
-          const Text('Riba-free flat commission',
-              style: TextStyle(
+          Text(AppLocalizations.of(context).ribaFreeShort,
+              style: const TextStyle(
                   fontSize: 11,
                   color: TradEtTheme.positive,
                   fontStyle: FontStyle.italic)),
@@ -1709,8 +1721,8 @@ class _ConfirmSheet extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Cancel',
-                      style: TextStyle(color: TradEtTheme.textSecondary)),
+                  child: Text(AppLocalizations.of(context).cancel,
+                      style: const TextStyle(color: TradEtTheme.textSecondary)),
                 ),
               ),
               const SizedBox(width: 12),

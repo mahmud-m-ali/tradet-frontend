@@ -7,6 +7,7 @@ import '../theme.dart';
 import '../white_label.dart';
 import '../widgets/disclaimer_footer.dart';
 import '../widgets/responsive_layout.dart';
+import '../l10n/app_localizations.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -22,12 +23,15 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
   String? _error;
   String? _currentCategory;
 
-  final _categories = [
-    {'label': 'All', 'value': null},
-    {'label': 'Research', 'value': 'research'},
-    {'label': 'Ethiopia', 'value': 'ethiopia'},
-    {'label': 'Islamic Finance', 'value': 'islamic'},
-    {'label': 'Global', 'value': 'global'},
+  // Static values used for tab logic (initState, _onTabChanged) — no l10n needed
+  static const _categoryValues = <String?>[null, 'research', 'ethiopia', 'islamic', 'global'];
+
+  List<Map<String, String?>> _getCategories(AppLocalizations l) => [
+    {'label': l.newsAll, 'value': null},
+    {'label': l.newsResearch, 'value': 'research'},
+    {'label': l.newsEthiopia, 'value': 'ethiopia'},
+    {'label': l.newsIslamicFinance, 'value': 'islamic'},
+    {'label': l.newsGlobal, 'value': 'global'},
   ];
 
   List<NewsArticle> _filterArticles(List<NewsArticle> all) {
@@ -43,7 +47,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _categories.length, vsync: this);
+    _tabController = TabController(length: _categoryValues.length, vsync: this);
     _allArticles = [];
     _tabController.addListener(_onTabChanged);
     _loadNews();
@@ -59,7 +63,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   void _onTabChanged() {
     if (_tabController.indexIsChanging) return;
-    final cat = _categories[_tabController.index]['value'];
+    final cat = _categoryValues[_tabController.index];
     if (cat != _currentCategory) {
       _currentCategory = cat;
       // fab_research filters locally — no network call needed
@@ -81,7 +85,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
       _allArticles = fetched;
       _articles = _filterArticles(fetched);
     } catch (e) {
-      _error = 'Failed to load news';
+      _error = 'error'; // non-null sentinel; message resolved via l10n in build
     }
     if (mounted) setState(() => _loading = false);
   }
@@ -91,7 +95,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Link copied to clipboard'),
+          content: Text(AppLocalizations.of(context).linkCopied),
           backgroundColor: TradEtTheme.positive,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -103,6 +107,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final wide = isWideScreen(context);
 
     final content = Container(
@@ -113,13 +118,13 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 0),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('News Feed', style: TextStyle(fontSize: 28,
+                  Text(l.newsFeedTitle, style: const TextStyle(fontSize: 28,
                       fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
-                  Text('ዜና • Financial & Islamic Finance News',
-                      style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+                  Text(l.financialIslamicNews,
+                      style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
                 ],
               ),
             ),
@@ -135,7 +140,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
               dividerColor: Colors.transparent,
               tabAlignment: TabAlignment.start,
               padding: EdgeInsets.symmetric(horizontal: wide ? 24 : 12),
-              tabs: _categories.map((c) => Tab(text: c['label'] as String)).toList(),
+              tabs: _getCategories(l).map((c) => Tab(text: c['label'] as String)).toList(),
             ),
             const SizedBox(height: 8),
 
@@ -149,15 +154,15 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                           children: [
                             const Icon(Icons.wifi_off, color: TradEtTheme.textMuted, size: 48),
                             const SizedBox(height: 12),
-                            Text(_error!, style: const TextStyle(color: TradEtTheme.textMuted)),
+                            Text(l.failedToLoadNews, style: const TextStyle(color: TradEtTheme.textMuted)),
                             const SizedBox(height: 12),
                             TextButton(onPressed: _loadNews,
-                                child: const Text('Retry')),
+                                child: Text(l.retry)),
                           ],
                         ))
                       : _articles.isEmpty
-                          ? const Center(child: Text('No news available',
-                              style: TextStyle(color: TradEtTheme.textMuted)))
+                          ? Center(child: Text(l.noNewsAvailable,
+                              style: const TextStyle(color: TradEtTheme.textMuted)))
                           : RefreshIndicator(
                               onRefresh: _loadNews,
                               color: TradEtTheme.positive,

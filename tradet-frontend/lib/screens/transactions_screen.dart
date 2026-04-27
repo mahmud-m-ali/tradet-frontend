@@ -33,15 +33,16 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   void _showExportSheet(BuildContext context, List<Transaction> txns) {
+    final l = AppLocalizations.of(context);
     final fmt = NumberFormat('#,##0.00', 'en');
     showExportSheet(
       context,
-      title: 'Transactions',
-      subtitle: '${txns.length} records',
-      pdfTitle: 'Transaction Statement',
-      headers: ['Type', 'Description', 'Amount (ETB)', 'Balance After (ETB)', 'Date'],
+      title: l.transactions,
+      subtitle: l.recordsCount(txns.length),
+      pdfTitle: l.transactionStatement,
+      headers: [l.type, l.description, l.amountEtb, l.balanceAfterEtb, l.date],
       rows: txns.map((tx) => [
-        _txTypeLabel(tx.transactionType),
+        _txTypeLabel(tx.transactionType, l),
         tx.description ?? '—',
         '${tx.isCredit ? '+' : '-'}${fmt.format(tx.amount)}',
         fmt.format(tx.balanceAfter),
@@ -74,7 +75,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         icon: const Icon(Icons.arrow_back_ios_new_rounded,
                             color: Colors.white, size: 20),
                         onPressed: () => Navigator.of(context).pop(),
-                        tooltip: 'Back',
+                        tooltip: l.back,
                       ),
                     Expanded(
                       child: Column(
@@ -172,7 +173,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                         fontWeight: FontWeight.w800)),
                                 if (reserved > 0) ...[
                                   const SizedBox(height: 4),
-                                  Text('${fmt.format(reserved)} ETB reserved in open orders',
+                                  Text(l.etbReservedInOrders(fmt.format(reserved)),
                                       style: TextStyle(
                                           color: Colors.white.withValues(alpha: 0.6),
                                           fontSize: 11)),
@@ -183,7 +184,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('Available',
+                              Text(l.available,
                                   style: TextStyle(
                                       color: Colors.white.withValues(alpha: 0.7),
                                       fontSize: 11)),
@@ -275,6 +276,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Widget _buildWebTable(List<Transaction> txns, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
     final wide = isWideScreen(context);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: wide ? 32 : 20),
@@ -287,13 +289,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
               border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                SizedBox(width: 130, child: _TH('Type')),
-                Expanded(flex: 3, child: _TH('Description')),
-                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH('Amount'))),
-                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH('Balance After'))),
-                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH('Date'))),
+                SizedBox(width: 130, child: _TH(l.type)),
+                Expanded(flex: 3, child: _TH(l.description)),
+                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH(l.amountEtb))),
+                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH(l.balanceAfter))),
+                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH(l.date))),
               ],
             ),
           ),
@@ -327,13 +329,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 }
 
-String _txTypeLabel(String type) {
+String _txTypeLabel(String type, AppLocalizations l) {
   return switch (type) {
-    'deposit' => 'Deposit',
-    'withdraw' => 'Withdrawal',
-    'trade_buy' => 'Trade Buy',
-    'trade_sell' => 'Trade Sell',
-    'refund' => 'Refund',
+    'deposit' => l.txDeposit,
+    'withdraw' => l.txWithdrawal,
+    'trade_buy' => l.txTradeBuy,
+    'trade_sell' => l.txTradeSell,
+    'refund' => l.txRefund,
     _ => type.replaceAll('_', ' ').toUpperCase(),
   };
 }
@@ -364,6 +366,7 @@ class _MobileTxCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final color = _txTypeColor(tx.transactionType);
     final isCredit = tx.isCredit;
 
@@ -389,7 +392,7 @@ class _MobileTxCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(_txTypeLabel(tx.transactionType),
+                Text(_txTypeLabel(tx.transactionType, l),
                     style: const TextStyle(fontWeight: FontWeight.w600,
                         fontSize: 14, color: Colors.white)),
                 if (tx.description != null) ...[
@@ -438,6 +441,7 @@ class _WebTxRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final color = _txTypeColor(tx.transactionType);
     final isCredit = tx.isCredit;
 
@@ -464,7 +468,7 @@ class _WebTxRow extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Flexible(
-                  child: Text(_txTypeLabel(tx.transactionType),
+                  child: Text(_txTypeLabel(tx.transactionType, l),
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
                           color: color),
                       overflow: TextOverflow.ellipsis),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/app_lock_service.dart';
 import '../theme.dart';
+import '../white_label.dart';
 
 /// Shown when the app returns from background (60s+ backgrounded) or on first
 /// launch if a PIN has been set. User must authenticate to continue.
@@ -76,6 +78,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: TradEtTheme.primaryDark,
       body: SafeArea(
@@ -98,14 +101,14 @@ class _AppLockScreenState extends State<AppLockScreen> {
                         color: Colors.white, size: 32),
                   ),
                   const SizedBox(height: 20),
-                  const Text('TradEt',
-                      style: TextStyle(
+                  Text(WhiteLabel.appName,
+                      style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
                           color: Colors.white)),
                   const SizedBox(height: 6),
-                  const Text('Enter your PIN to continue',
-                      style: TextStyle(
+                  Text(l.enterPinToContinue,
+                      style: const TextStyle(
                           fontSize: 13, color: TradEtTheme.textSecondary)),
                   const SizedBox(height: 36),
 
@@ -143,8 +146,8 @@ class _AppLockScreenState extends State<AppLockScreen> {
 
                   if (_hasError) ...[
                     const SizedBox(height: 12),
-                    const Text('Incorrect PIN. Try again.',
-                        style: TextStyle(
+                    Text(l.incorrectPin,
+                        style: const TextStyle(
                             color: TradEtTheme.negative, fontSize: 13)),
                   ],
 
@@ -162,8 +165,8 @@ class _AppLockScreenState extends State<AppLockScreen> {
                       onPressed: _tryBiometric,
                       icon: const Icon(Icons.fingerprint_rounded,
                           color: TradEtTheme.accent, size: 22),
-                      label: const Text('Use Biometric',
-                          style: TextStyle(
+                      label: Text(l.useBiometric,
+                          style: const TextStyle(
                               color: TradEtTheme.accent, fontSize: 13)),
                     ),
                   ],

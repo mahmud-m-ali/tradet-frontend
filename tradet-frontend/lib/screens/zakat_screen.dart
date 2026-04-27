@@ -40,8 +40,9 @@ class _ZakatScreenState extends State<ZakatScreen> {
       setState(() => _result = result);
     } catch (e) {
       if (mounted) {
+        final l = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to calculate: $e'),
+          SnackBar(content: Text(l.zakatCalculationError(e.toString())),
               backgroundColor: TradEtTheme.negative),
         );
       }
@@ -60,11 +61,11 @@ class _ZakatScreenState extends State<ZakatScreen> {
           padding: EdgeInsets.fromLTRB(
               wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 20),
           children: [
-            const Text('Zakat Calculator',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800,
+            Text(l.zakatCalculatorTitle,
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800,
                     color: Colors.white, letterSpacing: -0.5)),
-            const Text('የዘካት ማስሊያ • Calculate your annual Zakat',
-                style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+            Text(l.zakatSubtitle,
+                style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
             const SizedBox(height: 24),
 
             // Info card
@@ -75,14 +76,13 @@ class _ZakatScreenState extends State<ZakatScreen> {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: TradEtTheme.accent.withValues(alpha: 0.25)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: TradEtTheme.accent, size: 22),
-                  SizedBox(width: 12),
+                  const Icon(Icons.info_outline, color: TradEtTheme.accent, size: 22),
+                  const SizedBox(width: 12),
                   Expanded(child: Text(
-                    'Your portfolio value and wallet balance are auto-calculated. '
-                    'Add other wealth below for a complete Zakat assessment.',
-                    style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary),
+                    l.zakatInfoText,
+                    style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary),
                   )),
                 ],
               ),
@@ -91,27 +91,27 @@ class _ZakatScreenState extends State<ZakatScreen> {
 
             // Input form
             _buildCard(l.additionalWealth, [
-              _buildInput(_otherSavingsCtrl, 'Other Savings (ETB)', Icons.savings_outlined),
+              _buildInput(_otherSavingsCtrl, l.otherSavings, Icons.savings_outlined),
               const SizedBox(height: 12),
-              _buildInput(_goldCtrl, 'Gold Value (ETB)', Icons.diamond_outlined),
+              _buildInput(_goldCtrl, l.goldValue, Icons.diamond_outlined),
               const SizedBox(height: 12),
-              _buildInput(_silverCtrl, 'Silver Value (ETB)', Icons.monetization_on_outlined),
+              _buildInput(_silverCtrl, l.silverValue, Icons.monetization_on_outlined),
             ]),
             const SizedBox(height: 16),
 
             _buildCard(l.deductions, [
-              _buildInput(_debtsCtrl, 'Outstanding Debts (ETB)', Icons.money_off_outlined),
+              _buildInput(_debtsCtrl, l.outstandingDebts, Icons.money_off_outlined),
               const SizedBox(height: 12),
-              _buildInput(_expensesCtrl, 'Essential Expenses (ETB)', Icons.receipt_long_outlined),
+              _buildInput(_expensesCtrl, l.essentialExpenses, Icons.receipt_long_outlined),
             ]),
             const SizedBox(height: 16),
 
             // Nisab method
             _buildCard(l.nisabMethod, [
               Row(children: [
-                Expanded(child: _methodChip('Gold (85g)', 'gold')),
+                Expanded(child: _methodChip(l.nisabGold, 'gold')),
                 const SizedBox(width: 12),
-                Expanded(child: _methodChip('Silver (595g)', 'silver')),
+                Expanded(child: _methodChip(l.nisabSilver, 'silver')),
               ]),
             ]),
             const SizedBox(height: 20),
@@ -209,6 +209,7 @@ class _ZakatScreenState extends State<ZakatScreen> {
   }
 
   Widget _buildResultCard() {
+    final l = AppLocalizations.of(context);
     final r = _result!;
     final isObligatory = r['is_obligatory'] == true;
     final zakatAmount = (r['zakat_amount'] ?? 0).toDouble();
@@ -230,12 +231,9 @@ class _ZakatScreenState extends State<ZakatScreen> {
           Icon(isObligatory ? Icons.volunteer_activism : Icons.check_circle_outline,
               size: 48, color: Colors.white),
           const SizedBox(height: 12),
-          Text(isObligatory ? 'Zakat is Obligatory' : 'Zakat Not Due',
+          Text(isObligatory ? l.zakatObligatory : l.zakatNotDue,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800,
                   color: Colors.white)),
-          Text(isObligatory ? 'ዘካት ይከፈላል' : 'ዘካት አይከፈልም',
-              style: TextStyle(fontSize: 13,
-                  color: Colors.white.withValues(alpha: 0.7))),
           const SizedBox(height: 20),
 
           // Amount
@@ -243,28 +241,28 @@ class _ZakatScreenState extends State<ZakatScreen> {
             Text('${_fmt.format(zakatAmount)} ETB',
                 style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w800,
                     color: Colors.white)),
-            Text('${_fmt.format(r['zakat_amount_monthly'])} ETB/month',
+            Text('${_fmt.format(r['zakat_amount_monthly'])} ${l.etbPerMonth}',
                 style: TextStyle(fontSize: 14,
                     color: Colors.white.withValues(alpha: 0.7))),
             const SizedBox(height: 20),
           ],
 
           // Summary
-          _resultRow('Total Wealth', r['total_wealth']),
-          _resultRow('Deductions', r['total_deductions']),
-          _resultRow('Net Wealth', r['net_wealth']),
-          _resultRow('Nisab (${r['nisab_method']})', r['nisab_threshold']),
+          _resultRow(l.totalWealth, r['total_wealth']),
+          _resultRow(l.deductions, r['total_deductions']),
+          _resultRow(l.netWealth, r['net_wealth']),
+          _resultRow('${l.nisab} (${r['nisab_method']})', r['nisab_threshold']),
 
           // Breakdown
           if (breakdown.isNotEmpty) ...[
             const SizedBox(height: 16),
             const Divider(color: Colors.white24),
             const SizedBox(height: 8),
-            const Text('Breakdown', style: TextStyle(fontWeight: FontWeight.w700,
+            Text(l.breakdown, style: const TextStyle(fontWeight: FontWeight.w700,
                 color: Colors.white)),
             const SizedBox(height: 8),
             ...breakdown.map((b) => _resultRow(
-                b['category'], b['zakat'], prefix: 'Zakat: ')),
+                b['category'], b['zakat'], prefix: l.zakatBreakdownPrefix)),
           ],
 
           const SizedBox(height: 16),

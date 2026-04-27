@@ -115,11 +115,11 @@ class _ConverterScreenState extends State<ConverterScreen> {
           padding: EdgeInsets.fromLTRB(
               wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 20),
           children: [
-            const Text('Currency Converter',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800,
+            Text(l.currencyConverter,
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800,
                     color: Colors.white, letterSpacing: -0.5)),
-            const Text('የምንዛሬ መቀየሪያ • NBE Exchange Rates',
-                style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+            Text(l.nbeExchangeRates,
+                style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
             const SizedBox(height: 14),
             // Live exchange rate ticker
             Consumer<AppProvider>(
@@ -144,10 +144,10 @@ class _ConverterScreenState extends State<ConverterScreen> {
                     style: const TextStyle(color: Colors.white, fontSize: 24,
                         fontWeight: FontWeight.w700),
                     textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Enter amount',
-                      hintStyle: TextStyle(color: TradEtTheme.textMuted, fontSize: 20),
+                      hintText: l.enterAmount,
+                      hintStyle: const TextStyle(color: TradEtTheme.textMuted, fontSize: 20),
                     ),
                     onChanged: (_) => _convert(),
                   ),
@@ -210,8 +210,8 @@ class _ConverterScreenState extends State<ConverterScreen> {
             if (_loading)
               const Center(child: CircularProgressIndicator(color: TradEtTheme.positive))
             else if (_rates.isEmpty)
-              const Center(child: Text('No rates available',
-                  style: TextStyle(color: TradEtTheme.textMuted)))
+              Center(child: Text(l.noRatesAvailable,
+                  style: const TextStyle(color: TradEtTheme.textMuted)))
             else
               Container(
                 decoration: BoxDecoration(
@@ -226,13 +226,13 @@ class _ConverterScreenState extends State<ConverterScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       child: Row(
                         children: [
-                          const Expanded(flex: 2, child: Text('Currency',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
-                                  color: TradEtTheme.textMuted))),
-                          Expanded(child: Text('Buy', textAlign: TextAlign.right,
+                          Expanded(flex: 2, child: Text(l.currency,
                               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
                                   color: TradEtTheme.textMuted))),
-                          Expanded(child: Text('Sell', textAlign: TextAlign.right,
+                          Expanded(child: Text(l.buy, textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
+                                  color: TradEtTheme.textMuted))),
+                          Expanded(child: Text(l.sell, textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
                                   color: TradEtTheme.textMuted))),
                         ],
@@ -245,9 +245,9 @@ class _ConverterScreenState extends State<ConverterScreen> {
               ),
 
             const SizedBox(height: 16),
-            const Center(child: Text(
-              'Rates sourced from National Bank of Ethiopia',
-              style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
+            Center(child: Text(
+              l.ratesSourcedFromNBE,
+              style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
             )),
             const Padding(
               padding: EdgeInsets.fromLTRB(0, 8, 0, 16),

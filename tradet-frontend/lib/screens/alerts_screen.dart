@@ -7,6 +7,7 @@ import '../theme.dart';
 import '../widgets/disclaimer_footer.dart';
 import '../widgets/responsive_layout.dart';
 import 'trade_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class AlertsScreen extends StatefulWidget {
   const AlertsScreen({super.key});
@@ -49,11 +50,12 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   void _showCreateDialog() {
+    final l = AppLocalizations.of(context);
     final provider = context.read<AppProvider>();
     final assets = provider.assets;
     if (assets.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Load market data first'),
+        SnackBar(content: Text(AppLocalizations.of(context).loadMarketDataFirst),
             backgroundColor: TradEtTheme.warning),
       );
       return;
@@ -69,21 +71,21 @@ class _AlertsScreenState extends State<AlertsScreen> {
         builder: (context, setDialogState) => AlertDialog(
           backgroundColor: TradEtTheme.cardBg,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Create Price Alert',
-              style: TextStyle(color: Colors.white, fontSize: 18)),
+          title: Text(l.createPriceAlert,
+              style: const TextStyle(color: Colors.white, fontSize: 18)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('የዋጋ ማንቂያ ይፍጠሩ',
-                    style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary)),
+                Text(l.createPriceAlertSubtitle,
+                    style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary)),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<Asset>(
                   initialValue: selectedAsset,
                   dropdownColor: TradEtTheme.cardBgLight,
                   style: const TextStyle(color: Colors.white, fontSize: 14),
                   isExpanded: true,
-                  decoration: const InputDecoration(labelText: 'Asset'),
+                  decoration: InputDecoration(labelText: l.asset),
                   items: assets.map((a) => DropdownMenuItem(
                     value: a,
                     child: Text('${a.symbol} — ${a.name}',
@@ -98,15 +100,15 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 ),
                 const SizedBox(height: 12),
                 if (selectedAsset?.price != null)
-                  Text('Current: ${_fmt.format(selectedAsset!.price)} ETB',
+                  Text(l.currentPriceDisplay(_fmt.format(selectedAsset!.price!)),
                       style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary)),
                 const SizedBox(height: 12),
                 TextField(
                   controller: priceCtrl,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: 'Target Price (ETB)',
+                  decoration: InputDecoration(
+                    labelText: l.targetPrice,
                     suffixText: 'ETB',
                   ),
                 ),
@@ -134,7 +136,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                                 color: condition == 'above'
                                     ? TradEtTheme.positive : TradEtTheme.textMuted),
                             const SizedBox(width: 6),
-                            Text('Above', style: TextStyle(
+                            Text(l.above, style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: condition == 'above'
                                   ? TradEtTheme.positive : TradEtTheme.textMuted,
@@ -167,7 +169,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                                 color: condition == 'below'
                                     ? TradEtTheme.negative : TradEtTheme.textMuted),
                             const SizedBox(width: 6),
-                            Text('Below', style: TextStyle(
+                            Text(l.below, style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: condition == 'below'
                                   ? TradEtTheme.negative : TradEtTheme.textMuted,
@@ -184,8 +186,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel',
-                  style: TextStyle(color: TradEtTheme.textSecondary)),
+              child: Text(l.cancel,
+                  style: const TextStyle(color: TradEtTheme.textSecondary)),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -201,7 +203,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 } catch (_) {}
                 _loadAlerts();
               },
-              child: const Text('Create'),
+              child: Text(l.create),
             ),
           ],
         ),
@@ -211,6 +213,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final wide = isWideScreen(context);
 
     final content = Container(
@@ -223,13 +226,13 @@ class _AlertsScreenState extends State<AlertsScreen> {
               padding: EdgeInsets.fromLTRB(wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 0),
               child: Row(
                 children: [
-                  const Expanded(child: Column(
+                  Expanded(child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Price Alerts', style: TextStyle(fontSize: 28,
+                      Text(l.priceAlertsTitle, style: const TextStyle(fontSize: 28,
                           fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
-                      Text('የዋጋ ማንቂያ • Get notified on price changes',
-                          style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+                      Text(l.getNotifiedOnPriceChanges,
+                          style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
                     ],
                   )),
                   FloatingActionButton.small(
@@ -260,13 +263,14 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   Widget _buildAlertList(bool wide) {
+    final l = AppLocalizations.of(context);
     final list = ListView(
       padding: EdgeInsets.symmetric(horizontal: wide ? 32 : 16),
       children: [
         if (_triggered.isNotEmpty) ...[
-          const Padding(
-            padding: EdgeInsets.only(bottom: 8),
-            child: Text('Triggered', style: TextStyle(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(l.triggered, style: const TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w700,
                 color: TradEtTheme.accent)),
           ),
@@ -274,9 +278,9 @@ class _AlertsScreenState extends State<AlertsScreen> {
           const SizedBox(height: 20),
         ],
         if (_alerts.isNotEmpty) ...[
-          const Padding(
-            padding: EdgeInsets.only(bottom: 8),
-            child: Text('Active Alerts', style: TextStyle(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(l.activeAlerts, style: const TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w700,
                 color: TradEtTheme.positive)),
           ),
@@ -296,6 +300,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   Widget _buildAlertCard(PriceAlert alert) {
+    final l = AppLocalizations.of(context);
     final isAbove = alert.condition == 'above';
     final color = isAbove ? TradEtTheme.positive : TradEtTheme.negative;
     final asset = context.read<AppProvider>().assets
@@ -334,10 +339,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
               Text(alert.symbol, style: const TextStyle(
                   fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
               const SizedBox(height: 2),
-              Text('${isAbove ? "Above" : "Below"} ${_fmt.format(alert.targetPrice)} ETB',
+              Text('${isAbove ? l.above : l.below} ${_fmt.format(alert.targetPrice)} ETB',
                   style: TextStyle(fontSize: 12, color: color)),
               if (alert.currentPrice != null)
-                Text('Current: ${_fmt.format(alert.currentPrice)} ETB',
+                Text(l.currentPriceDisplay(_fmt.format(alert.currentPrice!)),
                     style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
             ],
           )),
@@ -353,6 +358,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   Widget _buildTriggeredAlert(PriceAlert alert) {
+    final l = AppLocalizations.of(context);
     final asset = context.read<AppProvider>().assets
         .where((a) => a.symbol == alert.symbol)
         .firstOrNull;
@@ -384,10 +390,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
           Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${alert.symbol} hit target!',
+              Text(l.hitTargetSymbol(alert.symbol),
                   style: const TextStyle(fontWeight: FontWeight.w700,
                       fontSize: 14, color: Colors.white)),
-              Text('${alert.condition == "above" ? "Went above" : "Dropped below"} '
+              Text('${alert.condition == "above" ? l.wentAbove : l.droppedBelow} '
                   '${_fmt.format(alert.targetPrice)} ETB',
                   style: const TextStyle(fontSize: 12, color: TradEtTheme.accent)),
             ],
@@ -400,17 +406,18 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(top: 80),
       child: Column(
         children: [
           Icon(Icons.notifications_none, size: 64, color: TradEtTheme.textMuted.withValues(alpha: 0.5)),
           const SizedBox(height: 16),
-          const Text('No alerts yet', style: TextStyle(fontSize: 18,
+          Text(l.noAlertsYet, style: const TextStyle(fontSize: 18,
               fontWeight: FontWeight.w600, color: TradEtTheme.textMuted)),
           const SizedBox(height: 8),
-          const Text('Tap + to create a price alert',
-              style: TextStyle(fontSize: 13, color: TradEtTheme.textMuted)),
+          Text(l.tapPlusToCreateAlert,
+              style: const TextStyle(fontSize: 13, color: TradEtTheme.textMuted)),
         ],
       ),
     );

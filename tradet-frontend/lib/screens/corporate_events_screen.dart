@@ -5,6 +5,7 @@ import '../providers/app_provider.dart';
 import '../theme.dart';
 import '../utils/asset_emoji.dart';
 import '../widgets/responsive_layout.dart';
+import '../l10n/app_localizations.dart';
 
 // ─── Model ───────────────────────────────────────────────────────────────────
 
@@ -225,18 +226,18 @@ Color _eventColor(CorporateEventType type) {
   }
 }
 
-String _eventLabel(CorporateEventType type) {
+String _eventLabel(CorporateEventType type, [AppLocalizations? l]) {
   switch (type) {
     case CorporateEventType.earnings:
-      return 'Earnings / Report';
+      return l?.earningsReport ?? 'Earnings / Report';
     case CorporateEventType.agm:
-      return 'Annual Meeting';
+      return l?.annualMeeting ?? 'Annual Meeting';
     case CorporateEventType.dividend:
-      return 'Profit Share';
+      return l?.profitShare ?? 'Profit Share';
     case CorporateEventType.marketHoliday:
-      return 'Market Holiday';
+      return l?.marketHolidayLabel ?? 'Market Holiday';
     case CorporateEventType.ecxSession:
-      return 'ECX Session';
+      return l?.ecxSessionLabel ?? 'ECX Session';
   }
 }
 
@@ -327,6 +328,7 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final provider = context.watch<AppProvider>();
     final mySymbols =
         provider.holdings.map((h) => h.symbol).toSet().cast<String>();
@@ -373,7 +375,7 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
             onChanged: (v) => setState(() => _search = v),
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Search events...',
+              hintText: l.searchEvents,
               hintStyle: const TextStyle(color: TradEtTheme.textMuted),
               prefixIcon: const Icon(Icons.search_rounded,
                   color: TradEtTheme.textMuted, size: 20),
@@ -399,9 +401,9 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
             ),
             child: Row(
               children: [
-                _tabBtn('My events', 0),
+                _tabBtn(l.myEvents, 0),
                 const SizedBox(width: 3),
-                _tabBtn('All events', 1),
+                _tabBtn(l.allEvents, 1),
               ],
             ),
           ),
@@ -454,8 +456,8 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
               padding: const EdgeInsets.fromLTRB(24, 20, 8, 12),
               child: Row(
                 children: [
-                  const Text('Corporate Events',
-                      style: TextStyle(
+                  Text(l.corporateEvents,
+                      style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),
@@ -468,14 +470,9 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
                 height: 1,
                 color: TradEtTheme.divider.withValues(alpha: 0.3)),
             Expanded(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 900),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: content,
-                  ),
-                ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: content,
               ),
             ),
           ],
@@ -501,8 +498,8 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Corporate Events',
-            style: TextStyle(
+        title: Text(l.corporateEvents,
+            style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
                 color: Colors.white)),
@@ -545,6 +542,7 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
   }
 
   Widget _empty() {
+    final l = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -552,16 +550,16 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
           const Icon(Icons.event_note_rounded,
               size: 48, color: TradEtTheme.textMuted),
           const SizedBox(height: 12),
-          const Text('No events found',
-              style: TextStyle(
+          Text(l.noEventsFound,
+              style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.white)),
           const SizedBox(height: 4),
           Text(
               _tab == 0
-                  ? 'Events for your holdings will appear here'
-                  : 'Try adjusting your search or filter',
+                  ? l.eventsForHoldings
+                  : l.adjustSearchFilter,
               textAlign: TextAlign.center,
               style: const TextStyle(
                   fontSize: 13, color: TradEtTheme.textMuted)),
@@ -571,6 +569,7 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
   }
 
   void _showFilterSheet() {
+    final l = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: TradEtTheme.surface,
@@ -583,8 +582,8 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Filter by Type',
-                  style: TextStyle(
+              Text(l.filterByType,
+                  style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Colors.white)),
@@ -593,9 +592,9 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _filterChip(null, 'All', Icons.apps_rounded),
+                  _filterChip(null, l.all, Icons.apps_rounded),
                   ...CorporateEventType.values.map((t) =>
-                      _filterChip(t, _eventLabel(t), _eventIcon(t))),
+                      _filterChip(t, _eventLabel(t, l), _eventIcon(t))),
                 ],
               ),
               const SizedBox(height: 20),
@@ -733,6 +732,7 @@ class _EventRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final color = _eventColor(event.type);
     final emoji = event.assetSymbol.isNotEmpty
         ? assetEmoji(event.assetSymbol, null)
@@ -812,7 +812,7 @@ class _EventRow extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          event.detail ?? _eventLabel(event.type),
+                          event.detail ?? _eventLabel(event.type, l),
                           style: TextStyle(
                               fontSize: 12,
                               color: color.withValues(alpha: 0.85)),

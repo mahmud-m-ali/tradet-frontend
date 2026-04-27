@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme.dart';
+import '../l10n/app_localizations.dart';
 
 /// A bottom disclaimer widget shown on all main screens.
 /// Informs users that the app does not constitute financial advice.
@@ -26,15 +27,10 @@ class DisclaimerFooter extends StatelessWidget {
             color: TradEtTheme.textMuted.withValues(alpha: 0.7),
           ),
           const SizedBox(width: 8),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Disclaimer: TradEt is a Sharia-compliant trading platform for '
-              'Ethiopian commodities. All information provided is for '
-              'informational purposes only and does not constitute financial, '
-              'investment, or legal advice. Past performance is not indicative '
-              'of future results. Trading involves risk — please consult a '
-              'qualified financial advisor before making investment decisions.',
-              style: TextStyle(
+              AppLocalizations.of(context).disclaimerText,
+              style: const TextStyle(
                 fontSize: 10,
                 color: TradEtTheme.textMuted,
                 height: 1.5,

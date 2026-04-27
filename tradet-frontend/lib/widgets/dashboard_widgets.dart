@@ -103,6 +103,7 @@ class HeroTradeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final summary = provider.portfolioSummary;
     final totalValue = summary?.totalPortfolioValue ?? 0;
     final cashBalance = provider.availableCashBalance;
@@ -139,8 +140,8 @@ class HeroTradeCard extends StatelessWidget {
               const Icon(Icons.account_balance_rounded,
                   size: 13, color: TradEtTheme.textSecondary),
               const SizedBox(width: 5),
-              const Text('Total Portfolio Value',
-                  style: TextStyle(
+              Text(l.totalPortfolioValue,
+                  style: const TextStyle(
                       fontSize: 11, color: TradEtTheme.textSecondary)),
               const Spacer(),
               Container(
@@ -150,8 +151,8 @@ class HeroTradeCard extends StatelessWidget {
                   color: TradEtTheme.positive.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                child: const Text('Halal',
-                    style: TextStyle(
+                child: Text(l.halal,
+                    style: const TextStyle(
                         fontSize: 9,
                         fontWeight: FontWeight.w700,
                         color: TradEtTheme.positive)),
@@ -231,8 +232,8 @@ class HeroTradeCard extends StatelessWidget {
               const Icon(Icons.show_chart_rounded,
                   size: 12, color: TradEtTheme.textMuted),
               const SizedBox(width: 4),
-              const Text('Capital at Risk',
-                  style: TextStyle(
+              Text(l.capitalAtRisk,
+                  style: const TextStyle(
                       fontSize: 11, color: TradEtTheme.textSecondary)),
               const Spacer(),
               Text('${fmt.format(holdingsValue)} ETB',
@@ -249,8 +250,8 @@ class HeroTradeCard extends StatelessWidget {
                 const Icon(Icons.account_balance_wallet_outlined,
                     size: 12, color: TradEtTheme.textMuted),
                 const SizedBox(width: 4),
-                const Text('Available Cash',
-                    style: TextStyle(
+                Text(l.availableCash,
+                    style: const TextStyle(
                         fontSize: 11, color: TradEtTheme.textSecondary)),
                 const Spacer(),
                 Text('${fmt.format(cashBalance)} ETB',
@@ -267,8 +268,8 @@ class HeroTradeCard extends StatelessWidget {
                   const Icon(Icons.lock_outline_rounded,
                       size: 12, color: TradEtTheme.warning),
                   const SizedBox(width: 4),
-                  const Text('Reserved for Orders',
-                      style: TextStyle(
+                  Text(l.reservedForOrders,
+                      style: const TextStyle(
                           fontSize: 11, color: TradEtTheme.warning)),
                   const Spacer(),
                   Text('${fmt.format(provider.reservedForOrders)} ETB',
@@ -310,14 +311,14 @@ class HeroTradeCard extends StatelessWidget {
                           gradient: TradEtTheme.heroGradient,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.bolt_rounded,
+                            const Icon(Icons.bolt_rounded,
                                 size: 14, color: Colors.white),
-                            SizedBox(width: 5),
-                            Text('Trade Now',
-                                style: TextStyle(
+                            const SizedBox(width: 5),
+                            Text(l.tradeNow,
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12)),
@@ -342,15 +343,15 @@ class HeroTradeCard extends StatelessWidget {
                               color: TradEtTheme.divider
                                   .withValues(alpha: 0.5)),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.pie_chart_outline,
+                            const Icon(Icons.pie_chart_outline,
                                 size: 14,
                                 color: TradEtTheme.primaryLight),
-                            SizedBox(width: 5),
-                            Text('Portfolio',
-                                style: TextStyle(
+                            const SizedBox(width: 5),
+                            Text(AppLocalizations.of(context).portfolio,
+                                style: const TextStyle(
                                     color: TradEtTheme.primaryLight,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12)),
@@ -467,6 +468,7 @@ class TrustStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
@@ -478,13 +480,13 @@ class TrustStrip extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _TrustBadge(icon: Icons.verified_rounded,
-              label: 'ECX Regulated', color: TradEtTheme.primaryLight),
+              label: l.ecxRegulated, color: TradEtTheme.primaryLight),
           _TrustDivider(),
           _TrustBadge(icon: Icons.star_rounded,
-              label: 'Sharia Certified', color: TradEtTheme.positive),
+              label: l.shariaCertified, color: TradEtTheme.positive),
           _TrustDivider(),
           _TrustBadge(icon: Icons.gavel_rounded,
-              label: 'AAOIFI Compliant', color: TradEtTheme.accent),
+              label: l.aaaoifiCompliant, color: TradEtTheme.accent),
         ],
       ),
     );
@@ -571,9 +573,9 @@ class PortfolioCard extends StatelessWidget {
                   color: TradEtTheme.positive.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
-                  'Halal',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context).halal,
+                  style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     color: TradEtTheme.positive,
@@ -1113,9 +1115,9 @@ class AllocationCard extends StatelessWidget {
                 color: TradEtTheme.textSecondary,
               ),
               const SizedBox(width: 6),
-              const Text(
-                'Portfolio Split',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).portfolioSplit,
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: TradEtTheme.textSecondary,
@@ -1123,8 +1125,8 @@ class AllocationCard extends StatelessWidget {
               ),
             ],
           ),
-          _bar('Holdings', holdingsPct, const Color(0xFF818CF8)),
-          _bar('Cash', cashPct, TradEtTheme.accent),
+          _bar(AppLocalizations.of(context).holdings, holdingsPct, const Color(0xFF818CF8)),
+          _bar(AppLocalizations.of(context).cash, cashPct, TradEtTheme.accent),
         ],
       ),
     );
@@ -1315,7 +1317,7 @@ class HoldingTile extends StatelessWidget {
               if (matches.isEmpty) return const SizedBox.shrink();
               final asset = matches.first;
               return _TradeChip(
-                label: 'Sell',
+                label: AppLocalizations.of(ctx).sell,
                 color: TradEtTheme.negative,
                 big: true,
                 onTap: () => Navigator.of(ctx).push(
@@ -1377,7 +1379,7 @@ class OrderTile extends StatelessWidget {
     };
 
     final statusLabel = order.orderStatus == 'pending'
-        ? 'OPEN'
+        ? AppLocalizations.of(context).openStatus.toUpperCase()
         : order.orderStatus.toString().toUpperCase();
     return GestureDetector(
       onTap: order.isPending
@@ -1978,9 +1980,9 @@ class TopOpportunitiesSection extends StatefulWidget {
 class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
   int _tab = 0; // 0=Top Volume, 1=Trending
 
-  static const _tabs = [
-    (Icons.bar_chart_rounded, 'Top Volume'),
-    (Icons.trending_up_rounded, 'Trending'),
+  static const _tabIcons = [
+    Icons.bar_chart_rounded,
+    Icons.trending_up_rounded,
   ];
 
   List<Asset> get _tabAssets {
@@ -2030,7 +2032,7 @@ class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
     TradEtTheme.positive,
   ];
 
-  Widget _buildDesktopLayout() {
+  Widget _buildDesktopLayout(List<String> tabLabels) {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2051,9 +2053,9 @@ class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
                     padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
                     child: Row(
                       children: [
-                        Icon(_tabs[i].$1, size: 14, color: color),
+                        Icon(_tabIcons[i], size: 14, color: color),
                         const SizedBox(width: 6),
-                        Text(_tabs[i].$2,
+                        Text(tabLabels[i],
                             style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
@@ -2066,11 +2068,11 @@ class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
                       height: 1,
                       color: TradEtTheme.divider.withValues(alpha: 0.3)),
                   if (assets.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.all(16),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
                       child: Center(
-                          child: Text('No data',
-                              style: TextStyle(
+                          child: Text(AppLocalizations.of(context).noData,
+                              style: const TextStyle(
                                   fontSize: 12,
                                   color: TradEtTheme.textMuted))),
                     )
@@ -2092,6 +2094,8 @@ class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
   @override
   Widget build(BuildContext context) {
     if (widget.provider.assets.isEmpty) return const SizedBox.shrink();
+    final l = AppLocalizations.of(context);
+    final tabLabels = [l.topVolume, l.trending];
     final wide = isWideScreen(context);
     if (wide) {
       return Container(
@@ -2108,14 +2112,14 @@ class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
               const Icon(Icons.lightbulb_rounded,
                   size: 17, color: TradEtTheme.warning),
               const SizedBox(width: 8),
-              const Text('Top Opportunities',
-                  style: TextStyle(
+              Text(l.topOpportunities,
+                  style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Colors.white)),
             ]),
             const SizedBox(height: 14),
-            _buildDesktopLayout(),
+            _buildDesktopLayout(tabLabels),
           ],
         ),
       );
@@ -2143,8 +2147,8 @@ class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
                   const Icon(Icons.lightbulb_rounded,
                       size: 17, color: TradEtTheme.warning),
                   const SizedBox(width: 7),
-                  const Text('Top Opportunities',
-                      style: TextStyle(
+                  Text(l.topOpportunities,
+                      style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),
@@ -2158,7 +2162,7 @@ class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
-                    children: List.generate(_tabs.length, (i) {
+                    children: List.generate(tabLabels.length, (i) {
                       final sel = _tab == i;
                       final color = _tabColors[i];
                       return Expanded(
@@ -2183,13 +2187,13 @@ class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(_tabs[i].$1,
+                                  Icon(_tabIcons[i],
                                       size: 13,
                                       color: sel
                                           ? color
                                           : TradEtTheme.textMuted),
                                   const SizedBox(width: 5),
-                                  Text(_tabs[i].$2,
+                                  Text(tabLabels[i],
                                       style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: sel
@@ -2213,11 +2217,11 @@ class _TopOpportunitiesSectionState extends State<TopOpportunitiesSection> {
           Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
           // Asset rows
           if (assets.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(20),
+            Padding(
+              padding: const EdgeInsets.all(20),
               child: Center(
-                  child: Text('No data',
-                      style: TextStyle(
+                  child: Text(AppLocalizations.of(context).noData,
+                      style: const TextStyle(
                           fontSize: 12, color: TradEtTheme.textMuted))),
             )
           else
@@ -2324,8 +2328,8 @@ class _OpportunityRow extends StatelessWidget {
                       gradient: TradEtTheme.heroGradient,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Text('Buy',
-                        style: TextStyle(
+                    child: Text(AppLocalizations.of(context).buy,
+                        style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: Colors.white)),
@@ -2390,11 +2394,11 @@ class _MoversSectionState extends State<MoversSection> {
         const SizedBox(height: 12),
         _showGainers
             ? (widget.webMode
-                  ? webTopMoversSection(widget.provider, widget.fmt, widget.desktop)
-                  : topMoversSection(widget.provider, widget.fmt))
+                  ? webTopMoversSection(context, widget.provider, widget.fmt, widget.desktop)
+                  : topMoversSection(context, widget.provider, widget.fmt))
             : (widget.webMode
-                  ? webTopLosersSection(widget.provider, widget.fmt, widget.desktop)
-                  : topLosersSection(widget.provider, widget.fmt)),
+                  ? webTopLosersSection(context, widget.provider, widget.fmt, widget.desktop)
+                  : topLosersSection(context, widget.provider, widget.fmt)),
       ],
     );
     // Wrap in a titled card for visual separation (mobile and desktop)
@@ -2458,11 +2462,12 @@ class _MoversSectionState extends State<MoversSection> {
 // ─── Top-level mover section builders (used by MoversSection widget) ───
 
 // 4-column grid for mobile movers — no sparklines, just icon + symbol + change%
-Widget _mobileMoversGrid(List<dynamic> assets) {
+Widget _mobileMoversGrid(BuildContext context, List<dynamic> assets) {
   if (assets.isEmpty) {
-    return const Padding(
-      padding: EdgeInsets.all(16),
-      child: Text('No data', style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13)),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Text(AppLocalizations.of(context).noData,
+          style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13)),
     );
   }
   return GridView.builder(
@@ -2483,7 +2488,7 @@ Widget _mobileMoversGrid(List<dynamic> assets) {
 String _assetEmoji(String symbol, String? categoryName) =>
     assetEmoji(symbol, categoryName);
 
-Widget topMoversSection(AppProvider provider, NumberFormat fmt) {
+Widget topMoversSection(BuildContext context, AppProvider provider, NumberFormat fmt) {
   if (provider.assetsLoading && provider.assets.isEmpty) {
     return const Center(child: Padding(padding: EdgeInsets.all(20),
         child: CircularProgressIndicator(color: TradEtTheme.positive)));
@@ -2491,12 +2496,12 @@ Widget topMoversSection(AppProvider provider, NumberFormat fmt) {
   if (provider.assetsError != null && provider.assets.isEmpty) {
     return ErrorRetryWidget(message: provider.assetsError!, onRetry: () => provider.loadAssets());
   }
-  return _mobileMoversGrid(getTopMovers(provider).take(3).toList());
+  return _mobileMoversGrid(context, getTopMovers(provider).take(3).toList());
 }
 
-Widget topLosersSection(AppProvider provider, NumberFormat fmt) {
+Widget topLosersSection(BuildContext context, AppProvider provider, NumberFormat fmt) {
   if (provider.assets.isEmpty) return const SizedBox.shrink();
-  return _mobileMoversGrid(getTopLosers(provider).take(3).toList());
+  return _mobileMoversGrid(context, getTopLosers(provider).take(3).toList());
 }
 
 class _MoverGridItem extends StatelessWidget {
@@ -2576,6 +2581,7 @@ class _MoverGridItem extends StatelessWidget {
 }
 
 Widget webTopMoversSection(
+  BuildContext context,
   AppProvider provider,
   NumberFormat fmt,
   bool desktop,
@@ -2610,16 +2616,17 @@ Widget webTopMoversSection(
       onRetry: () => provider.loadAssets(),
     );
   }
-  return const Padding(
-    padding: EdgeInsets.all(16),
+  return Padding(
+    padding: const EdgeInsets.all(16),
     child: Text(
-      'No market data available',
-      style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
+      AppLocalizations.of(context).noMarketDataAvailable,
+      style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
     ),
   );
 }
 
 Widget webTopLosersSection(
+  BuildContext context,
   AppProvider provider,
   NumberFormat fmt,
   bool desktop,
@@ -2627,11 +2634,11 @@ Widget webTopLosersSection(
   if (provider.assets.isNotEmpty) {
     final losers = getTopLosers(provider);
     if (losers.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
+      return Padding(
+        padding: const EdgeInsets.all(16),
         child: Text(
-          'No losers today',
-          style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
+          AppLocalizations.of(context).noLosersToday,
+          style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
         ),
       );
     }
@@ -2690,6 +2697,7 @@ class WatchlistMiniSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final isWide = isWideScreen(context);
     final items = provider.watchlist.take(isWide ? 5 : 3).toList();
 
@@ -2709,9 +2717,9 @@ class WatchlistMiniSection extends StatelessWidget {
               children: [
                 const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFF8C00)),
                 const SizedBox(width: 6),
-                const Expanded(
-                  child: Text('Watchlist',
-                      style: TextStyle(
+                Expanded(
+                  child: Text(l.watchlist,
+                      style: const TextStyle(
                           fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
                 ),
                 GestureDetector(
@@ -2722,10 +2730,10 @@ class WatchlistMiniSection extends StatelessWidget {
                     cursor: SystemMouseCursors.click,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Text('See all',
-                            style: TextStyle(fontSize: 12, color: TradEtTheme.primaryLight)),
-                        SizedBox(width: 2),
+                      children: [
+                        Text(l.seeAll,
+                            style: const TextStyle(fontSize: 12, color: TradEtTheme.primaryLight)),
+                        const SizedBox(width: 2),
                         Icon(Icons.chevron_right_rounded,
                             size: 16, color: TradEtTheme.primaryLight),
                       ],
@@ -2746,13 +2754,13 @@ class WatchlistMiniSection extends StatelessWidget {
                     const Icon(Icons.star_outline_rounded,
                         size: 28, color: TradEtTheme.textMuted),
                     const SizedBox(height: 6),
-                    const Text('No watchlist items',
-                        style: TextStyle(fontSize: 12, color: TradEtTheme.textMuted)),
+                    Text(l.noWatchlistItems,
+                        style: const TextStyle(fontSize: 12, color: TradEtTheme.textMuted)),
                     const SizedBox(height: 8),
                     GestureDetector(
                       onTap: onNavigateTo != null ? () => onNavigateTo!(1) : null,
-                      child: const Text('Browse Market →',
-                          style: TextStyle(
+                      child: Text(l.browseMarketArrow,
+                          style: const TextStyle(
                               fontSize: 12,
                               color: TradEtTheme.primaryLight,
                               fontWeight: FontWeight.w600)),
@@ -2913,9 +2921,9 @@ void showDepositSheet(BuildContext context) {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Deposit ETB',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(ctx).depositEtb,
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -2929,9 +2937,9 @@ void showDepositSheet(BuildContext context) {
             )
           else ...[
             const SizedBox(height: 20),
-            const Text(
-              'Deposit ETB',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(ctx).depositEtb,
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -2939,9 +2947,9 @@ void showDepositSheet(BuildContext context) {
             ),
           ],
           const SizedBox(height: 4),
-          const Text(
-            'ገንዘብ አስገባ • Funds via secure channel (no interest)',
-            style: TextStyle(fontSize: 13, color: Color(0xFF8BAF97)),
+          Text(
+            AppLocalizations.of(ctx).depositSubtitle,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF8BAF97)),
           ),
           const SizedBox(height: 20),
           TextField(
@@ -2975,7 +2983,7 @@ void showDepositSheet(BuildContext context) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(result['message'] ?? 'Deposit complete'),
+                      content: Text(result['message'] ?? AppLocalizations.of(context).depositComplete),
                       backgroundColor: const Color(0xFF2E7D52),
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
@@ -3074,16 +3082,16 @@ void showWithdrawSheet(BuildContext context) {
                 ),
               ],
               const SizedBox(height: 4),
-              const Text(
-                'Riba-free withdrawal to your saved bank account',
-                style: TextStyle(
+              Text(
+                l.ribaFreeWithdrawal,
+                style: const TextStyle(
                   fontSize: 13,
                   color: TradEtTheme.textSecondary,
                 ),
               ),
               const SizedBox(height: 12),
               Text(
-                'Available: ${available.toStringAsFixed(2)} ETB',
+                l.availableBalance(available.toStringAsFixed(2)),
                 style: const TextStyle(
                   fontSize: 13,
                   color: TradEtTheme.positive,
@@ -3092,7 +3100,7 @@ void showWithdrawSheet(BuildContext context) {
               ),
               if (reserved > 0)
                 Text(
-                  'Reserved in open orders: ${reserved.toStringAsFixed(2)} ETB',
+                  l.reservedInOrders(reserved.toStringAsFixed(2)),
                   style: const TextStyle(
                     fontSize: 11,
                     color: TradEtTheme.warning,
@@ -3109,37 +3117,29 @@ void showWithdrawSheet(BuildContext context) {
                       color: TradEtTheme.warning.withValues(alpha: 0.4),
                     ),
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.account_balance_outlined,
                         color: TradEtTheme.warning,
                         size: 32,
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
-                        'No payment methods saved.',
-                        style: TextStyle(
+                        l.noPaymentMethods,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Go to Profile → Payment Methods to add your bank account.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: TradEtTheme.textSecondary,
                         ),
                       ),
                     ],
                   ),
                 ),
               ] else ...[
-                const Text(
-                  'Select payment method:',
-                  style: TextStyle(fontSize: 12, color: TradEtTheme.textMuted),
+                Text(
+                  l.selectPaymentMethod,
+                  style: const TextStyle(fontSize: 12, color: TradEtTheme.textMuted),
                 ),
                 const SizedBox(height: 8),
                 ...methods.map(
@@ -3206,9 +3206,9 @@ void showWithdrawSheet(BuildContext context) {
                                 ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: const Text(
-                                'Primary',
-                                style: TextStyle(
+                              child: Text(
+                                l.primaryLabel,
+                                style: const TextStyle(
                                   fontSize: 9,
                                   fontWeight: FontWeight.w600,
                                   color: TradEtTheme.positive,
@@ -3263,7 +3263,7 @@ void showWithdrawSheet(BuildContext context) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            'Insufficient balance. Available: ${available.toStringAsFixed(2)} ETB',
+                            AppLocalizations.of(context).insufficientBalanceMsg(available.toStringAsFixed(2)),
                           ),
                           backgroundColor: TradEtTheme.negative,
                           behavior: SnackBarBehavior.floating,
@@ -3279,7 +3279,7 @@ void showWithdrawSheet(BuildContext context) {
                       final authed = await challengeTransactionAuth(
                         context,
                         reason:
-                            'Authenticate to withdraw ${amount.toStringAsFixed(2)} ETB',
+                            AppLocalizations.of(context).authenticateToWithdraw(amount.toStringAsFixed(2)),
                       );
                       if (!authed) return;
                     }
@@ -3295,8 +3295,8 @@ void showWithdrawSheet(BuildContext context) {
                         SnackBar(
                           content: Text(
                             isError
-                                ? (result['error'] ?? 'Withdrawal failed')
-                                : (result['message'] ?? 'Withdrawal complete'),
+                                ? (result['error'] ?? AppLocalizations.of(context).withdrawalFailed)
+                                : (result['message'] ?? AppLocalizations.of(context).withdrawComplete),
                           ),
                           backgroundColor: isError
                               ? TradEtTheme.negative
@@ -3433,8 +3433,8 @@ class _MarketStripState extends State<MarketStrip> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: visible.isEmpty
-                    ? [const Text('No assets',
-                        style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted))]
+                    ? [Text(AppLocalizations.of(context).noData,
+                        style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted))]
                     : visible.map((a) {
                         final isUp = (a.change24h ?? 0) >= 0;
                         return GestureDetector(
@@ -3626,9 +3626,9 @@ class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
 
     // ── Desktop: two side-by-side sub-cards (same pattern as TopOpportunitiesSection) ──
     if (wide) {
-      const subCards = [
-        (Icons.pie_chart_rounded, 'Your Holdings', TradEtTheme.primaryLight),
-        (Icons.receipt_long_rounded, 'Recent Orders', TradEtTheme.accent),
+      final subCards = [
+        (Icons.pie_chart_rounded, l.yourHoldingsLabel, TradEtTheme.primaryLight),
+        (Icons.receipt_long_rounded, l.recentOrdersLabel, TradEtTheme.accent),
       ];
 
       Widget buildSubCard(int i) {
@@ -3646,7 +3646,7 @@ class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
                         child: HoldingTile(holding: h, fmt: widget.fmt),
                       )),
                   if (widget.provider.holdings.length > 4)
-                    _viewAllBtn('View all holdings', () => widget.onNavigateTo?.call(2)),
+                    _viewAllBtn(l.viewAllHoldings, () => widget.onNavigateTo?.call(2)),
                 ])
               : _emptyHoldings(context);
         } else {
@@ -3657,9 +3657,9 @@ class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
                         child: OrderTile(order: o, fmt: widget.fmt),
                       )),
                   if (widget.provider.orders.length > 4)
-                    _viewAllBtn('View all orders', () => widget.onNavigateTo?.call(3)),
+                    _viewAllBtn(l.viewAllOrders, () => widget.onNavigateTo?.call(3)),
                 ])
-              : _emptyState(Icons.receipt_long_outlined, 'No recent orders');
+              : _emptyState(Icons.receipt_long_outlined, l.noRecentOrders);
         }
 
         return Expanded(
@@ -3714,8 +3714,8 @@ class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
             Row(children: [
               const Icon(Icons.bar_chart_rounded, size: 18, color: TradEtTheme.accent),
               const SizedBox(width: 8),
-              const Text('Activity',
-                  style: TextStyle(
+              Text(l.activity,
+                  style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Colors.white)),
@@ -3752,8 +3752,8 @@ class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
             children: [
               const Icon(Icons.bar_chart_rounded, size: 18, color: TradEtTheme.accent),
               const SizedBox(width: 8),
-              const Text('Activity',
-                  style: TextStyle(
+              Text(l.activity,
+                  style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Colors.white)),
@@ -3785,17 +3785,17 @@ class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
                 child: HoldingTile(holding: h, fmt: widget.fmt),
               )),
               if (widget.provider.holdings.length > 3)
-                _viewAllBtn('View all holdings', () => widget.onNavigateTo?.call(2)),
+                _viewAllBtn(l.viewAllHoldings, () => widget.onNavigateTo?.call(2)),
             ],
           ] else ...[
-            if (!hasOrders) _emptyState(Icons.receipt_long_outlined, 'No recent orders')
+            if (!hasOrders) _emptyState(Icons.receipt_long_outlined, l.noRecentOrders)
             else ...[
               ...widget.provider.orders.take(3).map((o) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: OrderTile(order: o, fmt: widget.fmt),
               )),
               if (widget.provider.orders.length > 3)
-                _viewAllBtn('View all orders', () => widget.onNavigateTo?.call(3)),
+                _viewAllBtn(l.viewAllOrders, () => widget.onNavigateTo?.call(3)),
             ],
           ],
         ],
@@ -3829,6 +3829,7 @@ class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
   }
 
   Widget _emptyHoldings(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -3841,13 +3842,13 @@ class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
         children: [
           const Icon(Icons.add_chart_rounded, size: 32, color: TradEtTheme.positive),
           const SizedBox(height: 10),
-          const Text('Your portfolio is empty',
-              style: TextStyle(
+          Text(l.portfolioEmpty,
+              style: const TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
           const SizedBox(height: 4),
-          const Text('Browse the market to place your first\nSharia-compliant trade',
+          Text(l.firstTradePrompt,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary)),
+              style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary)),
           const SizedBox(height: 14),
           GestureDetector(
             onTap: () => widget.onNavigateTo?.call(1),
@@ -3860,8 +3861,8 @@ class _HoldingsOrdersTabCardState extends State<HoldingsOrdersTabCard> {
                   gradient: TradEtTheme.heroGradient,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text('Browse Market',
-                    style: TextStyle(
+                child: Text(l.browseMarket,
+                    style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: Colors.white)),
@@ -3953,9 +3954,9 @@ class CorporateEventsCard extends StatelessWidget {
                 const Icon(Icons.event_note_rounded,
                     size: 16, color: TradEtTheme.primaryLight),
                 const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('Corporate Events',
-                      style: TextStyle(
+                Expanded(
+                  child: Text(AppLocalizations.of(context).corporateEvents,
+                      style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),
@@ -3976,7 +3977,7 @@ class CorporateEventsCard extends StatelessWidget {
                           horizontal: 8, vertical: 6),
                       child: Row(
                         children: [
-                          Text('See all',
+                          Text(AppLocalizations.of(context).seeAll,
                               style: TextStyle(
                                   fontSize: 13,
                                   color: TradEtTheme.primaryLight
@@ -4000,8 +4001,8 @@ class CorporateEventsCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(20),
               child: Center(
-                child: Text('No upcoming events',
-                    style: TextStyle(
+                child: Text(AppLocalizations.of(context).noUpcomingEvents,
+                    style: const TextStyle(
                         fontSize: 13, color: TradEtTheme.textMuted)),
               ),
             )
@@ -4021,6 +4022,7 @@ class _EventPreviewRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final color = _eventColor(event.type);
     final emoji = event.assetSymbol.isNotEmpty
         ? assetEmoji(event.assetSymbol, null)
@@ -4087,7 +4089,7 @@ class _EventPreviewRow extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white),
                             overflow: TextOverflow.ellipsis),
-                        Text(event.detail ?? _eventLabel(event.type),
+                        Text(event.detail ?? _eventLabel(event.type, l),
                             style: TextStyle(
                                 fontSize: 11,
                                 color: color.withValues(alpha: 0.85)),
@@ -4134,17 +4136,17 @@ Color _eventColor(CorporateEventType type) {
   }
 }
 
-String _eventLabel(CorporateEventType type) {
+String _eventLabel(CorporateEventType type, [AppLocalizations? l]) {
   switch (type) {
     case CorporateEventType.earnings:
-      return 'Earnings / Report';
+      return l?.earningsReport ?? 'Earnings / Report';
     case CorporateEventType.agm:
-      return 'Annual Meeting';
+      return l?.annualMeeting ?? 'Annual Meeting';
     case CorporateEventType.dividend:
-      return 'Profit Share';
+      return l?.profitShare ?? 'Profit Share';
     case CorporateEventType.marketHoliday:
-      return 'Market Holiday';
+      return l?.marketHolidayLabel ?? 'Market Holiday';
     case CorporateEventType.ecxSession:
-      return 'ECX Session';
+      return l?.ecxSessionLabel ?? 'ECX Session';
   }
 }

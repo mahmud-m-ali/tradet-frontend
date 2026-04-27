@@ -1,6 +1,7 @@
 /// Reusable compliance badge widgets for Sharia and ECX status indicators.
 import 'package:flutter/material.dart';
 import '../theme.dart';
+import '../l10n/app_localizations.dart';
 
 /// Displays a colour-coded Sharia compliance label for an asset.
 /// Permissible assets render nothing; only `halal` and `non_compliant` show a badge.
@@ -46,17 +47,6 @@ class ShariaBadge extends StatelessWidget {
     }
   }
 
-  String get _label {
-    switch (_level) {
-      case 'halal':
-        return compact ? 'Halal' : 'Sharia Compliant';
-      case 'permissible':
-        return compact ? 'Permissible' : 'Permissible';
-      default:
-        return compact ? 'Non-Halal' : 'Non-Compliant';
-    }
-  }
-
   IconData get _icon {
     switch (_level) {
       case 'halal':
@@ -72,6 +62,10 @@ class ShariaBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     // Permissible assets show no badge — only Halal and Non-Compliant are labelled
     if (_level == 'permissible') return const SizedBox.shrink();
+    final l = AppLocalizations.of(context);
+    final label = _level == 'halal'
+        ? (compact ? l.halal : l.shariaCompliantBadge)
+        : (compact ? l.nonHalal : l.nonCompliant);
 
     if (compact) {
       return Container(
@@ -81,7 +75,7 @@ class ShariaBadge extends StatelessWidget {
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
-          _label,
+          label,
           style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: _fgColor),
         ),
       );
@@ -99,7 +93,7 @@ class ShariaBadge extends StatelessWidget {
           Icon(_icon, size: 14, color: _fgColor),
           const SizedBox(width: 4),
           Text(
-            _label,
+            label,
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: _fgColor),
           ),
         ],

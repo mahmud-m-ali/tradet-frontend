@@ -91,7 +91,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           icon: const Icon(Icons.arrow_back_ios_new_rounded,
                               color: Colors.white, size: 20),
                           onPressed: () => Navigator.of(context).pop(),
-                          tooltip: 'Back',
+                          tooltip: l.back,
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                         ),

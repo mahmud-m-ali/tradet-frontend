@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
+import '../white_label.dart';
 import '../widgets/responsive_layout.dart';
 import '../widgets/language_selector.dart';
 import 'register_screen.dart';
@@ -114,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Logo
+                            // Logo — TE / ትኢ mark
                             Container(
                               width: 80,
                               height: 80,
@@ -129,36 +130,47 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ],
                               ),
-                              child: const Icon(Icons.show_chart_rounded,
-                                  size: 40, color: Colors.white),
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'TE',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1,
+                                      height: 1.1,
+                                    ),
+                                  ),
+                                  Text(
+                                    'ትኢ',
+                                    style: TextStyle(
+                                      color: Color(0xFFD4AF37),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.1,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 20),
-                            const Text(
-                              'ትሬድኢት',
+                            Text(
+                              l.appName,
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
                                 letterSpacing: -0.5,
                               ),
                             ),
-                            const SizedBox(height: 2),
-                            const Text(
-                              'TradEt',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: TradEtTheme.textSecondary,
-                                letterSpacing: 3,
-                              ),
-                            ),
                             const SizedBox(height: 4),
-                            const Text(
-                              'by Amber',
+                            Text(
+                              l.byBrand(WhiteLabel.bankName),
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 11,
                                 color: TradEtTheme.textMuted,
                                 letterSpacing: 1,
@@ -233,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: const TextStyle(color: Colors.white),
                                     decoration: InputDecoration(
                                       labelText: l.email,
-                                      hintText: 'you@example.com',
+                                      hintText: l.emailHint,
                                       prefixIcon: const Icon(Icons.email_outlined, size: 20),
                                     ),
                                     validator: (v) =>
@@ -285,7 +297,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           const SizedBox(width: 10),
                                           Expanded(
                                             child: Text(
-                                              'Account locked. Too many failed attempts.\nTry again in ${_lockSecondsRemaining ~/ 60}m ${_lockSecondsRemaining % 60}s',
+                                              l.accountLocked(_lockSecondsRemaining ~/ 60, _lockSecondsRemaining % 60),
                                               style: const TextStyle(
                                                   color: TradEtTheme.negative,
                                                   fontSize: 12,
@@ -304,7 +316,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Text(
-                                        '${5 - _failedAttempts} attempt(s) remaining before lockout',
+                                        l.attemptsRemaining(5 - _failedAttempts),
                                         style: const TextStyle(
                                             color: TradEtTheme.warning, fontSize: 12),
                                       ),
@@ -360,7 +372,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Icon(Icons.play_circle_outline,
                                           size: 20, color: TradEtTheme.accent),
                                       const SizedBox(width: 8),
-                                      Text('Try Demo',
+                                      Text(l.tryDemo,
                                           style: TextStyle(
                                               color: TradEtTheme.accent,
                                               fontSize: 15,

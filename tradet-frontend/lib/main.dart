@@ -148,17 +148,36 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.show_chart_rounded,
-                    size: 48,
-                    color: Colors.white,
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'TE',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                          height: 1.1,
+                        ),
+                      ),
+                      Text(
+                        'ትኢ',
+                        style: TextStyle(
+                          color: Color(0xFFD4AF37),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          height: 1.1,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               const SizedBox(height: 28),
-              const Text(
-                WhiteLabel.appNameAmharic,
-                style: TextStyle(
+              Text(
+                WhiteLabel.appName,
+                style: const TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.w800,
                   color: TradEtTheme.primaryDark,
@@ -167,7 +186,7 @@ class _AuthGateState extends State<AuthGate> with SingleTickerProviderStateMixin
               ),
               const SizedBox(height: 4),
               Text(
-                WhiteLabel.appName,
+                'by ${WhiteLabel.bankName}',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -253,10 +272,10 @@ class _InactivityWrapperState extends State<_InactivityWrapper> {
         (route) => false,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Session expired due to inactivity. Please sign in again.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).sessionExpired),
           backgroundColor: TradEtTheme.warning,
-          duration: Duration(seconds: 5),
+          duration: const Duration(seconds: 5),
         ),
       );
     }

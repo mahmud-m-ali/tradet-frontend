@@ -123,14 +123,14 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                               color: TradEtTheme.textMuted
                                   .withValues(alpha: 0.5)),
                           const SizedBox(height: 16),
-                          const Text('Your watchlist is empty',
-                              style: TextStyle(
+                          Text(l.watchlistEmpty,
+                              style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white)),
                           const SizedBox(height: 8),
-                          const Text('Tap ★ on any asset to add it here',
-                              style: TextStyle(
+                          Text(l.tapStarToAdd,
+                              style: const TextStyle(
                                   fontSize: 13,
                                   color: TradEtTheme.textSecondary)),
                         ],

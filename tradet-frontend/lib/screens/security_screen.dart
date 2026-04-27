@@ -125,6 +125,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
   }
 
   Widget _buildAppBar() {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
       child: Row(
@@ -149,13 +150,13 @@ class _SecurityScreenState extends State<SecurityScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(AppLocalizations.of(context).security,
+              Text(l.security,
                   style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: Colors.white)),
-              const Text('Protect your account',
-                  style: TextStyle(
+              Text(l.protectYourAccount,
+                  style: const TextStyle(
                       fontSize: 11, color: TradEtTheme.textSecondary)),
             ],
           ),
@@ -167,9 +168,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
   // ─── Wealth Protection card ───────────────────────────────────────────
 
   Widget _wealthProtectionCard() {
+    final l = AppLocalizations.of(context);
     final statusColor =
         _wealthProtectionEnabled ? TradEtTheme.positive : TradEtTheme.textMuted;
-    final statusLabel = _wealthProtectionEnabled ? 'Active' : 'Inactive';
+    final statusLabel = _wealthProtectionEnabled ? l.wealthProtectionActive : l.wealthProtectionInactive;
     final methodLabel = _wealthProtectionEnabled
         ? _methodLabel(_authMethod, _biometricAvailable)
         : null;
@@ -211,8 +213,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Wealth Protection',
-                        style: TextStyle(
+                    Text(l.wealthProtection,
+                        style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: Colors.white)),
@@ -256,18 +258,15 @@ class _SecurityScreenState extends State<SecurityScreen> {
           Divider(height: 1, color: TradEtTheme.divider.withValues(alpha: 0.3)),
           const SizedBox(height: 14),
           // What it protects
-          const Text('Requires authentication for:',
-              style: TextStyle(
+          Text(l.requiresAuthFor,
+              style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: TradEtTheme.textSecondary)),
           const SizedBox(height: 10),
-          _protectionItem(Icons.swap_horiz_rounded, 'Buy & Sell orders',
-              'Every order placement'),
-          _protectionItem(Icons.arrow_upward_rounded, 'Withdrawals over 5,000 ETB',
-              'Large transfers to bank'),
-          _protectionItem(Icons.account_balance_outlined, 'Adding payment methods',
-              'Linking new bank accounts'),
+          _protectionItem(Icons.swap_horiz_rounded, l.buySellOrders, l.everyOrderPlacement),
+          _protectionItem(Icons.arrow_upward_rounded, l.withdrawalsOver, l.largeTransfersToBank),
+          _protectionItem(Icons.account_balance_outlined, l.addingPaymentMethods, l.linkingNewBankAccounts),
           if (kIsWeb) ...[
             const SizedBox(height: 12),
             Container(
@@ -278,15 +277,15 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 border:
                     Border.all(color: TradEtTheme.warning.withValues(alpha: 0.2)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline_rounded,
+                  const Icon(Icons.info_outline_rounded,
                       size: 14, color: TradEtTheme.warning),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Biometric auth requires the mobile app. PIN-based protection works on web.',
-                      style: TextStyle(
+                      l.biometricWebNote,
+                      style: const TextStyle(
                           fontSize: 11, color: TradEtTheme.textSecondary),
                     ),
                   ),

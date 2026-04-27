@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../models/models.dart';
 import '../utils/ethiopian_date.dart';
@@ -86,27 +87,28 @@ class OrdersScreen extends StatefulWidget {
             GestureDetector(
               onTap: () async {
                 Navigator.pop(ctx);
+                final l = AppLocalizations.of(context);
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (dCtx) => AlertDialog(
                     backgroundColor: TradEtTheme.cardBg,
-                    title: const Text('Cancel Order',
-                        style: TextStyle(color: Colors.white)),
+                    title: Text('${l.cancel} ${l.orders}',
+                        style: const TextStyle(color: Colors.white)),
                     content: Text(
-                      'Cancel ${order.orderType.toUpperCase()} order for ${order.symbol}?',
+                      '${l.cancel} ${order.orderType.toUpperCase()} ${l.orders.toLowerCase()} ${order.symbol}?',
                       style: const TextStyle(color: TradEtTheme.textSecondary),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dCtx, false),
-                        child: const Text('No',
-                            style: TextStyle(color: TradEtTheme.textSecondary)),
+                        child: Text(l.cancel,
+                            style: const TextStyle(color: TradEtTheme.textSecondary)),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: TradEtTheme.negative),
                         onPressed: () => Navigator.pop(dCtx, true),
-                        child: const Text('Cancel Order'),
+                        child: Text('${l.cancel} ${l.orders}'),
                       ),
                     ],
                   ),
@@ -119,8 +121,8 @@ class OrdersScreen extends StatefulWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(isError
-                            ? (result['error'] ?? 'Failed to cancel order')
-                            : 'Order cancelled successfully'),
+                            ? (result['error'] ?? AppLocalizations.of(context).failedToCancelOrder)
+                            : AppLocalizations.of(context).orderCancelledSuccess),
                         backgroundColor:
                             isError ? TradEtTheme.negative : TradEtTheme.positive,
                         behavior: SnackBarBehavior.floating,
@@ -141,13 +143,13 @@ class OrdersScreen extends StatefulWidget {
                     border: Border.all(
                         color: TradEtTheme.negative.withValues(alpha: 0.3)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(Icons.cancel_outlined,
+                      const Icon(Icons.cancel_outlined,
                           color: TradEtTheme.negative, size: 20),
-                      SizedBox(width: 12),
-                      Text('Cancel Order',
-                          style: TextStyle(
+                      const SizedBox(width: 12),
+                      Text('${AppLocalizations.of(context).cancel} ${AppLocalizations.of(context).orders}',
+                          style: const TextStyle(
                               color: TradEtTheme.negative,
                               fontWeight: FontWeight.w600,
                               fontSize: 15)),
@@ -187,6 +189,7 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     final fmt = NumberFormat('#,##0.00', 'en');
     final wide = isWideScreen(context);
+    final l = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
@@ -200,18 +203,18 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                   wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 0),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Orders',
-                            style: TextStyle(
+                        Text(l.orders,
+                            style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
                                 letterSpacing: -0.5)),
-                        Text('ትዕዛዞች • Trade history',
-                            style: TextStyle(
+                        Text('${l.orders} • ${l.tradeHistory}',
+                            style: const TextStyle(
                                 fontSize: 13,
                                 color: TradEtTheme.textSecondary)),
                       ],
@@ -225,14 +228,23 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                         child: GestureDetector(
                           onTap: () {
                             final fmt = NumberFormat('#,##0.00', 'en');
+                            final l = AppLocalizations.of(context);
                             showExportSheet(
                               context,
-                              title: 'Orders',
-                              subtitle: '${provider.orders.length} orders',
-                              pdfTitle: 'Order History Statement',
-                              headers: ['Date', 'Type', 'Symbol', 'Asset',
-                                'Qty', 'Price (ETB)', 'Total (ETB)',
-                                'Fee (ETB)', 'Status'],
+                              title: l.orders,
+                              subtitle: l.ordersCountLabel(provider.orders.length),
+                              pdfTitle: l.orderExportTitle,
+                              headers: [
+                                l.exportDateHeader,
+                                l.exportTypeHeader,
+                                l.symbol,
+                                l.asset,
+                                l.exportQtyHeader,
+                                l.exportPriceEtbHeader,
+                                l.exportTotalEtbHeader,
+                                l.exportFeeEtbHeader,
+                                l.exportStatusHeader,
+                              ],
                               rows: provider.orders.map((o) => [
                                 o.createdAt,
                                 o.orderType.toUpperCase(),
@@ -303,9 +315,9 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                   labelColor: Colors.white,
                   unselectedLabelColor: TradEtTheme.textMuted,
                   labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                  tabs: const [
-                    Tab(text: 'Orders'),
-                    Tab(text: 'Event Log'),
+                  tabs: [
+                    Tab(text: l.orders),
+                    Tab(text: l.securityLog),
                   ],
                 ),
               ),
@@ -345,12 +357,12 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                                     size: 48, color: TradEtTheme.textMuted),
                               ),
                               const SizedBox(height: 16),
-                              const Text('No events yet',
-                                  style: TextStyle(fontWeight: FontWeight.w600,
+                              Text(l.noOrdersYet,
+                                  style: const TextStyle(fontWeight: FontWeight.w600,
                                       fontSize: 16, color: Colors.white)),
                               const SizedBox(height: 4),
-                              const Text('Place an order to see the audit trail',
-                                  style: TextStyle(
+                              Text(l.noOrdersYet,
+                                  style: const TextStyle(
                                       color: TradEtTheme.textMuted, fontSize: 13)),
                             ],
                           ),
@@ -386,6 +398,7 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
 
   Widget _buildEventWebTable(AppProvider provider, NumberFormat fmt) {
     final wide = isWideScreen(context);
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: wide ? 32 : 20),
       child: Column(
@@ -397,17 +410,17 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
               borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
               border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                SizedBox(width: 90, child: _TH('Event')),
-                SizedBox(width: 12),
-                SizedBox(width: 64, child: _TH('Side')),
-                SizedBox(width: 12),
-                Expanded(flex: 2, child: _TH('Asset')),
-                Expanded(flex: 1, child: _TH('Quantity')),
-                Expanded(flex: 1, child: _TH('Price')),
-                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH('Amount'))),
-                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH('Date'))),
+                SizedBox(width: 90, child: _TH(l.activity)),
+                const SizedBox(width: 12),
+                SizedBox(width: 64, child: _TH(l.type)),
+                const SizedBox(width: 12),
+                Expanded(flex: 2, child: _TH(l.asset)),
+                Expanded(flex: 1, child: _TH(l.quantity)),
+                Expanded(flex: 1, child: _TH(l.price)),
+                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH(l.total))),
+                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH(l.date))),
               ],
             ),
           ),
@@ -450,12 +463,12 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                 size: 48, color: TradEtTheme.textMuted),
           ),
           const SizedBox(height: 16),
-          const Text('No orders yet',
-              style: TextStyle(
+          Text(AppLocalizations.of(context).noOrdersYet,
+              style: const TextStyle(
                   fontWeight: FontWeight.w600, fontSize: 16, color: Colors.white)),
           const SizedBox(height: 4),
-          const Text('ገና ትዕዛዝ የለም • Place your first trade',
-              style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13)),
+          Text(AppLocalizations.of(context).noOrdersYet,
+              style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13)),
         ],
       ),
     );
@@ -463,6 +476,7 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
 
   // ─── Web: Table layout ───
   Widget _buildWebTable(AppProvider provider, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
@@ -475,17 +489,17 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
               borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
               border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                SizedBox(width: 64, child: _TH('Type')),
-                SizedBox(width: 12),
-                Expanded(flex: 2, child: _TH('Asset')),
-                Expanded(flex: 1, child: _TH('Quantity')),
-                Expanded(flex: 1, child: _TH('Price')),
-                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH('Total'))),
-                SizedBox(width: 80, child: Align(alignment: Alignment.centerRight, child: _TH('Fee'))),
-                SizedBox(width: 90, child: Align(alignment: Alignment.center, child: _TH('Status'))),
-                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH('Date'))),
+                SizedBox(width: 64, child: _TH(l.type)),
+                const SizedBox(width: 12),
+                Expanded(flex: 2, child: _TH(l.asset)),
+                Expanded(flex: 1, child: _TH(l.quantity)),
+                Expanded(flex: 1, child: _TH(l.price)),
+                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH(l.total))),
+                SizedBox(width: 80, child: Align(alignment: Alignment.centerRight, child: _TH(l.fee))),
+                SizedBox(width: 90, child: Align(alignment: Alignment.center, child: _TH(l.status))),
+                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH(l.date))),
               ],
             ),
           ),
@@ -587,8 +601,11 @@ class _WebOrderRowState extends State<_WebOrderRow> {
       'cancelled' => TradEtTheme.negative,
       _ => TradEtTheme.textMuted,
     };
+    final l = AppLocalizations.of(context);
     final statusLabel = switch (order.orderStatus) {
-      'pending' => 'OPEN',
+      'pending' => l.openStatus.toUpperCase(),
+      'filled' => l.filledStatus.toUpperCase(),
+      'cancelled' => l.cancel.toUpperCase(),
       _ => order.orderStatus.toUpperCase(),
     };
 
@@ -623,7 +640,7 @@ class _WebOrderRowState extends State<_WebOrderRow> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  isBuy ? 'BUY' : 'SELL',
+                  isBuy ? AppLocalizations.of(context).buy : AppLocalizations.of(context).sell,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
@@ -739,6 +756,7 @@ class _OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isBuy = order.orderType == 'buy';
+    final l = AppLocalizations.of(context);
 
     return GestureDetector(
       onTap: order.isPending ? () => OrdersScreen.showOrderActions(context, order) : null,
@@ -771,7 +789,7 @@ class _OrderCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  isBuy ? 'BUY' : 'SELL',
+                  isBuy ? l.buy : l.sell,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     color: isBuy ? TradEtTheme.positive : TradEtTheme.negative,
@@ -812,7 +830,7 @@ class _OrderCard extends StatelessWidget {
                 }),
               ),
               const SizedBox(width: 8),
-              _statusBadge(order.orderStatus),
+              _statusBadge(context, order.orderStatus),
             ],
           ),
           const SizedBox(height: 14),
@@ -827,15 +845,15 @@ class _OrderCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Expanded(child: _detail('Quantity', '${order.quantity}')),
-                    Expanded(child: _detail('Price', '${fmt.format(order.price)} ETB')),
+                    Expanded(child: _detail(l.quantity, '${order.quantity}')),
+                    Expanded(child: _detail(l.price, '${fmt.format(order.price)} ETB')),
                   ],
                 ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    Expanded(child: _detail('Total', '${fmt.format(order.totalAmount)} ETB')),
-                    Expanded(child: _detail('Fee (1.5%)', '${fmt.format(order.feeAmount)} ETB')),
+                    Expanded(child: _detail(l.total, '${fmt.format(order.totalAmount)} ETB')),
+                    Expanded(child: _detail('${l.fee} (1.5%)', '${fmt.format(order.feeAmount)} ETB')),
                   ],
                 ),
               ],
@@ -853,7 +871,7 @@ class _OrderCard extends StatelessWidget {
               children: [
                 Icon(Icons.touch_app_outlined, size: 12, color: TradEtTheme.accent.withValues(alpha: 0.7)),
                 const SizedBox(width: 4),
-                Text('Tap to manage',
+                Text(l.tradeNow,
                     style: TextStyle(fontSize: 10, color: TradEtTheme.accent.withValues(alpha: 0.7))),
               ],
             ),
@@ -880,7 +898,8 @@ class _OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _statusBadge(String status) {
+  Widget _statusBadge(BuildContext context, String status) {
+    final l = AppLocalizations.of(context);
     Color color;
     switch (status) {
       case 'filled': color = TradEtTheme.positive; break;
@@ -888,7 +907,12 @@ class _OrderCard extends StatelessWidget {
       case 'cancelled': color = TradEtTheme.negative; break;
       default: color = TradEtTheme.textMuted;
     }
-    final label = status == 'pending' ? 'OPEN' : status.toUpperCase();
+    final label = switch (status) {
+      'pending' => l.openStatus.toUpperCase(),
+      'filled' => l.filledStatus.toUpperCase(),
+      'cancelled' => l.cancel.toUpperCase(),
+      _ => status.toUpperCase(),
+    };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
@@ -933,6 +957,7 @@ class _EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final color = _eventColor(event.eventType as String);
     final isBuy = event.orderType == 'buy';
 
@@ -974,7 +999,7 @@ class _EventCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
-                        '${isBuy ? 'BUY' : 'SELL'} ${event.symbol}',
+                        '${isBuy ? l.buy.toUpperCase() : l.sell.toUpperCase()} ${event.symbol}',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -1008,6 +1033,7 @@ class _EventWebRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final color = _eventColor(event.eventType as String);
     final isBuy = event.orderType == 'buy';
 
@@ -1047,7 +1073,7 @@ class _EventWebRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                isBuy ? 'BUY' : 'SELL',
+                isBuy ? l.buy.toUpperCase() : l.sell.toUpperCase(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 11,

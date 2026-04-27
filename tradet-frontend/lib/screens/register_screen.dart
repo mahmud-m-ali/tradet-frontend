@@ -24,17 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _tosAccepted = false;
-  String _passwordStrength = '';
-  Color _strengthColor = TradEtTheme.textMuted;
-
-  static String? _validatePassword(String? v) {
-    if (v == null || v.isEmpty) return 'Password is required';
-    if (v.length < 8) return 'Min 8 characters';
-    if (!v.contains(RegExp(r'[A-Z]'))) return 'Must contain an uppercase letter';
-    if (!v.contains(RegExp(r'[0-9]'))) return 'Must contain a number';
-    if (!v.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'))) return 'Must contain a special character';
-    return null;
-  }
+  int _strengthScore = -1;
 
   void _updateStrength(String v) {
     int score = 0;
@@ -42,12 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (v.contains(RegExp(r'[A-Z]'))) score++;
     if (v.contains(RegExp(r'[0-9]'))) score++;
     if (v.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'))) score++;
-    setState(() {
-      if (score <= 1) { _passwordStrength = 'Weak'; _strengthColor = TradEtTheme.negative; }
-      else if (score == 2) { _passwordStrength = 'Fair'; _strengthColor = TradEtTheme.warning; }
-      else if (score == 3) { _passwordStrength = 'Good'; _strengthColor = TradEtTheme.positive; }
-      else { _passwordStrength = 'Strong'; _strengthColor = TradEtTheme.positive; }
-    });
+    setState(() { _strengthScore = v.isEmpty ? -1 : score; });
   }
 
   @override
@@ -63,9 +48,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_tosAccepted) {
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please accept the Terms of Service and Privacy Policy to continue.'),
+        SnackBar(
+          content: Text(l.acceptTermsRequired),
           backgroundColor: TradEtTheme.warning,
         ),
       );
@@ -89,6 +75,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    String strengthLabel() {
+      if (_strengthScore < 0) return '';
+      if (_strengthScore <= 1) return l.passwordWeak;
+      if (_strengthScore == 2) return l.passwordFair;
+      if (_strengthScore == 3) return l.passwordGood;
+      return l.passwordStrong;
+    }
+    Color strengthColor() {
+      if (_strengthScore <= 1) return TradEtTheme.negative;
+      if (_strengthScore == 2) return TradEtTheme.warning;
+      return TradEtTheme.positive;
+    }
+    String? validatePassword(String? v) {
+      if (v == null || v.isEmpty) return l.passwordRequired;
+      if (v.length < 8) return l.minEightChars;
+      if (!v.contains(RegExp(r'[A-Z]'))) return l.mustContainUppercase;
+      if (!v.contains(RegExp(r'[0-9]'))) return l.mustContainNumber;
+      if (!v.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'))) return l.mustContainSpecialChar;
+      return null;
+    }
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
@@ -122,17 +128,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                        const Text(
-                          'Create Account',
-                          style: TextStyle(
+                        Text(
+                          l.createAccount,
+                          style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w700,
                               color: Colors.white),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'Join ትሬድኢት to start trading',
-                          style: TextStyle(
+                        Text(
+                          l.joinToStartTrading,
+                          style: const TextStyle(
                               fontSize: 14, color: TradEtTheme.textSecondary),
                         ),
                         const SizedBox(height: 32),
@@ -158,15 +164,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
 
                         _field(_nameController, l.fullName,
-                            Icons.person_outlined),
+                            Icons.person_outlined,
+                            requiredMsg: l.requiredField),
                         const SizedBox(height: 14),
                         _field(_emailController, l.email,
                             Icons.email_outlined,
-                            keyboard: TextInputType.emailAddress),
+                            keyboard: TextInputType.emailAddress,
+                            requiredMsg: l.requiredField),
                         const SizedBox(height: 14),
                         _field(_phoneController, l.phone,
                             Icons.phone_outlined,
-                            keyboard: TextInputType.phone),
+                            keyboard: TextInputType.phone,
+                            requiredMsg: l.requiredField),
                         const SizedBox(height: 14),
                         TextFormField(
                           controller: _passwordController,
@@ -189,18 +198,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   () => _obscurePassword = !_obscurePassword),
                             ),
                           ),
-                          validator: _validatePassword,
+                          validator: validatePassword,
                         ),
-                        if (_passwordStrength.isNotEmpty) ...[
+                        if (_strengthScore >= 0) ...[
                           const SizedBox(height: 6),
                           Row(
                             children: [
                               const Icon(Icons.security_outlined, size: 13, color: TradEtTheme.textMuted),
                               const SizedBox(width: 5),
-                              const Text('Strength: ',
-                                  style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
-                              Text(_passwordStrength,
-                                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _strengthColor)),
+                              Text(l.passwordStrengthLabel,
+                                  style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
+                              Text(strengthLabel(),
+                                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: strengthColor())),
                             ],
                           ),
                         ],
@@ -255,10 +264,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     color: TradEtTheme.positive, size: 18),
                               ),
                               const SizedBox(width: 12),
-                              const Expanded(
+                              Expanded(
                                 child: Text(
-                                  'AAOIFI Sharia compliant • ECX regulated\nNBE supervised • Riba-free fees',
-                                  style: TextStyle(
+                                  l.complianceSummary,
+                                  style: const TextStyle(
                                       fontSize: 12,
                                       color: TradEtTheme.textSecondary,
                                       height: 1.4),
@@ -290,31 +299,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: RichText(
-                                  text: const TextSpan(
-                                    style: TextStyle(
+                                  text: TextSpan(
+                                    style: const TextStyle(
                                         fontSize: 12,
                                         color: TradEtTheme.textSecondary,
                                         height: 1.5),
                                     children: [
-                                      TextSpan(text: 'I agree to the '),
+                                      TextSpan(text: l.iAgreeToThe),
                                       TextSpan(
-                                        text: 'Terms of Service',
-                                        style: TextStyle(
+                                        text: l.termsOfService,
+                                        style: const TextStyle(
                                             color: TradEtTheme.positive,
                                             fontWeight: FontWeight.w600,
                                             decoration: TextDecoration.underline),
                                       ),
-                                      TextSpan(text: ' and '),
+                                      TextSpan(text: l.andConjunction),
                                       TextSpan(
-                                        text: 'Privacy Policy',
-                                        style: TextStyle(
+                                        text: l.privacyPolicy,
+                                        style: const TextStyle(
                                             color: TradEtTheme.positive,
                                             fontWeight: FontWeight.w600,
                                             decoration: TextDecoration.underline),
                                       ),
-                                      TextSpan(
-                                          text:
-                                              '. My data will be processed in accordance with NBE data residency requirements and INSA CSMS guidelines.'),
+                                      TextSpan(text: l.tosAgreementSuffix),
                                     ],
                                   ),
                                 ),
@@ -353,7 +360,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _field(TextEditingController c, String label, IconData icon,
-      {TextInputType? keyboard}) {
+      {TextInputType? keyboard, String? requiredMsg}) {
     return TextFormField(
       controller: c,
       keyboardType: keyboard,
@@ -363,7 +370,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         labelText: label,
         prefixIcon: Icon(icon, size: 20),
       ),
-      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+      validator: (v) => v == null || v.isEmpty ? (requiredMsg ?? 'Required') : null,
     );
   }
 }

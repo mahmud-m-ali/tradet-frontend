@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 import '../widgets/responsive_layout.dart';
+import '../l10n/app_localizations.dart';
 import 'login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -30,48 +31,49 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  List<_OnboardingPage>? _pages;
 
-  static const _pages = [
-    _OnboardingPage(
-      icon: Icons.account_balance_outlined,
-      iconColor: TradEtTheme.positive,
-      badge: 'ECX',
-      title: 'Ethiopian Commodity\nExchange (ECX)',
-      subtitle: 'Trade real commodities on\nEthiopia\'s official exchange',
-      bullets: [
-        ('Coffee, Sesame, Wheat, Gold', Icons.grain),
-        ('ECX trading sessions: 9:00 AM – 3:00 PM EAT', Icons.access_time),
-        ('Regulated by ECEA & National Bank of Ethiopia', Icons.verified_outlined),
-        ('Prices updated in real-time from ECX floor', Icons.show_chart),
-      ],
-    ),
-    _OnboardingPage(
-      icon: Icons.stars_outlined,
-      iconColor: TradEtTheme.accent,
-      badge: 'AAOIFI',
-      title: 'Sharia-Compliant\nTrading Platform',
-      subtitle: 'Every trade meets AAOIFI\nIslamic finance standards',
-      bullets: [
-        ('No Riba (interest) — flat 1.5% commission only', Icons.money_off),
-        ('No Gharar (uncertainty) — transparent pricing', Icons.visibility),
-        ('Haram screening: debt <30%, haram revenue <5%', Icons.shield_outlined),
-        ('AAOIFI Standard No. 21 compliance on all assets', Icons.workspace_premium),
-      ],
-    ),
-    _OnboardingPage(
-      icon: Icons.badge_outlined,
-      iconColor: TradEtTheme.indigo,
-      badge: 'KYC',
-      title: 'Identity Verification\nRequired',
-      subtitle: 'Required by Ethiopian law\nbefore you can start trading',
-      bullets: [
-        ('National ID, Passport, or Kebele ID accepted', Icons.perm_identity),
-        ('Verified in minutes — no branch visit needed', Icons.timer_outlined),
-        ('Data encrypted & stored securely (AES-256)', Icons.lock_outline),
-        ('One-time verification — trade freely after', Icons.check_circle_outline),
-      ],
-    ),
-  ];
+  List<_OnboardingPage> _buildPages(AppLocalizations l) => [
+        _OnboardingPage(
+          icon: Icons.account_balance_outlined,
+          iconColor: TradEtTheme.positive,
+          badge: 'ECX',
+          title: l.onboardingEcxTitle,
+          subtitle: l.onboardingEcxSubtitle,
+          bullets: [
+            (l.onboardingEcxBullet1, Icons.grain),
+            (l.onboardingEcxBullet2, Icons.access_time),
+            (l.onboardingEcxBullet3, Icons.verified_outlined),
+            (l.onboardingEcxBullet4, Icons.show_chart),
+          ],
+        ),
+        _OnboardingPage(
+          icon: Icons.stars_outlined,
+          iconColor: TradEtTheme.accent,
+          badge: 'AAOIFI',
+          title: l.onboardingShariaTitle,
+          subtitle: l.onboardingShariaSubtitle,
+          bullets: [
+            (l.onboardingShariaBullet1, Icons.money_off),
+            (l.onboardingShariaBullet2, Icons.visibility),
+            (l.onboardingShariaBullet3, Icons.shield_outlined),
+            (l.onboardingShariaBullet4, Icons.workspace_premium),
+          ],
+        ),
+        _OnboardingPage(
+          icon: Icons.badge_outlined,
+          iconColor: TradEtTheme.indigo,
+          badge: 'KYC',
+          title: l.onboardingKycTitle,
+          subtitle: l.onboardingKycSubtitle,
+          bullets: [
+            (l.onboardingKycBullet1, Icons.perm_identity),
+            (l.onboardingKycBullet2, Icons.timer_outlined),
+            (l.onboardingKycBullet3, Icons.lock_outline),
+            (l.onboardingKycBullet4, Icons.check_circle_outline),
+          ],
+        ),
+      ];
 
   @override
   void dispose() {
@@ -80,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _next() {
-    if (_currentPage < _pages.length - 1) {
+    if (_currentPage < (_pages?.length ?? 3) - 1) {
       _pageController.nextPage(
           duration: const Duration(milliseconds: 350), curve: Curves.easeInOut);
     } else {
@@ -98,6 +100,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    _pages ??= _buildPages(l);
+    final pages = _pages!;
+
     final isWide = isWideScreen(context);
     return Scaffold(
       backgroundColor: TradEtTheme.surface,
@@ -109,8 +115,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               alignment: Alignment.topRight,
               child: TextButton(
                 onPressed: _finish,
-                child: const Text('Skip',
-                    style: TextStyle(
+                child: Text(l.skip,
+                    style: const TextStyle(
                         color: TradEtTheme.textMuted, fontSize: 13)),
               ),
             ),
@@ -120,8 +126,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: PageView.builder(
                 controller: _pageController,
                 onPageChanged: (i) => setState(() => _currentPage = i),
-                itemCount: _pages.length,
-                itemBuilder: (_, i) => _buildPage(_pages[i], isWide),
+                itemCount: pages.length,
+                itemBuilder: (_, i) => _buildPage(pages[i], isWide),
               ),
             ),
 
@@ -133,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   // Page dots
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(_pages.length, (i) {
+                    children: List.generate(pages.length, (i) {
                       final active = i == _currentPage;
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 250),
@@ -163,9 +169,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             borderRadius: BorderRadius.circular(14)),
                       ),
                       child: Text(
-                        _currentPage < _pages.length - 1
-                            ? 'Next →'
-                            : 'Get Started',
+                        _currentPage < pages.length - 1
+                            ? l.nextArrow
+                            : l.getStarted,
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w700),
                       ),
