@@ -62,7 +62,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                                 letterSpacing: -0.5)),
                         Consumer<AppProvider>(
                           builder: (_, p, __) => Text(
-                            '${p.watchlist.length} ${l.assetsTracked}',
+                            '${l.followedMarkets} • ${p.watchlist.length} ${l.assetsTracked}',
                             style: const TextStyle(
                                 fontSize: 13,
                                 color: TradEtTheme.textSecondary),
@@ -147,7 +147,11 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(asset.symbol, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                                              Row(children: [
+                                                Text(asset.symbol, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                                                const SizedBox(width: 5),
+                                                const Text('🇪🇹', style: TextStyle(fontSize: 11)),
+                                              ]),
                                               Text(asset.name, style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary), overflow: TextOverflow.ellipsis),
                                             ],
                                           ),

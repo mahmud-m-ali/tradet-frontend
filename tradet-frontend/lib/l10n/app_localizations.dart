@@ -97,6 +97,9 @@ class AppLocalizations {
   String get capitalAtRisk => _t({'en': 'Capital at Risk', 'am': 'ተጋላጭ ካፒታል', 'ti': 'ኣብ ሓደጋ ዘሎ ካፒታል', 'om': 'Kaappitaala Gaaga Jiru', 'so': 'Maalgelin Khatar', 'gur': 'ተጋላጭ ካፒታል'});
   String get transactions => _t({'en': 'Transactions', 'am': 'ግብይቶች', 'ti': 'ምትሕልላፍ', 'om': 'Hojii Mallaqa', 'so': 'Macaamilaadaha', 'gur': 'ግብይቶች'});
   String get viewHistory => _t({'en': 'View history', 'am': 'ታሪክ ይመልከቱ', 'ti': 'ታሪኽ ርአ', 'om': 'Seenaa ilaalee', 'so': 'Taariikhda eeg', 'gur': 'ታሪክ ይመልከቱ'});
+  String get tradeNow => _t({'en': 'Trade', 'am': 'ይነግዱ', 'ti': 'ነግድ', 'om': 'Gurguri', 'so': 'Ganacsasho', 'gur': 'ይነግዱ'});
+  String get addMoney => _t({'en': 'Add Money', 'am': 'ገንዘብ ጨምር', 'ti': 'ገንዘብ ወስኽ', 'om': 'Maallaqa Dabalii', 'so': 'Ku dar lacag', 'gur': 'ገንዘብ ጨምር'});
+  String get followedMarkets => _t({'en': 'Followed Markets', 'am': 'የሚከታተሏቸው ገበያዎች', 'ti': 'ዝስዓብካዮም ዕዳጋታት', 'om': 'Gabaalee Hordofaman', 'so': 'Suuqyada la raacayo', 'gur': 'የሚከታተሏቸው ገቢያዎች'});
 
   // ─── Market ──────────────────────────────────────
   String get market => _t({'en': 'Market', 'am': 'ገበያ', 'ti': 'ዕዳጋ', 'om': 'Gabaa', 'so': 'Suuqa', 'gur': 'ገቢያ'});

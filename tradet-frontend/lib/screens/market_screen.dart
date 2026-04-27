@@ -739,11 +739,17 @@ class _CategoryAssetRow extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(asset.symbol,
-                        style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white)),
+                    Row(
+                      children: [
+                        Text(asset.symbol,
+                            style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white)),
+                        const SizedBox(width: 4),
+                        const Text('🇪🇹', style: TextStyle(fontSize: 10)),
+                      ],
+                    ),
                     Text(asset.name,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -958,6 +964,8 @@ class _WebAssetRowState extends State<_WebAssetRow> {
                           ),
                         ),
                         const SizedBox(width: 4),
+                        const Text('🇪🇹', style: TextStyle(fontSize: 11)),
+                        const SizedBox(width: 4),
                         ShariaBadge(
                           isCompliant: asset.isShariaCompliant,
                           complianceLevel: asset.complianceLevel,
@@ -1171,14 +1179,20 @@ class _AssetCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    asset.symbol,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      Text(
+                        asset.symbol,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(width: 4),
+                      const Text('🇪🇹', style: TextStyle(fontSize: 10)),
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(
