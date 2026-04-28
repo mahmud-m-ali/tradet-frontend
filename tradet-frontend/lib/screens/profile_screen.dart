@@ -333,39 +333,21 @@ class ProfileScreen extends StatelessWidget {
         ? (user?.fullName ?? 'U')[0].toUpperCase()
         : '?';
 
-    return GestureDetector(
-      onTap: () => _showAvatarOptions(context, provider),
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: Stack(
-          children: [
-            Container(
-              width: size, height: size,
-              decoration: BoxDecoration(
-                color: bg,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 3),
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 12, offset: const Offset(0, 4))],
-              ),
-              child: imgBytes != null
-                  ? ClipOval(child: Image.memory(imgBytes, width: size, height: size, fit: BoxFit.cover))
-                  : Center(child: Text(initial,
-                      style: TextStyle(fontSize: size * 0.4,
-                          fontWeight: FontWeight.w700, color: Colors.white))),
-            ),
-            Positioned(
-              bottom: 0, right: 0,
-              child: Container(
-                width: 22, height: 22,
-                decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle,
-                    border: Border.all(color: bg, width: 2)),
-                child: Icon(Icons.camera_alt, size: 11, color: bg),
-              ),
-            ),
-          ],
-        ),
+    // Display-only avatar — photo changes are done in Account → Your Profile
+    return Container(
+      width: size, height: size,
+      decoration: BoxDecoration(
+        color: bg,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 3),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 12, offset: const Offset(0, 4))],
       ),
+      child: imgBytes != null
+          ? ClipOval(child: Image.memory(imgBytes, width: size, height: size, fit: BoxFit.cover))
+          : Center(child: Text(initial,
+              style: TextStyle(fontSize: size * 0.4,
+                  fontWeight: FontWeight.w700, color: Colors.white))),
     );
   }
 
@@ -2498,7 +2480,6 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
     final user = widget.user;
     final name = user?.fullName ?? 'User';
     final email = user?.email ?? '';
-    final isVerified = user?.kycStatus == 'verified';
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -2507,48 +2488,7 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // ── Top bar ─────────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white, size: 20),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    Text(l.yourProfile,
-                        style: const TextStyle(fontSize: 18,
-                            fontWeight: FontWeight.w700, color: Colors.white)),
-                    const Spacer(),
-                    // KYC badge chip
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: isVerified
-                            ? TradEtTheme.positive.withValues(alpha: 0.15)
-                            : TradEtTheme.warning.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isVerified
-                              ? TradEtTheme.positive.withValues(alpha: 0.4)
-                              : TradEtTheme.warning.withValues(alpha: 0.4),
-                        ),
-                      ),
-                      child: Text(
-                        isVerified ? 'KYC Verified' : 'KYC Pending',
-                        style: TextStyle(
-                            fontSize: 10, fontWeight: FontWeight.w600,
-                            color: isVerified
-                                ? TradEtTheme.positive : TradEtTheme.warning),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // ── Avatar + name header ─────────────────────────────────────
+              // ── Top row: X close button (left) + small avatar (right) ───
               Consumer<AppProvider>(
                 builder: (ctx, prov, _) {
                   final bg = _avatarColors[
@@ -2557,79 +2497,76 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                   final initial = name.isNotEmpty
                       ? name[0].toUpperCase() : '?';
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: Column(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
+                    child: Row(
                       children: [
+                        // X close button
+                        IconButton(
+                          icon: const Icon(Icons.close,
+                              color: Colors.white, size: 22),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        const Spacer(),
+                        // Small circular avatar top-right
                         GestureDetector(
                           onTap: () =>
                               _showAvatarOptionsFromState(context, prov),
                           child: MouseRegion(
                             cursor: SystemMouseCursors.click,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: 88, height: 88,
-                                  decoration: BoxDecoration(
-                                    color: bg, shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Colors.white.withValues(
-                                            alpha: 0.3),
-                                        width: 3),
-                                    boxShadow: [BoxShadow(
-                                        color: bg.withValues(alpha: 0.4),
-                                        blurRadius: 16,
-                                        offset: const Offset(0, 6))],
-                                  ),
-                                  child: imgBytes != null
-                                      ? ClipOval(child: Image.memory(imgBytes,
-                                          width: 88, height: 88,
-                                          fit: BoxFit.cover))
-                                      : Center(child: Text(initial,
-                                          style: const TextStyle(fontSize: 34,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.white))),
-                                ),
-                                Positioned(
-                                  bottom: 0, right: 0,
-                                  child: Container(
-                                    width: 26, height: 26,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            color: bg, width: 2)),
-                                    child: Icon(Icons.camera_alt,
-                                        size: 13, color: bg),
-                                  ),
-                                ),
-                              ],
+                            child: Container(
+                              width: 42, height: 42,
+                              decoration: BoxDecoration(
+                                color: bg, shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.35),
+                                    width: 2),
+                              ),
+                              child: imgBytes != null
+                                  ? ClipOval(child: Image.memory(imgBytes,
+                                      width: 42, height: 42,
+                                      fit: BoxFit.cover))
+                                  : Center(child: Text(initial,
+                                      style: const TextStyle(fontSize: 17,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white))),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Text(name,
-                            style: const TextStyle(fontSize: 20,
-                                fontWeight: FontWeight.w700, color: Colors.white)),
-                        const SizedBox(height: 3),
-                        Text('@${email.split('@').first}',
-                            style: const TextStyle(fontSize: 13,
-                                color: TradEtTheme.accent)),
                       ],
                     ),
                   );
                 },
               ),
 
+              // ── Large title + @handle (left-aligned) ────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l.yourProfile,
+                        style: const TextStyle(fontSize: 26,
+                            fontWeight: FontWeight.w800, color: Colors.white)),
+                    const SizedBox(height: 4),
+                    Text('@${email.split('@').first}',
+                        style: const TextStyle(fontSize: 14,
+                            color: TradEtTheme.accent,
+                            fontWeight: FontWeight.w500)),
+                  ],
+                ),
+              ),
+
               // ── Content ──────────────────────────────────────────────────
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   children: [
                     // ── Personal ──────────────────────────────────────────
                     Text(l.personalSection,
-                        style: const TextStyle(fontSize: 16,
-                            fontWeight: FontWeight.w700, color: Colors.white)),
-                    const SizedBox(height: 10),
+                        style: const TextStyle(fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: TradEtTheme.textMuted)),
+                    const SizedBox(height: 8),
                     _infoCard([
                       _infoRow(l.basicInfo,
                           '${user?.fullName ?? '--'}\n14 January 1995',
@@ -2649,33 +2586,11 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                     const SizedBox(height: 20),
 
                     // ── Wealth / KYC ──────────────────────────────────────
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(l.wealthSection,
-                            style: const TextStyle(fontSize: 16,
-                                fontWeight: FontWeight.w700, color: Colors.white)),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: TradEtTheme.positive.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text('KYC required',
-                              style: TextStyle(fontSize: 10,
-                                  color: TradEtTheme.positive,
-                                  fontWeight: FontWeight.w600)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Required for regulatory purposes (NBE). '
-                      'Stored securely.',
-                      style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
-                    ),
-                    const SizedBox(height: 12),
+                    Text(l.wealthSection,
+                        style: const TextStyle(fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: TradEtTheme.textMuted)),
+                    const SizedBox(height: 8),
                     _infoCard([
                       _dropdownRow(
                         label: l.occupation,
@@ -2850,8 +2765,8 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.expand_more_rounded,
-                color: TradEtTheme.accent, size: 20),
+            const Icon(Icons.edit_outlined,
+                color: TradEtTheme.accent, size: 18),
           ],
         ),
       ),
