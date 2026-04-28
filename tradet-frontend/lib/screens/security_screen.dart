@@ -173,7 +173,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
         _wealthProtectionEnabled ? TradEtTheme.positive : TradEtTheme.textMuted;
     final statusLabel = _wealthProtectionEnabled ? l.wealthProtectionActive : l.wealthProtectionInactive;
     final methodLabel = _wealthProtectionEnabled
-        ? _methodLabel(_authMethod, _biometricAvailable)
+        ? _methodLabel(_authMethod, _biometricAvailable, l)
         : null;
 
     return Container(
@@ -363,17 +363,17 @@ class _SecurityScreenState extends State<SecurityScreen> {
                     color: Color(0xFF818CF8), size: 18),
               ),
               const SizedBox(width: 12),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Authentication Method',
-                      style: TextStyle(
+                  Text(AppLocalizations.of(context).authMethod,
+                      style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),
-                  Text('How to verify your identity',
+                  Text(AppLocalizations.of(context).howToVerifyIdentity,
                       style:
-                          TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
+                          const TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
                 ],
               ),
             ],
@@ -570,8 +570,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
               child: const Icon(Icons.fingerprint_rounded,
                   color: Color(0xFF60A5FA), size: 18),
             ),
-            title: const Text('Biometrics',
-                style: TextStyle(
+            title: Text(AppLocalizations.of(context).biometrics,
+                style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Colors.white)),
@@ -641,16 +641,16 @@ class _SecurityScreenState extends State<SecurityScreen> {
                     color: Color(0xFF22D3EE), size: 18),
               ),
               const SizedBox(width: 12),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Session Protection',
-                      style: TextStyle(
+                  Text(AppLocalizations.of(context).sessionProtection,
+                      style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),
-                  Text('Configurable within INSA CSMS bounds',
-                      style: TextStyle(
+                  Text(AppLocalizations.of(context).configWithinInsa,
+                      style: const TextStyle(
                           fontSize: 10, color: TradEtTheme.textMuted)),
                 ],
               ),
@@ -706,14 +706,14 @@ class _SecurityScreenState extends State<SecurityScreen> {
                     size: 15, color: TradEtTheme.negative),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Account Lockout',
-                        style: TextStyle(
+                    Text(AppLocalizations.of(context).accountLockout,
+                        style: const TextStyle(
                             fontSize: 12, color: TradEtTheme.textSecondary)),
-                    Text('5 failed attempts → 15 min block',
+                    const Text('5 failed attempts → 15 min block',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -730,8 +730,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   border: Border.all(
                       color: TradEtTheme.negative.withValues(alpha: 0.25)),
                 ),
-                child: const Text('INSA Mandated',
-                    style: TextStyle(
+                child: Text(AppLocalizations.of(context).insaMandated,
+                    style: const TextStyle(
                         fontSize: 9,
                         fontWeight: FontWeight.w600,
                         color: TradEtTheme.negative)),
@@ -855,13 +855,14 @@ class _SecurityScreenState extends State<SecurityScreen> {
   // ─── Helpers ─────────────────────────────────────────────────────────
 
   Future<void> _handleBiometricTap() async {
+    final l = AppLocalizations.of(context);
     if (!_biometricAvailable) {
       // Guide to Android settings
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Go to Android Settings → Security → Fingerprint to enroll your biometrics.'),
+        SnackBar(
+          content: Text(l.biometricEnrollPrompt),
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 4),
+          duration: const Duration(seconds: 4),
         ),
       );
       return;
@@ -869,27 +870,29 @@ class _SecurityScreenState extends State<SecurityScreen> {
     // Test biometric auth
     final success = await AppLockService.authenticateWithBiometric();
     if (!mounted) return;
+    final l2 = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(success ? 'Biometric authentication successful!' : 'Biometric authentication failed.'),
+        content: Text(success ? l2.biometricSuccess : l2.biometricFailed),
         backgroundColor: success ? TradEtTheme.positive : TradEtTheme.negative,
         behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
-  String _methodLabel(String method, bool biometricAvailable) {
+  String _methodLabel(String method, bool biometricAvailable, AppLocalizations l) {
     switch (method) {
       case 'biometric':
-        return biometricAvailable ? 'With biometrics' : 'Biometrics (unavail.)';
+        return biometricAvailable ? l.withBiometrics : l.biometricsUnavailable;
       case 'pin':
-        return 'With PIN';
+        return l.withPin;
       default:
-        return biometricAvailable ? 'With biometrics' : 'With PIN';
+        return biometricAvailable ? l.withBiometrics : l.withPin;
     }
   }
 
   void _showSetPinDialog() {
+    final l = AppLocalizations.of(context);
     final pin1 = TextEditingController();
     final pin2 = TextEditingController();
     showDialog(
@@ -897,7 +900,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: TradEtTheme.cardBg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(_pinSet ? 'Change / Remove PIN' : 'Set Security PIN',
+        title: Text(_pinSet ? l.changePinTitle : l.setPinTitle,
             style: const TextStyle(color: Colors.white, fontSize: 16)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -913,8 +916,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
               keyboardType: TextInputType.number,
               maxLength: 4,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                  labelText: 'New PIN (4 digits)', counterText: ''),
+              decoration: InputDecoration(
+                  labelText: l.newPinHint, counterText: ''),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -923,8 +926,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
               keyboardType: TextInputType.number,
               maxLength: 4,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                  labelText: 'Confirm PIN', counterText: ''),
+              decoration: InputDecoration(
+                  labelText: l.confirmPinHint, counterText: ''),
             ),
           ],
         ),
@@ -936,36 +939,36 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 if (ctx.mounted) {
                   Navigator.pop(ctx);
                   setState(() => _pinSet = false);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('PIN removed'),
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(l.pinRemoved),
                     backgroundColor: TradEtTheme.warning,
                     behavior: SnackBarBehavior.floating,
                   ));
                 }
               },
-              child: const Text('Remove PIN',
-                  style: TextStyle(color: TradEtTheme.negative)),
+              child: Text(l.removePinButton,
+                  style: const TextStyle(color: TradEtTheme.negative)),
             ),
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
-                style: TextStyle(color: TradEtTheme.textSecondary)),
+            child: Text(l.cancel,
+                style: const TextStyle(color: TradEtTheme.textSecondary)),
           ),
           ElevatedButton(
             onPressed: () async {
               final p1 = pin1.text.trim();
               final p2 = pin2.text.trim();
               if (p1.length != 4 || !RegExp(r'^\d{4}$').hasMatch(p1)) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('PIN must be exactly 4 digits'),
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(l.pinInvalid),
                   backgroundColor: TradEtTheme.warning,
                   behavior: SnackBarBehavior.floating,
                 ));
                 return;
               }
               if (p1 != p2) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('PINs do not match'),
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(l.pinsDoNotMatch),
                   backgroundColor: TradEtTheme.negative,
                   behavior: SnackBarBehavior.floating,
                 ));
@@ -975,14 +978,14 @@ class _SecurityScreenState extends State<SecurityScreen> {
               if (ctx.mounted) {
                 Navigator.pop(ctx);
                 setState(() => _pinSet = true);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Security PIN set'),
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(l.pinSet),
                   backgroundColor: TradEtTheme.positive,
                   behavior: SnackBarBehavior.floating,
                 ));
               }
             },
-            child: const Text('Save PIN'),
+            child: Text(l.savePin),
           ),
         ],
       ),

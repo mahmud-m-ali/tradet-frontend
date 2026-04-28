@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../services/api_service.dart';
+import '../l10n/app_localizations.dart';
 
 /// OHLCV data point for candlestick chart.
 class OhlcData {
@@ -138,8 +139,8 @@ class _CandlestickChartState extends State<CandlestickChart> {
           // Header: title + toggle + period pills
           Row(
             children: [
-              const Text('Price Chart',
-                  style: TextStyle(
+              Text(AppLocalizations.of(context).priceChart,
+                  style: const TextStyle(
                       color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
               const SizedBox(width: 8),
               // Candle / Line toggle — clearly labeled
@@ -198,9 +199,9 @@ class _CandlestickChartState extends State<CandlestickChart> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: TradEtTheme.accent)))
                 : _activeData.isEmpty
-                    ? const Center(
-                        child: Text('No chart data',
-                            style: TextStyle(color: TradEtTheme.textMuted)))
+                    ? Center(
+                        child: Text(AppLocalizations.of(context).noChartData,
+                            style: const TextStyle(color: TradEtTheme.textMuted)))
                     : GestureDetector(
                         onPanUpdate: (details) => _onPan(details),
                         onPanEnd: (_) => setState(() => _selectedIndex = null),

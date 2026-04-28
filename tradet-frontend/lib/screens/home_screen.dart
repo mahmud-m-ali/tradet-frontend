@@ -459,6 +459,7 @@ class _WebTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, provider, _) {
+        final l = AppLocalizations.of(context);
         final user = provider.user;
         final imgBytes = provider.profileImageBytes;
         final initials = (user?.fullName.isNotEmpty == true)
@@ -466,7 +467,7 @@ class _WebTopBar extends StatelessWidget {
             : '?';
 
         return Container(
-          height: 52,
+          height: 80,
           padding: const EdgeInsets.symmetric(horizontal: 24),
           decoration: BoxDecoration(
             color: TradEtTheme.primaryDark,
@@ -485,7 +486,7 @@ class _WebTopBar extends StatelessWidget {
               // Analytics
               _topBarIcon(
                 icon: Icons.bar_chart_rounded,
-                tooltip: 'Analytics',
+                tooltip: l.analytics,
                 onTap: onAnalyticsTap,
               ),
               // Refresh
@@ -505,7 +506,7 @@ class _WebTopBar extends StatelessWidget {
                     )
                   : _topBarIcon(
                       icon: Icons.refresh_rounded,
-                      tooltip: 'Refresh',
+                      tooltip: l.refresh,
                       onTap: () => provider.loadAllData(),
                     ),
               _divider(),

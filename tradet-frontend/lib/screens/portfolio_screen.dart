@@ -178,7 +178,7 @@ class PortfolioScreen extends StatelessWidget {
                           const SizedBox(width: 20),
                           Expanded(
                             flex: 2,
-                            child: _combinedStatsCard(summary, fmt),
+                            child: _combinedStatsCard(context, summary, fmt),
                           ),
                         ],
                       ),
@@ -203,7 +203,7 @@ class PortfolioScreen extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   if (provider.holdings.isEmpty)
-                    _emptyHoldings()
+                    _emptyHoldings(context)
                   else if (wide)
                     _webHoldingsTable(context, provider, fmt)
                   else
@@ -444,7 +444,8 @@ class PortfolioScreen extends StatelessWidget {
     );
   }
 
-  Widget _quickStats(dynamic summary, NumberFormat fmt) {
+  Widget _quickStats(BuildContext context, dynamic summary, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -456,9 +457,9 @@ class PortfolioScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            'Quick Stats',
-            style: TextStyle(
+          Text(
+            l.quickStats,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: TradEtTheme.textSecondary,
@@ -466,17 +467,17 @@ class PortfolioScreen extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           _quickStatRow(
-            'Total Invested',
+            l.totalInvested,
             '${fmt.format(summary?.totalInvested ?? 0)} ETB',
           ),
           const SizedBox(height: 8),
           _quickStatRow(
-            'Holdings Value',
+            l.holdingsValue,
             '${fmt.format(summary?.totalHoldingsValue ?? 0)} ETB',
           ),
           const SizedBox(height: 8),
           _quickStatRow(
-            'Return',
+            l.returnLabel,
             '${(summary?.totalPnl ?? 0) >= 0 ? '+' : ''}${fmt.format(summary?.totalPnl ?? 0)} ETB',
             color: (summary?.totalPnl ?? 0) >= 0
                 ? TradEtTheme.positive
@@ -487,7 +488,8 @@ class PortfolioScreen extends StatelessWidget {
     );
   }
 
-  Widget _returnRateCard(dynamic summary, NumberFormat fmt) {
+  Widget _returnRateCard(BuildContext context, dynamic summary, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
     final invested = summary?.totalInvested ?? 0;
     final pnl = summary?.totalPnl ?? 0;
     final pnlPct = invested > 0 ? (pnl / invested * 100) : 0.0;
@@ -505,9 +507,9 @@ class PortfolioScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Return Rate',
-            style: TextStyle(
+          Text(
+            l.returnRate,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: TradEtTheme.textSecondary,
@@ -539,9 +541,9 @@ class PortfolioScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Invested',
-                    style: TextStyle(
+                  Text(
+                    l.invested,
+                    style: const TextStyle(
                       fontSize: 10,
                       color: TradEtTheme.textMuted,
                     ),
@@ -559,9 +561,9 @@ class PortfolioScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
-                    'Return',
-                    style: TextStyle(
+                  Text(
+                    l.returnLabel,
+                    style: const TextStyle(
                       fontSize: 10,
                       color: TradEtTheme.textMuted,
                     ),
@@ -584,7 +586,8 @@ class PortfolioScreen extends StatelessWidget {
   }
 
   /// Combined card that merges Quick Stats + Return Rate into a single card
-  Widget _combinedStatsCard(dynamic summary, NumberFormat fmt) {
+  Widget _combinedStatsCard(BuildContext context, dynamic summary, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
     final invested = (summary?.totalInvested ?? 0) as double;
     final pnl = (summary?.totalPnl ?? 0) as double;
     final pnlPct = invested > 0 ? (pnl / invested * 100) : 0.0;
@@ -603,20 +606,20 @@ class PortfolioScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Quick stats section
-          const Text('Portfolio Stats',
-              style: TextStyle(
+          Text(l.portfolioStats,
+              style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: TradEtTheme.textSecondary)),
           const SizedBox(height: 14),
-          _quickStatRow('Total Invested',
+          _quickStatRow(l.totalInvested,
               '${fmt.format(summary?.totalInvested ?? 0)} ETB'),
           const SizedBox(height: 8),
-          _quickStatRow('Holdings Value',
+          _quickStatRow(l.holdingsValue,
               '${fmt.format(summary?.totalHoldingsValue ?? 0)} ETB'),
           const SizedBox(height: 8),
           _quickStatRow(
-            'Return',
+            l.returnLabel,
             '${isPositive ? "+" : ""}${fmt.format(pnl)} ETB',
             color: color,
           ),
@@ -627,8 +630,8 @@ class PortfolioScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Return Rate',
-                  style: TextStyle(
+              Text(l.returnRate,
+                  style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: TradEtTheme.textSecondary)),
@@ -1048,7 +1051,8 @@ class PortfolioScreen extends StatelessWidget {
     );
   }
 
-  Widget _emptyHoldings() {
+  Widget _emptyHoldings(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
@@ -1071,18 +1075,18 @@ class PortfolioScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'No holdings yet',
-            style: TextStyle(
+          Text(
+            l.noHoldingsYet,
+            style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 15,
               color: Colors.white,
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Start trading to build your portfolio',
-            style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
+          Text(
+            l.startTrading,
+            style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
           ),
         ],
       ),
@@ -1133,6 +1137,7 @@ class PortfolioScreen extends StatelessWidget {
   }
 
   void _showDepositSheet(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final controller = TextEditingController();
     showResponsiveSheet(
       context: context,
@@ -1163,9 +1168,9 @@ class PortfolioScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Deposit ETB',
-                    style: TextStyle(
+                  Text(
+                    l.depositEtb,
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -1179,9 +1184,9 @@ class PortfolioScreen extends StatelessWidget {
               )
             else ...[
               const SizedBox(height: 20),
-              const Text(
-                'Deposit ETB',
-                style: TextStyle(
+              Text(
+                l.depositEtb,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -1189,9 +1194,9 @@ class PortfolioScreen extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 4),
-            const Text(
-              'ገንዘብ አስገባ • Funds via secure channel (no interest)',
-              style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary),
+            Text(
+              l.depositSubtitle,
+              style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary),
             ),
             const SizedBox(height: 20),
             TextField(
@@ -1226,7 +1231,7 @@ class PortfolioScreen extends StatelessWidget {
                     await context.read<AppProvider>().loadPortfolio();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(result['message'] ?? 'Deposit complete'),
+                        content: Text(result['message'] ?? l.depositComplete),
                         backgroundColor: TradEtTheme.positive,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
@@ -1237,7 +1242,7 @@ class PortfolioScreen extends StatelessWidget {
                   }
                 }
               },
-              child: const Text('Deposit'),
+              child: Text(l.deposit),
             ),
           ],
         ),
@@ -1273,6 +1278,7 @@ class PortfolioScreen extends StatelessWidget {
   ];
 
   void _showWithdrawSheet(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final amountCtrl = TextEditingController();
     int? selectedMethodId;
 
@@ -1322,8 +1328,8 @@ class PortfolioScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Withdraw ETB',
-                            style: TextStyle(
+                        Text(l.withdrawEtb,
+                            style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white)),
@@ -1335,26 +1341,26 @@ class PortfolioScreen extends StatelessWidget {
                     )
                   else ...[
                     const SizedBox(height: 20),
-                    const Text('Withdraw ETB',
-                        style: TextStyle(
+                    Text(l.withdrawEtb,
+                        style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                             color: Colors.white)),
                   ],
                   const SizedBox(height: 4),
-                  const Text('Withdraw to your saved bank account (Riba-free)',
-                      style: TextStyle(
+                  Text(l.ribaFreeWithdrawal,
+                      style: const TextStyle(
                           fontSize: 13, color: TradEtTheme.textSecondary)),
                   const SizedBox(height: 12),
                   // Available balance
-                  Text('Available: ${available.toStringAsFixed(2)} ETB',
+                  Text(l.availableBalance(available.toStringAsFixed(2)),
                       style: const TextStyle(
                           fontSize: 13,
                           color: TradEtTheme.positive,
                           fontWeight: FontWeight.w600)),
                   if (reserved > 0)
                     Text(
-                        'Reserved in open orders: ${reserved.toStringAsFixed(2)} ETB',
+                        l.reservedInOrders(reserved.toStringAsFixed(2)),
                         style: const TextStyle(
                             fontSize: 11, color: TradEtTheme.warning)),
                   const SizedBox(height: 16),
@@ -1369,15 +1375,15 @@ class PortfolioScreen extends StatelessWidget {
                         border: Border.all(
                             color: TradEtTheme.warning.withValues(alpha: 0.4)),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(Icons.warning_amber_rounded,
+                          const Icon(Icons.warning_amber_rounded,
                               color: TradEtTheme.warning, size: 18),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'No payment methods saved. Add a bank account in Profile > Payment Methods first.',
-                              style: TextStyle(
+                              l.noPaymentMethods,
+                              style: const TextStyle(
                                   color: TradEtTheme.warning, fontSize: 12),
                             ),
                           ),
@@ -1385,8 +1391,8 @@ class PortfolioScreen extends StatelessWidget {
                       ),
                     ),
                   ] else ...[
-                    const Text('Destination Account',
-                        style: TextStyle(
+                    Text(l.destinationAccount,
+                        style: const TextStyle(
                             fontSize: 12,
                             color: TradEtTheme.textSecondary,
                             fontWeight: FontWeight.w600)),
@@ -1449,8 +1455,8 @@ class PortfolioScreen extends StatelessWidget {
                                               borderRadius:
                                                   BorderRadius.circular(4),
                                             ),
-                                            child: const Text('Primary',
-                                                style: TextStyle(
+                                            child: Text(l.primaryLabel,
+                                                style: const TextStyle(
                                                     fontSize: 9,
                                                     color: TradEtTheme.accent,
                                                     fontWeight:
@@ -1512,7 +1518,7 @@ class PortfolioScreen extends StatelessWidget {
                             if (amount > available) {
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text(
-                                    'Insufficient balance. Available: ${available.toStringAsFixed(2)} ETB'),
+                                    l.insufficientBalanceMsg(available.toStringAsFixed(2))),
                                 backgroundColor: TradEtTheme.negative,
                                 behavior: SnackBarBehavior.floating,
                                 shape: RoundedRectangleBorder(
@@ -1557,9 +1563,9 @@ class PortfolioScreen extends StatelessWidget {
                               final isError = result.containsKey('error');
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text(isError
-                                    ? (result['error'] ?? 'Withdrawal failed')
+                                    ? (result['error'] ?? l.withdrawalFailed)
                                     : (result['message'] ??
-                                        'Withdrawal complete')),
+                                        l.withdrawComplete)),
                                 backgroundColor: isError
                                     ? TradEtTheme.negative
                                     : TradEtTheme.positive,

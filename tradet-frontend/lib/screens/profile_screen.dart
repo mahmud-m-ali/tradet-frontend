@@ -352,30 +352,30 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final l = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: TradEtTheme.cardBg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('About TradEt', style: TextStyle(color: Colors.white)),
-        content: const Column(
+        title: Text(l.aboutTradEt, style: const TextStyle(color: Colors.white)),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('TradEt v1.0.0', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-            SizedBox(height: 6),
-            Text('by Amber Research Inc.',
+            const Text('TradEt v1.0.0', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 6),
+            const Text('by Amber Research Inc.',
                 style: TextStyle(color: TradEtTheme.textSecondary, fontSize: 13)),
-            SizedBox(height: 12),
-            Text('Sharia-compliant Ethiopian commodity trading platform. '
-                'AAOIFI certified • ECX Licensed • NBE Regulated.',
-                style: TextStyle(color: TradEtTheme.textSecondary, fontSize: 12)),
+            const SizedBox(height: 12),
+            Text(l.shariaCompliantPlatform,
+                style: const TextStyle(color: TradEtTheme.textSecondary, fontSize: 12)),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close', style: TextStyle(color: TradEtTheme.positive)),
+            child: Text(l.close, style: const TextStyle(color: TradEtTheme.positive)),
           ),
         ],
       ),
@@ -547,9 +547,12 @@ class ProfileScreen extends StatelessWidget {
                           Icon(Icons.calendar_today_rounded, size: 12,
                               color: Colors.white.withValues(alpha: 0.6)),
                           const SizedBox(width: 6),
-                          Text('Member since 2024',
+                          Builder(builder: (context) {
+                            final l = AppLocalizations.of(context);
+                            return Text(l.memberSinceYear('2024'),
                               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500,
-                                  color: Colors.white.withValues(alpha: 0.6))),
+                                  color: Colors.white.withValues(alpha: 0.6)));
+                          }),
                         ],
                       ),
                     ),
@@ -1054,16 +1057,16 @@ class ProfileScreen extends StatelessWidget {
                           color: TradEtTheme.warning, size: 18),
                     ),
                     const SizedBox(width: 10),
-                    const Expanded(
-                      child: Text('KYC Required',
-                          style: TextStyle(fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Text(l.kycRequired,
+                          style: const TextStyle(fontWeight: FontWeight.w700,
                               fontSize: 14, color: Colors.white)),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                const Text('Complete identity verification to start trading.',
-                    style: TextStyle(fontSize: 12, color: TradEtTheme.textSecondary)),
+                Text(l.completeKycToTrade,
+                    style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary)),
                 const SizedBox(height: 14),
                 SizedBox(
                   width: double.infinity,
@@ -1306,8 +1309,11 @@ class ProfileScreen extends StatelessWidget {
               onPressed: () => _showKycDialog(context),
               icon: const Icon(Icons.upload_file_outlined, size: 14,
                   color: TradEtTheme.warning),
-              label: const Text('Submit Documents',
-                  style: TextStyle(color: TradEtTheme.warning, fontSize: 12)),
+              label: Builder(builder: (context) {
+                    final l = AppLocalizations.of(context);
+                    return Text(l.submitDocuments,
+                        style: const TextStyle(color: TradEtTheme.warning, fontSize: 12));
+                  }),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: TradEtTheme.warning, width: 0.8),
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -1338,8 +1344,9 @@ class ProfileScreen extends StatelessWidget {
       if (bytes != null) await provider.setProfileImage(bytes);
     } catch (e) {
       if (context.mounted) {
+        final l = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not load image: $e'),
+          SnackBar(content: Text(l.couldNotLoadImage(e.toString())),
               backgroundColor: Colors.red),
         );
       }
@@ -1359,7 +1366,9 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: const Color(0xFF1A2F22),
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => Padding(
+      builder: (ctx) {
+        final l = AppLocalizations.of(ctx);
+        return Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1374,14 +1383,14 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text('Profile Photo',
-                style: TextStyle(color: Colors.white, fontSize: 16,
+            Text(l.profilePhoto,
+                style: const TextStyle(color: Colors.white, fontSize: 16,
                     fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.photo_library_rounded, color: Color(0xFF34D399)),
-              title: const Text('Upload Photo', style: TextStyle(color: Colors.white)),
+              title: Text(l.uploadPhoto, style: const TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickProfileImage(context, provider);
@@ -1389,8 +1398,8 @@ class ProfileScreen extends StatelessWidget {
             ),
             const Divider(color: Color(0xFF2D4A38), height: 1),
             const SizedBox(height: 8),
-            const Text('Choose Avatar Color',
-                style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13)),
+            Text(l.chooseAvatarColor,
+                style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 13)),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12, runSpacing: 12,
@@ -1433,8 +1442,8 @@ class ProfileScreen extends StatelessWidget {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.delete_outline_rounded,
                     color: Colors.redAccent),
-                title: const Text('Remove Photo',
-                    style: TextStyle(color: Colors.redAccent)),
+                title: Text(l.removePhoto,
+                    style: const TextStyle(color: Colors.redAccent)),
                 onTap: () {
                   provider.clearProfileImage();
                   Navigator.pop(ctx);
@@ -1443,7 +1452,8 @@ class ProfileScreen extends StatelessWidget {
             ],
           ],
         ),
-      ),
+      );
+      },
     );
   }
 
@@ -1464,8 +1474,8 @@ class ProfileScreen extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Identity verification',
-                  style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+              Text(AppLocalizations.of(context).identityVerification,
+                  style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: selectedIdType,
@@ -2118,8 +2128,8 @@ class _KycDialogContentState extends State<_KycDialogContent> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Identity verification',
-              style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+          Text(l.identityVerification,
+              style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             initialValue: _idType,
@@ -2287,8 +2297,8 @@ class _FeesLimitsScreen extends StatelessWidget {
                         Text(l.feesAndLimits,
                             style: const TextStyle(fontSize: 18,
                                 fontWeight: FontWeight.w700, color: Colors.white)),
-                        const Text('Commission & trading limits',
-                            style: TextStyle(fontSize: 11,
+                        Text(l.commissionLimits,
+                            style: const TextStyle(fontSize: 11,
                                 color: TradEtTheme.textMuted)),
                       ],
                     ),
@@ -2647,7 +2657,7 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Profile updated successfully'),
+                              content: Text(l.profileUpdated),
                               backgroundColor: TradEtTheme.positive,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
@@ -2947,10 +2957,12 @@ class _PaymentMethodsSectionState extends State<_PaymentMethodsSection> {
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setStateDialog) => AlertDialog(
+        builder: (ctx, setStateDialog) {
+          final l = AppLocalizations.of(ctx);
+          return AlertDialog(
           backgroundColor: TradEtTheme.cardBg,
-          title: const Text('Add Payment Method',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+          title: Text(l.addPaymentMethod,
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -2964,14 +2976,14 @@ class _PaymentMethodsSectionState extends State<_PaymentMethodsSection> {
                     value: selectedBank,
                     isExpanded: true,
                     dropdownColor: TradEtTheme.cardBg,
-                    hint: const Row(
+                    hint: Row(
                       children: [
-                        SizedBox(width: 12),
-                        Icon(Icons.account_balance_outlined,
+                        const SizedBox(width: 12),
+                        const Icon(Icons.account_balance_outlined,
                             color: TradEtTheme.textMuted, size: 18),
-                        SizedBox(width: 10),
-                        Text('Select Bank',
-                            style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13)),
+                        const SizedBox(width: 10),
+                        Text(l.selectBank,
+                            style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13)),
                       ],
                     ),
                     items: _ethiopianBanks.map((bank) => DropdownMenuItem(
@@ -2997,8 +3009,8 @@ class _PaymentMethodsSectionState extends State<_PaymentMethodsSection> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel',
-                  style: TextStyle(color: TradEtTheme.textMuted)),
+              child: Text(l.cancel,
+                  style: const TextStyle(color: TradEtTheme.textMuted)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -3024,10 +3036,11 @@ class _PaymentMethodsSectionState extends State<_PaymentMethodsSection> {
                   ));
                 }
               },
-              child: const Text('Add'),
+              child: Text(l.add),
             ),
           ],
-        ),
+        );
+        },
       ),
     );
   }
@@ -3058,6 +3071,7 @@ class _PaymentMethodsSectionState extends State<_PaymentMethodsSection> {
     return Consumer<AppProvider>(
       builder: (context, provider, _) {
         final methods = provider.paymentMethods;
+        final l = AppLocalizations.of(context);
 
         return Container(
           padding: const EdgeInsets.all(20),
@@ -3081,15 +3095,15 @@ class _PaymentMethodsSectionState extends State<_PaymentMethodsSection> {
                         color: TradEtTheme.accent, size: 18),
                   ),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Payment Methods',
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,
+                        Text(l.paymentMethods,
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700,
                                 color: Colors.white)),
-                        Text('Linked accounts',
-                            style: TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
+                        Text(l.linkedAccounts,
+                            style: const TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
                       ],
                     ),
                   ),
@@ -3105,13 +3119,13 @@ class _PaymentMethodsSectionState extends State<_PaymentMethodsSection> {
                           border: Border.all(
                               color: TradEtTheme.positive.withValues(alpha: 0.3)),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.add, color: TradEtTheme.positive, size: 14),
-                            SizedBox(width: 4),
-                            Text('Add',
-                                style: TextStyle(color: TradEtTheme.positive,
+                            const Icon(Icons.add, color: TradEtTheme.positive, size: 14),
+                            const SizedBox(width: 4),
+                            Text(l.add,
+                                style: const TextStyle(color: TradEtTheme.positive,
                                     fontSize: 12, fontWeight: FontWeight.w600)),
                           ],
                         ),
@@ -3129,12 +3143,12 @@ class _PaymentMethodsSectionState extends State<_PaymentMethodsSection> {
                     color: TradEtTheme.surfaceLight,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: TradEtTheme.textMuted, size: 16),
-                      SizedBox(width: 10),
-                      Text('No payment methods linked yet',
-                          style: TextStyle(fontSize: 12, color: TradEtTheme.textMuted)),
+                      const Icon(Icons.info_outline, color: TradEtTheme.textMuted, size: 16),
+                      const SizedBox(width: 10),
+                      Text(l.noPaymentMethodsLinked,
+                          style: const TextStyle(fontSize: 12, color: TradEtTheme.textMuted)),
                     ],
                   ),
                 ),
@@ -3156,6 +3170,7 @@ class _MethodTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -3198,8 +3213,8 @@ class _MethodTile extends StatelessWidget {
                           color: TradEtTheme.positive.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text('Primary',
-                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600,
+                        child: Text(l.primaryLabel,
+                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w600,
                                 color: TradEtTheme.positive)),
                       ),
                     ],
@@ -3223,57 +3238,61 @@ class _MethodTile extends StatelessWidget {
               } else if (value == 'delete') {
                 final confirmed = await showDialog<bool>(
                   context: context,
-                  builder: (ctx) => AlertDialog(
+                  builder: (ctx) {
+                    final l = AppLocalizations.of(ctx);
+                    return AlertDialog(
                     backgroundColor: TradEtTheme.cardBg,
-                    title: const Text('Remove Account',
-                        style: TextStyle(color: Colors.white)),
+                    title: Text(l.removeAccount,
+                        style: const TextStyle(color: Colors.white)),
                     content: Text('Remove ${method.bankName} ${method.accountNumber}?',
                         style: const TextStyle(color: TradEtTheme.textSecondary)),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text('Cancel',
-                            style: TextStyle(color: TradEtTheme.textMuted)),
+                        child: Text(l.cancel,
+                            style: const TextStyle(color: TradEtTheme.textMuted)),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: TradEtTheme.negative),
                         onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text('Remove'),
+                        child: Text(l.remove),
                       ),
                     ],
-                  ),
+                  );},
                 );
                 if (confirmed == true) {
                   await provider.deletePaymentMethod(method.id);
                 }
               }
             },
-            itemBuilder: (_) => [
+            itemBuilder: (popupCtx) {
+              final l = AppLocalizations.of(popupCtx);
+              return [
               if (!method.isPrimary)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'primary',
                   child: Row(
                     children: [
-                      Icon(Icons.star_outline, size: 16, color: TradEtTheme.positive),
-                      SizedBox(width: 8),
-                      Text('Set as Primary',
-                          style: TextStyle(color: Colors.white, fontSize: 13)),
+                      const Icon(Icons.star_outline, size: 16, color: TradEtTheme.positive),
+                      const SizedBox(width: 8),
+                      Text(l.setAsPrimary,
+                          style: const TextStyle(color: Colors.white, fontSize: 13)),
                     ],
                   ),
                 ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete_outline, size: 16, color: TradEtTheme.negative),
-                    SizedBox(width: 8),
-                    Text('Remove',
-                        style: TextStyle(color: TradEtTheme.negative, fontSize: 13)),
+                    const Icon(Icons.delete_outline, size: 16, color: TradEtTheme.negative),
+                    const SizedBox(width: 8),
+                    Text(l.remove,
+                        style: const TextStyle(color: TradEtTheme.negative, fontSize: 13)),
                   ],
                 ),
               ),
-            ],
+            ];},
           ),
         ],
       ),

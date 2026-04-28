@@ -343,6 +343,10 @@ class AppLocalizations {
 
   // ─── Market screen ───────────────────────────────
   String get allCategories => _t({'en': 'All Categories', 'am': 'ሁሉም ምድቦች', 'ti': 'ኩሉ ክፍልታት', 'om': 'Gosota hunda', 'so': 'Dhammaan qaybaha', 'gur': 'ሁሉ ምድቦች'});
+  String get islamicBanks => _t({'en': 'Islamic Banks', 'am': 'እስላማዊ ባንኮች', 'ti': 'ኢስላማዊ ባንክታት', 'om': 'Baankiiwwan Islaamaa', 'so': 'Bangiyada Islaamiga', 'gur': 'እስላማዊ ባንኮች'});
+  String get ethiopianEquities => _t({'en': 'Ethiopian Equities', 'am': 'ኢትዮጵያዊ አክሲዮኖች', 'ti': 'ኢትዮጵያዊ ኣክስዮናት', 'om': 'Aksiyoonota Itoophiyaa', 'so': 'Sahaamaha Itoobiya', 'gur': 'ኢትዮጵያዊ አክሲዮናት'});
+  String get takafullInsurance => _t({'en': 'Takaful & Insurance', 'am': 'ታካፉልና ኢንሹራንስ', 'ti': 'ታካፉልን ኢንሹራንስን', 'om': 'Takaafulii fi Inshuraansii', 'so': 'Takaful & Caymiska', 'gur': 'ታካፉልና ኢንሹራንስ'});
+  String get halalAssets => _t({'en': 'Halal Assets', 'am': 'ሐላል ንብረቶች', 'ti': 'ሐላል ንብረታት', 'om': 'Qabeenyaa Halaal', 'so': 'Hantida Xalaal', 'gur': 'ሐላል ንብረቶች'});
   String get seeAllArrow => _t({'en': 'See all →', 'am': 'ሁሉን ይመልከቱ →', 'ti': 'ኩሉ ርአ →', 'om': 'Hundaa ilaalee →', 'so': 'Arki dhammaan →', 'gur': 'ሁሉ ይመልከቱ →'});
   String get assetsCount => _t({'en': 'assets', 'am': 'ንብረቶች', 'ti': 'ንብረታት', 'om': 'qabeenyaa', 'so': 'hanti', 'gur': 'ንብረቶች'});
   String get createAlert => _t({'en': 'Create Alert', 'am': 'ማንቂያ ፍጠር', 'ti': 'መጠንቀቕታ ፍጠር', 'om': 'Beeksisa uumi', 'so': 'Samee Digniin', 'gur': 'ማስጠንቀቂያ ፍጠር'});
@@ -747,6 +751,42 @@ class AppLocalizations {
   String get noRatesAvailable => _t({'en': 'No rates available', 'am': 'ምንም ዋጋ የለም', 'ti': 'ዋጋ ዘይብሉ', 'om': 'Gatiin hin jiru', 'so': 'Qiyaas la heli maayo', 'gur': 'ምንም ዋጋ የለም'});
   String get currency => _t({'en': 'Currency', 'am': 'ምንዛሬ', 'ti': 'ምንዛሬ', 'om': 'Maallaqaa', 'so': 'Lacagta', 'gur': 'ምንዛሬ'});
   String get ratesSourcedFromNBE => _t({'en': 'Rates sourced from National Bank of Ethiopia', 'am': 'ዋጋዎቹ ከኢትዮጵያ ብሔራዊ ባንክ', 'ti': 'ዋጋታት ካብ ናሽናል ባንክ ኢትዮጵያ', 'om': 'Gatiin Baankii Biyyoolessaa Itoophiyaa irraa', 'so': 'Qiyaasaha ka yimid Baanka Qaran ee Itoobiya', 'gur': 'ዋጋዎቹ ከኢትዮጵያ ብሔራዊ ባንክ'});
+
+  // ─── Charts ──────────────────────────────────────────
+  String get priceChart => _t({'en': 'Price Chart', 'am': 'የዋጋ ቻርት', 'ti': 'ናይ ዋጋ ቻርት', 'om': 'Chaartii Gatii', 'so': 'Jaantuska Qiimaha', 'gur': 'የዋጋ ቻርት'});
+  String get noChartData => _t({'en': 'No chart data', 'am': 'ምንም ቻርት ዳታ የለም', 'ti': 'ዳታ ቻርት ዘሎ', 'om': 'Deetaa chaartii hin jiru', 'so': 'Xog jaantuska ma jirto', 'gur': 'ምንም ቻርት ዳታ የለም'});
+  String get noChartDataAvailable => _t({'en': 'No chart data available', 'am': 'ቻርት ዳታ አይገኝም', 'ti': 'ዳታ ቻርት ዘሎ', 'om': 'Deetaa chaartii hin argamne', 'so': 'Xog jaantuska la heli maayo', 'gur': 'ቻርት ዳታ አይገኝም'});
+
+  // ─── Payment methods / Profile (new unique keys) ─────
+  String get addPaymentMethod => _t({'en': 'Add Payment Method', 'am': 'የክፍያ ዘዴ ጨምር', 'ti': 'ኣገባብ ክፍሊት ወስኽ', 'om': 'Mala kaffaltii dabali', 'so': 'Ku dar hab lacag-bixin', 'gur': 'የክፍያ ዘዴ ጨምር'});
+  String get removeAccount => _t({'en': 'Remove Account', 'am': 'ሒሳብ አስወግድ', 'ti': 'ሒሳብ ኣልዕሎ', 'om': 'Herrega haqi', 'so': 'Ka saar xisaabta', 'gur': 'ሒሳብ አስወግድ'});
+  String get close => _t({'en': 'Close', 'am': 'ዝጋ', 'ti': 'ዕጸዎ', 'om': 'Cufii', 'so': 'Xidh', 'gur': 'ዝጋ'});
+  String get commissionLimits => _t({'en': 'Commission & trading limits', 'am': 'ኮሚሽን እና የንግድ ወሰን', 'ti': 'ኮሚሽን ወ ገደብ ንግዲ', 'om': 'Komiishinii fi daangaa daldala', 'so': 'Guddoomiyaha & Xaddadka ganacsiga', 'gur': 'ኮሚሽን እና የንግድ ወሰን'});
+  String get profileUpdated => _t({'en': 'Profile updated successfully', 'am': 'ፕሮፋይሉ ተሻሽሏል', 'ti': 'ፕሮፋይል ብዓወት ሕዲሱ', 'om': 'Piroofaayiliin milkiinan haaromfame', 'so': 'Boggu si guul leh ayaa loo cusboonaysiiyay', 'gur': 'ፕሮፋይሉ ተሻሽሏል'});
+  String get aboutTradEt => _t({'en': 'About TradEt', 'am': 'ስለ ትሬድኢት', 'ti': 'ብዛዕባ ትሬድኢት', 'om': "Waa'ee TradEt", 'so': 'Ku saabsan TradEt', 'gur': 'ስለ ትሬድኢት'});
+  String get shariaCompliantPlatform => _t({'en': 'Sharia-compliant Ethiopian commodity trading platform.', 'am': 'ሸሪዓ ተገዢ ኢትዮጵያ የሸቀጥ ንግድ መድረክ።', 'ti': 'ሸሪዓ ዝኽተል ናይ ኢትዮጵያ ሸቐጥ ናይ ንግዲ መድረኽ።', 'om': "Shari'aa hordofu gabaa meeshaalee Itoophiyaa.", 'so': 'Goobo ganacsiga alaabta Itoobiya ee ku habboon Shariicada.', 'gur': 'ሸሪዓ ተስማሚ ኢትዮጵያ ሸቀጥ ንግድ መሣርያ።'});
+
+  // ─── Security screen ──────────────────────────────────
+  String get withBiometrics => _t({'en': 'With biometrics', 'am': 'ባዮሜትሪክ', 'ti': 'ብባዮሜትሪክ', 'om': 'Bayoomeetriksiin', 'so': 'Bayometriga', 'gur': 'ባዮሜትሪክ'});
+  String get biometricsUnavailable => _t({'en': 'Biometrics (unavailable)', 'am': 'ባዮሜትሪክ (አይገኝም)', 'ti': 'ባዮሜትሪክ (ዘይርከብ)', 'om': 'Bayoomeetriksii (hin argamne)', 'so': 'Bayometrika (ma heli karo)', 'gur': 'ባዮሜትሪክ (አይገኝም)'});
+  String get withPin => _t({'en': 'With PIN', 'am': 'PIN ጋር', 'ti': 'ብPIN', 'om': 'PINiin', 'so': 'PIN la', 'gur': 'PIN ጋር'});
+  String get authMethod => _t({'en': 'Authentication Method', 'am': 'የማረጋጊጥ ዘዴ', 'ti': 'ኣገባብ ምርግጋጽ', 'om': 'Mala mirkaneessuu', 'so': 'Habka xaqiijinta', 'gur': 'የማረጋጊጥ ዘዴ'});
+  String get howToVerifyIdentity => _t({'en': 'How to verify your identity', 'am': 'ማንነትዎን እንዴት ማረጋጊጥ', 'ti': 'ህልውናኻ ብኸምዚ ኣረጋግጽ', 'om': 'Eenyummaa kee akkam mirkanaa\'uu', 'so': 'Sida aad aqoonsigaaga xaqiijiso', 'gur': 'ማንነቱን እንዴት ማረጋጊጥ'});
+  String get biometrics => _t({'en': 'Biometrics', 'am': 'ባዮሜትሪክ', 'ti': 'ባዮሜትሪክ', 'om': 'Bayoomeetriksii', 'so': 'Bayometrikska', 'gur': 'ባዮሜትሪክ'});
+  String get sessionProtection => _t({'en': 'Session Protection', 'am': 'ሴሽን ጥበቃ', 'ti': 'ሴሽን ሓለዋ', 'om': 'Eegumsa seeshinii', 'so': 'Ilaalinta session-ka', 'gur': 'ሴሽን ጥበቃ'});
+  String get configWithinInsa => _t({'en': 'Configurable within INSA CSMS bounds', 'am': 'በINSA CSMS ድንበር ውስጥ ሊስተካከል ይችላል', 'ti': 'ኣብ ውሽጢ ዶብ INSA CSMS ክቅየር ይካኣል', 'om': 'Daangaa INSA CSMS keessatti qindaa\'uu danda\'ama', 'so': 'Xaddadka INSA CSMS gudaha laga dejin karaa', 'gur': 'INSA CSMS ዶብ ውስጥ ሊስተካከል ይቻላ'});
+  String get accountLockout => _t({'en': 'Account Lockout', 'am': 'የሒሳብ መቆለፊያ', 'ti': 'ዕጸፋ ሒሳብ', 'om': 'Cufaa herregaa', 'so': 'Xidida akoonka', 'gur': 'የሒሳብ መቆለፊያ'});
+  String get insaMandated => _t({'en': 'INSA Mandated', 'am': 'INSA ተደንጋጋ', 'ti': 'INSA ዝእዘዘ', 'om': 'INSA dirqisiise', 'so': 'INSA waajib sameysey', 'gur': 'INSA ተደንጋጋ'});
+  String get biometricEnrollPrompt => _t({'en': 'Go to Settings → Security to enroll your biometrics.', 'am': 'ባዮሜትሪክ ለመመዝገብ ቅንጅቶች → ደህንነት ይሂዱ።', 'ti': 'ናብ ቅጥዒ → ድሕንነት ዕደም ባዮሜትሪካዊ ቑሶ።', 'om': 'Baayoomeetrikii galchuuf Qindaa\'ina → Nageenyaa deemi.', 'so': 'Aad u xidha Dejinta → Amniga si aad ugu diwaan-geliso bayometrigaaga.', 'gur': 'ቅንጅቶቸ → ደህንነት ሂድ ባዮሜትሪክ ለምዝገብ።'});
+  String get biometricSuccess => _t({'en': 'Biometric authentication successful!', 'am': 'ባዮሜትሪክ ማረጋጊጥ ተሳክቷል!', 'ti': 'ምርግጋጽ ባዮሜትሪክ ተዓዊቱ!', 'om': 'Mirkaneessaan bayoomeetriksii milkaawe!', 'so': 'Xaqiijinta bayometrika way guulatay!', 'gur': 'ባዮሜትሪክ ማረጋጊጥ ተሳክቷ!'});
+  String get biometricFailed => _t({'en': 'Biometric authentication failed.', 'am': 'ባዮሜትሪክ ማረጋጊጥ አልተሳካም።', 'ti': 'ምርግጋጽ ባዮሜትሪክ ኣይሰለጠን።', 'om': 'Mirkaneessaan bayoomeetriksii hin milkoofne.', 'so': 'Xaqiijinta bayometrika way fashilantay.', 'gur': 'ባዮሜትሪክ ማረጋጊጥ አልተሳካም።'});
+  String get newPinHint => _t({'en': 'New PIN (4 digits)', 'am': 'አዲስ PIN (4 ቁጥሮች)', 'ti': 'ሓዲሽ PIN (4 ቑጽሪ)', 'om': 'PIN haaraa (lakk. 4)', 'so': 'PIN cusub (4 nambar)', 'gur': 'አዲስ PIN (4 ቁጥሮቸ)'});
+  String get confirmPinHint => _t({'en': 'Confirm PIN', 'am': 'PIN አረጋግጥ', 'ti': 'PIN ኣረጋግጽ', 'om': 'PIN mirkaneessi', 'so': 'PIN xaqiiji', 'gur': 'PIN አረጋግጥ'});
+  String get pinRemoved => _t({'en': 'PIN removed', 'am': 'PIN ተወግዷል', 'ti': 'PIN ተኣሊዩ', 'om': 'PIN haqame', 'so': 'PIN waa la tirtiray', 'gur': 'PIN ተወግዷ'});
+  String get removePinButton => _t({'en': 'Remove PIN', 'am': 'PIN አስወግድ', 'ti': 'PIN ኣልዕሎ', 'om': 'PIN haqi', 'so': 'Ka saar PIN', 'gur': 'PIN አስወግድ'});
+  String get savePin => _t({'en': 'Save PIN', 'am': 'PIN አስቀምጥ', 'ti': 'PIN ዓቅብ', 'om': "PIN olkaa'i", 'so': 'Kaydi PIN', 'gur': 'PIN አኑር'});
+  String get pinInvalid => _t({'en': 'PIN must be exactly 4 digits', 'am': 'PIN ትክክል 4 ቁጥሮች መሆን አለበት', 'ti': 'PIN ልክ 4 ቑጽሪ ክኸውን ኣለዎ', 'om': 'PIN lakkoofsa 4 qofa ta\'uu qaba', 'so': 'PIN waa in uu ahaa 4 nambar oo kaliya', 'gur': 'PIN ትክክለኛ 4 ቁጥሮቸ ሊሆን አለበት'});
+  String get pinSet => _t({'en': 'Security PIN set', 'am': 'የደህንነት PIN ተዘጋጅቷል', 'ti': 'ናይ ድሕንነት PIN ዝቀረበ', 'om': 'PIN nageenyaa qophaahe', 'so': 'PIN amni ayaa la dejiyay', 'gur': 'የደህንነት PIN ተዘጋጅቷ'});
 
   /// Multi-language translation helper.
   String _t(Map<String, String> translations) {

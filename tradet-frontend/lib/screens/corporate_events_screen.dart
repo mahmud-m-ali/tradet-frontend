@@ -657,6 +657,7 @@ class _MonthGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final now = DateTime.now();
     final isCurrentMonth = DateFormat('MMMM yyyy').format(now) == month;
 
@@ -683,8 +684,8 @@ class _MonthGroup extends StatelessWidget {
                     color: TradEtTheme.primaryLight.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text('Current',
-                      style: TextStyle(
+                  child: Text(l.current,
+                      style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                           color: TradEtTheme.primaryLight)),
@@ -832,8 +833,8 @@ class _EventRow extends StatelessWidget {
                         color: TradEtTheme.positive.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      child: const Text('Held',
-                          style: TextStyle(
+                      child: Text(l.held,
+                          style: const TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
                               color: TradEtTheme.positive)),
