@@ -299,6 +299,19 @@ class ApiService {
     return User.fromJson(data);
   }
 
+  /// Updates the user's profile fields. Returns the updated User on success.
+  /// Gracefully handles backends that don't yet support all fields.
+  Future<User> updateProfile(Map<String, dynamic> fields) async {
+    // Remove null values before sending
+    fields.removeWhere((_, v) => v == null || (v is String && v.isEmpty));
+    final response = await _put('/auth/profile', body: fields);
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      // Refetch the profile to get the server-confirmed values
+      return getProfile();
+    }
+    throw ApiException('Failed to update profile (${response.statusCode})');
+  }
+
   /// Saves user preferences to the server (avatar_color, profile_image).
   /// Silently returns false if the backend doesn't support this endpoint.
   Future<bool> savePreferences(Map<String, dynamic> prefs) async {

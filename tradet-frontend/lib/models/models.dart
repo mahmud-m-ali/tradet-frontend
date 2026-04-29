@@ -8,6 +8,19 @@ class User {
   final String kycStatus;
   final String accountType;
   final double walletBalance;
+  final String? phone;
+  final String? country;
+  final String? city;
+  final String? address;
+  final String? dateOfBirth;
+  final String? nationality;
+  final String? taxResidency;
+  final String? purposeOfAccount;
+  final String? occupation;
+  final String? sourceOfWealth;
+  final String? sourceOfFunds;
+  final String? netWorth;
+  final String? purposeOfTrading;
 
   User({
     required this.id,
@@ -16,6 +29,19 @@ class User {
     required this.kycStatus,
     required this.accountType,
     this.walletBalance = 0,
+    this.phone,
+    this.country,
+    this.city,
+    this.address,
+    this.dateOfBirth,
+    this.nationality,
+    this.taxResidency,
+    this.purposeOfAccount,
+    this.occupation,
+    this.sourceOfWealth,
+    this.sourceOfFunds,
+    this.netWorth,
+    this.purposeOfTrading,
   });
 
   /// Deserialises a [User] from the `/auth/profile` API response.
@@ -27,6 +53,80 @@ class User {
       kycStatus: json['kyc_status'] ?? 'pending',
       accountType: json['account_type'] ?? 'individual',
       walletBalance: (json['wallet_balance'] ?? 0).toDouble(),
+      phone: json['phone'],
+      country: json['country'],
+      city: json['city'],
+      address: json['address'],
+      dateOfBirth: json['date_of_birth'],
+      nationality: json['nationality'],
+      taxResidency: json['tax_residency'],
+      purposeOfAccount: json['purpose_of_account'],
+      occupation: json['occupation'],
+      sourceOfWealth: json['source_of_wealth'],
+      sourceOfFunds: json['source_of_funds'],
+      netWorth: json['net_worth'],
+      purposeOfTrading: json['purpose_of_trading'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'full_name': fullName,
+    'phone': phone,
+    'date_of_birth': dateOfBirth,
+    'country': country,
+    'city': city,
+    'address': address,
+    'nationality': nationality,
+    'tax_residency': taxResidency,
+    'purpose_of_account': purposeOfAccount,
+    'occupation': occupation,
+    'source_of_wealth': sourceOfWealth,
+    'source_of_funds': sourceOfFunds,
+    'net_worth': netWorth,
+    'purpose_of_trading': purposeOfTrading,
+  };
+
+  User copyWith({
+    int? id,
+    String? email,
+    String? fullName,
+    String? kycStatus,
+    String? accountType,
+    double? walletBalance,
+    String? phone,
+    String? dateOfBirth,
+    String? country,
+    String? city,
+    String? address,
+    String? nationality,
+    String? taxResidency,
+    String? purposeOfAccount,
+    String? occupation,
+    String? sourceOfWealth,
+    String? sourceOfFunds,
+    String? netWorth,
+    String? purposeOfTrading,
+  }) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      fullName: fullName ?? this.fullName,
+      kycStatus: kycStatus ?? this.kycStatus,
+      accountType: accountType ?? this.accountType,
+      walletBalance: walletBalance ?? this.walletBalance,
+      phone: phone ?? this.phone,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      country: country ?? this.country,
+      city: city ?? this.city,
+      address: address ?? this.address,
+      nationality: nationality ?? this.nationality,
+      taxResidency: taxResidency ?? this.taxResidency,
+      purposeOfAccount: purposeOfAccount ?? this.purposeOfAccount,
+      occupation: occupation ?? this.occupation,
+      sourceOfWealth: sourceOfWealth ?? this.sourceOfWealth,
+      sourceOfFunds: sourceOfFunds ?? this.sourceOfFunds,
+      netWorth: netWorth ?? this.netWorth,
+      purposeOfTrading: purposeOfTrading ?? this.purposeOfTrading,
     );
   }
 

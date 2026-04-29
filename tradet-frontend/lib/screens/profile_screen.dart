@@ -110,7 +110,7 @@ class ProfileScreen extends StatelessWidget {
               label: l.account,
               subtitle: '${l.profileInformation}, ${l.verificationStatus}...',
               onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => _AccountDetailsScreen(user: user)))),
+                  MaterialPageRoute(builder: (_) => _AccountMenuScreen(user: user)))),
         ]),
         const SizedBox(height: 10),
 
@@ -161,22 +161,16 @@ class ProfileScreen extends StatelessWidget {
         // ── Preferences (inline) ──────────────────────────────────────────
         _menuCard([
           _menuItem(context, icon: Icons.palette_outlined, label: l.appearance,
-              trailing: Consumer<AppProvider>(
-                builder: (ctx, prov, _) => Switch(
-                  value: prov.isDarkMode,
-                  onChanged: (_) => prov.toggleTheme(),
-                  activeThumbColor: TradEtTheme.positive,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              ),
-              onTap: null),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const _AppearanceScreen()))),
           _menuDivider(),
           _menuItem(context, icon: Icons.language_rounded, label: l.language,
               trailing: const LanguageSelector(),
               onTap: null),
           _menuDivider(),
           _menuItem(context, icon: Icons.info_outline_rounded, label: l.aboutUs,
-              onTap: () => _showAboutDialog(context)),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const _AboutUsScreen()))),
           _menuDivider(),
           _menuItem(context,
               icon: Icons.logout_rounded,
@@ -405,12 +399,30 @@ class ProfileScreen extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Left: Compliance + Security Log
+            // Left: Account info + payments
             Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _webAccountCard(context, provider, user),
+                ],
+              ),
+            ),
+            const SizedBox(width: 20),
+            // Right: Compliance + Settings + Notifications + Help + Security
+            Expanded(
+              flex: 2,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _webComplianceCard(context),
+                  const SizedBox(height: 16),
+                  _webSettingsCard(context, provider),
+                  const SizedBox(height: 16),
+                  _webNotificationsCard(context),
+                  const SizedBox(height: 16),
+                  _webHelpCard(context),
                   const SizedBox(height: 16),
                   _webLegalDocsCard(context),
                   const SizedBox(height: 16),
@@ -418,23 +430,6 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 20),
-            // Middle: Preferences + Notifications + Help
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _webSettingsCard(context, provider),
-                  const SizedBox(height: 16),
-                  _webNotificationsCard(context),
-                  const SizedBox(height: 16),
-                  _webHelpCard(context),
-                ],
-              ),
-            ),
-            const SizedBox(width: 20),
-            // Right: Account + Payment + Logout
-            Expanded(child: _webAccountCard(context, provider, user)),
           ],
         ),
         const SizedBox(height: 32),
@@ -535,7 +530,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    _kycBadge(isVerified),
+                    _kycBadge(isVerified, context),
                     const SizedBox(width: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -597,7 +592,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _kycBadge(bool isVerified) {
+  Widget _kycBadge(bool isVerified, BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
@@ -621,7 +617,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            isVerified ? 'KYC Verified' : 'KYC Pending',
+            isVerified ? l.kycVerified : l.kycPending,
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11,
                 color: isVerified ? TradEtTheme.positive : TradEtTheme.warning),
           ),
@@ -1102,41 +1098,56 @@ class ProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _cardHeader(Icons.person_outline_rounded, l.profileInformation,
-                  'Personal information', const Color(0xFF22D3EE)),
+                  l.subtitlePersonalDetails, const Color(0xFF22D3EE)),
               const SizedBox(height: 18),
               _accountInfoRow(l.fullName, user?.fullName ?? '--'),
               _accountInfoRow(l.emailAddress, user?.email ?? '--'),
-              _accountInfoRow(l.nationality, 'Ethiopia'),
-              _accountInfoRow(l.purposeOfAccount, 'Investment'),
-              _accountInfoRow(l.taxResidency, 'Ethiopia'),
-              _accountInfoRow('KYC Status',
-                  user?.kycStatus?.toString().toUpperCase() ?? 'PENDING'),
+              _accountInfoRow(l.nationality, user?.nationality ?? 'Ethiopia'),
+              _accountInfoRow(l.purposeOfAccount, user?.purposeOfAccount ?? '--'),
+              _accountInfoRow(l.taxResidency, user?.taxResidency ?? '--'),
+              _accountInfoRow(l.kycStatus,
+                  user?.kycStatus == 'verified' ? l.kycVerified : l.kycPending),
               const SizedBox(height: 14),
               _kycTierProgress(context, user?.kycStatus ?? 'pending'),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Wealth / KYC Card (inline on desktop)
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: TradEtTheme.cardBg,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _cardHeader(Icons.account_balance_wallet_outlined, l.wealthSection,
-                  'KYC financial profile', TradEtTheme.positive),
-              const SizedBox(height: 16),
-              _accountInfoRow(l.occupation, 'Student'),
-              _accountInfoRow(l.sourceOfWealth, 'Personal Savings'),
-              _accountInfoRow(l.sourceOfFund, 'Employment Income'),
-              _accountInfoRow(l.netWorth, 'ETB 0 – ETB 100,000'),
-              _accountInfoRow(l.purposeOfTrading, 'Investing for Learning'),
+              const SizedBox(height: 14),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (_) => Dialog(
+                      backgroundColor: Colors.transparent,
+                      insetPadding: const EdgeInsets.all(24),
+                      child: SizedBox(
+                        width: 480,
+                        height: 680,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: _AccountDetailsScreen(user: user),
+                        ),
+                      ),
+                    ),
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: TradEtTheme.positive.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: TradEtTheme.positive.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.edit_outlined, size: 16, color: TradEtTheme.positive),
+                        const SizedBox(width: 8),
+                        Text(AppLocalizations.of(context).editProfile,
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
+                                color: TradEtTheme.positive)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -1203,10 +1214,10 @@ class ProfileScreen extends StatelessWidget {
           _cardHeader(Icons.price_change_outlined, l.feesAndLimits,
               'Commission & limits', const Color(0xFF60A5FA)),
           const SizedBox(height: 16),
-          _accountInfoRow('Commission rate', '1.5% (flat, Riba-free)'),
-          _accountInfoRow('Daily withdrawal limit', '100,000 ETB'),
-          _accountInfoRow('Weekly trading limit', '500,000 ETB'),
-          _accountInfoRow('Plan', 'Retail Trader — Standard'),
+          _accountInfoRow(l.commissionRate, '1.5%'),
+          _accountInfoRow(l.dailyWithdrawalLimit, '100,000 ETB'),
+          _accountInfoRow(l.weeklyTradingLimit, '500,000 ETB'),
+          _accountInfoRow(l.planType, l.retailTraderStandard),
         ],
       ),
     );
@@ -1236,7 +1247,8 @@ class ProfileScreen extends StatelessWidget {
     final isVerified = kycStatus == 'verified';
     final isPending = kycStatus == 'pending';
 
-    const steps = ['Registration', 'Document Upload', 'Tier 1 Verified'];
+    final l = AppLocalizations.of(context);
+    final steps = [l.registrationStep, l.documentUpload, l.tier1Verified];
     final currentStep = isVerified ? 2 : (isPending ? 1 : 0);
 
     return Column(
@@ -1251,7 +1263,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              isVerified ? 'KYC Tier 1 — Verified' : 'KYC Tier 1 — In Progress',
+              isVerified ? l.kycVerified : l.kycPending,
               style: TextStyle(
                 color: isVerified ? TradEtTheme.positive : TradEtTheme.warning,
                 fontWeight: FontWeight.w600, fontSize: 13,
@@ -1547,7 +1559,7 @@ class ProfileScreen extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Account Screen — "Your Profile" hub with banner + 4 sub-options
+// Account Menu Screen — "Account" hub with banner + Profile Information
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _AccountMenuScreen extends StatelessWidget {
@@ -1585,6 +1597,234 @@ class _AccountMenuScreen extends StatelessWidget {
                       onPressed: () => Navigator.pop(context),
                     ),
                     Text(l.account,
+                        style: const TextStyle(fontSize: 18,
+                            fontWeight: FontWeight.w700, color: Colors.white)),
+                  ],
+                ),
+              ),
+
+              // ── Profile Banner ─────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 24),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF0F6B3C), Color(0xFF1B8A5A),
+                               Color(0xFF27AE60)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Consumer<AppProvider>(
+                    builder: (ctx, prov, _) {
+                      final bg = _avatarColors[
+                          prov.avatarColorIndex % _avatarColors.length];
+                      final imgBytes = prov.profileImageBytes;
+                      final initial = name.isNotEmpty
+                          ? name[0].toUpperCase() : '?';
+                      return Row(
+                        children: [
+                          Stack(
+                            children: [
+                              Container(
+                                width: 72, height: 72,
+                                decoration: BoxDecoration(
+                                  color: bg, shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: Colors.white.withValues(alpha: 0.3),
+                                      width: 2.5),
+                                ),
+                                child: imgBytes != null
+                                    ? ClipOval(child: Image.memory(imgBytes,
+                                        width: 72, height: 72,
+                                        fit: BoxFit.cover))
+                                    : Center(child: Text(initial,
+                                        style: const TextStyle(fontSize: 28,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white))),
+                              ),
+                              Positioned(
+                                bottom: 0, right: 0,
+                                child: Container(
+                                  width: 22, height: 22,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: bg, width: 2)),
+                                  child: Icon(Icons.camera_alt,
+                                      size: 11, color: bg),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(name,
+                                    style: const TextStyle(fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                        letterSpacing: -0.3)),
+                                const SizedBox(height: 3),
+                                Text('@${email.split('@').first}',
+                                    style: TextStyle(fontSize: 12,
+                                        color: Colors.white.withValues(alpha: 0.7))),
+                                const SizedBox(height: 10),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: isVerified
+                                        ? Colors.white.withValues(alpha: 0.2)
+                                        : TradEtTheme.warning.withValues(alpha: 0.25),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isVerified
+                                          ? Colors.white.withValues(alpha: 0.4)
+                                          : TradEtTheme.warning.withValues(alpha: 0.5),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        isVerified
+                                            ? Icons.verified_rounded
+                                            : Icons.pending_rounded,
+                                        size: 13,
+                                        color: isVerified
+                                            ? Colors.white
+                                            : TradEtTheme.warning,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        isVerified ? l.kycVerified : l.kycPending,
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                            color: isVerified
+                                                ? Colors.white
+                                                : TradEtTheme.warning),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── Sub-option: Profile Information ────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: TradEtTheme.cardBg,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                        color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                  ),
+                  child: _subItem(context,
+                    icon: Icons.badge_outlined,
+                    color: const Color(0xFF22D3EE),
+                    title: l.profileInformation,
+                    subtitle: l.subtitlePersonalDetails,
+                    isLast: true,
+                    onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) =>
+                            _ProfileInformationMenuScreen(user: user))),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _subItem(BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    bool isLast = false,
+  }) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      leading: Container(
+        width: 40, height: 40,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: color, size: 20),
+      ),
+      title: Text(title,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600,
+              color: Colors.white)),
+      subtitle: Text(subtitle,
+          style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
+      trailing: const Icon(Icons.chevron_right_rounded,
+          color: TradEtTheme.textMuted, size: 20),
+      onTap: onTap,
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Profile Information Menu — banner + 4 sub-options + Close Account
+// ═══════════════════════════════════════════════════════════════════════════
+
+class _ProfileInformationMenuScreen extends StatelessWidget {
+  final dynamic user;
+  const _ProfileInformationMenuScreen({required this.user});
+
+  static const _avatarColors = [
+    Color(0xFF0F6B3C), Color(0xFF1D4ED8), Color(0xFF7C3AED),
+    Color(0xFFB45309), Color(0xFF0D9488), Color(0xFF9D174D),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final isVerified = user?.kycStatus == 'verified';
+    final name = user?.fullName ?? 'User';
+    final email = user?.email ?? '';
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              // ── Header ─────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    Text(l.profileInformation,
                         style: const TextStyle(fontSize: 18,
                             fontWeight: FontWeight.w700, color: Colors.white)),
                   ],
@@ -1698,8 +1938,8 @@ class _AccountMenuScreen extends StatelessWidget {
                                       const SizedBox(width: 5),
                                       Text(
                                         isVerified
-                                            ? 'KYC Verified'
-                                            : 'KYC Pending',
+                                            ? l.kycVerified
+                                            : l.kycPending,
                                         style: TextStyle(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w600,
@@ -1749,8 +1989,8 @@ class _AccountMenuScreen extends StatelessWidget {
                             ? TradEtTheme.positive : TradEtTheme.warning,
                         title: l.verificationStatus,
                         subtitle: isVerified
-                            ? 'Tier 1 — Verified ✓'
-                            : 'Upload ID documents & check approval',
+                            ? l.tier1Verified
+                            : l.uploadIdDocuments,
                         onTap: () => showDialog(
                           context: context,
                           builder: (_) => _KycDialogContent(),
@@ -1769,12 +2009,47 @@ class _AccountMenuScreen extends StatelessWidget {
                         icon: Icons.price_change_outlined,
                         color: const Color(0xFF60A5FA),
                         title: l.feesAndLimits,
-                        subtitle:
-                            '1.5% flat commission • 100K ETB daily limit',
-                        isLast: true,
+                        subtitle: l.flatCommissionLimit,
                         onTap: () => Navigator.push(context,
                             MaterialPageRoute(builder: (_) =>
                                 const _FeesLimitsScreen())),
+                      ),
+                      _subItem(context,
+                        icon: Icons.delete_forever_outlined,
+                        color: TradEtTheme.negative,
+                        title: l.closeAccount,
+                        subtitle: l.closeAccountWarning.split('.').first,
+                        isLast: true,
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            backgroundColor: const Color(0xFF1A2F22),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                            title: Text(l.closeAccountTitle,
+                                style: const TextStyle(color: Colors.white,
+                                    fontWeight: FontWeight.w700)),
+                            content: Text(l.closeAccountWarning,
+                                style: const TextStyle(
+                                    color: TradEtTheme.textSecondary,
+                                    fontSize: 13)),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(l.cancel,
+                                    style: const TextStyle(
+                                        color: TradEtTheme.textMuted)),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(l.closeAccount,
+                                    style: const TextStyle(
+                                        color: TradEtTheme.negative,
+                                        fontWeight: FontWeight.w700)),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -2311,16 +2586,16 @@ class _FeesLimitsScreen extends StatelessWidget {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                   children: [
-                    feeRow('Commission rate', '1.5% flat (Riba-free)',
+                    feeRow(l.commissionRate, l.commissionRateValue,
                         Icons.percent_rounded, TradEtTheme.positive),
-                    feeRow('Daily withdrawal limit', '100,000 ETB',
+                    feeRow(l.dailyWithdrawalLimit, '100,000 ETB',
                         Icons.arrow_upward_rounded, TradEtTheme.warning),
-                    feeRow('Weekly trading limit', '500,000 ETB',
+                    feeRow(l.weeklyTradingLimit, '500,000 ETB',
                         Icons.swap_horiz_rounded, const Color(0xFF60A5FA)),
-                    feeRow('Plan', 'Retail Trader — Standard',
+                    feeRow(l.planType, l.retailTraderStandard,
                         Icons.workspace_premium_outlined,
                         const Color(0xFF818CF8)),
-                    feeRow('Settlement', 'T+2 (ECX standard)',
+                    feeRow(l.settlementType, l.settlementTPlus2,
                         Icons.schedule_rounded, TradEtTheme.accent),
                     Container(
                       padding: const EdgeInsets.all(14),
@@ -2330,16 +2605,15 @@ class _FeesLimitsScreen extends StatelessWidget {
                         border: Border.all(
                             color: TradEtTheme.positive.withValues(alpha: 0.2)),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(Icons.info_outline, color: TradEtTheme.positive,
+                          const Icon(Icons.info_outline, color: TradEtTheme.positive,
                               size: 16),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'All fees are Sharia-compliant flat commissions. '
-                              'No hidden interest (Riba) charges.',
-                              style: TextStyle(fontSize: 11,
+                              l.shariaFeeNote,
+                              style: const TextStyle(fontSize: 11,
                                   color: TradEtTheme.textSecondary),
                             ),
                           ),
@@ -2370,12 +2644,101 @@ class _AccountDetailsScreen extends StatefulWidget {
 }
 
 class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
+  // Edit mode
+  bool _editing = false;
+  bool _saving = false;
+
+  // Personal info text controllers
+  late TextEditingController _fullNameCtrl;
+  late TextEditingController _phoneCtrl;
+  late TextEditingController _addressCtrl;
+  late TextEditingController _dobCtrl;
+  late TextEditingController _nationalityCtrl;
+  late TextEditingController _purposeOfAccountCtrl;
+  late TextEditingController _taxResidencyCtrl;
+
   // Dropdown state for KYC wealth fields
   String? _occupation;
   String? _sourceOfWealth;
   String? _sourceOfFunds;
   String? _netWorth;
   String? _purposeOfTrading;
+
+  @override
+  void initState() {
+    super.initState();
+    final u = widget.user;
+    _fullNameCtrl = TextEditingController(text: u?.fullName ?? '');
+    _phoneCtrl = TextEditingController(text: u?.phone ?? '');
+    _addressCtrl = TextEditingController(text: u?.address ?? '');
+    _dobCtrl = TextEditingController(text: u?.dateOfBirth ?? '');
+    _nationalityCtrl = TextEditingController(text: u?.nationality ?? 'Ethiopia');
+    _purposeOfAccountCtrl = TextEditingController(text: u?.purposeOfAccount ?? '');
+    _taxResidencyCtrl = TextEditingController(text: u?.taxResidency ?? 'Ethiopia');
+    _occupation = u?.occupation;
+    _sourceOfWealth = u?.sourceOfWealth;
+    _sourceOfFunds = u?.sourceOfFunds;
+    _netWorth = u?.netWorth;
+    _purposeOfTrading = u?.purposeOfTrading;
+  }
+
+  @override
+  void dispose() {
+    _fullNameCtrl.dispose();
+    _phoneCtrl.dispose();
+    _addressCtrl.dispose();
+    _dobCtrl.dispose();
+    _nationalityCtrl.dispose();
+    _purposeOfAccountCtrl.dispose();
+    _taxResidencyCtrl.dispose();
+    super.dispose();
+  }
+
+  Widget _editableRow(String label, TextEditingController ctrl,
+      {TextInputType keyboardType = TextInputType.text, bool isLast = false}) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: _editing ? 10 : 14),
+      decoration: BoxDecoration(
+        border: isLast
+            ? null
+            : Border(bottom: BorderSide(color: TradEtTheme.divider.withValues(alpha: 0.3))),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
+          const SizedBox(height: 4),
+          if (_editing)
+            TextField(
+              controller: ctrl,
+              keyboardType: keyboardType,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white),
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                filled: true,
+                fillColor: TradEtTheme.surfaceLight,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: TradEtTheme.positive.withValues(alpha: 0.4)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: TradEtTheme.divider.withValues(alpha: 0.4)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: TradEtTheme.positive),
+                ),
+              ),
+            )
+          else
+            Text(ctrl.text.isNotEmpty ? ctrl.text : '--',
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white)),
+        ],
+      ),
+    );
+  }
 
   static const _occupations = [
     'Public Sector Employee (Government)',
@@ -2481,16 +2844,49 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
     );
   }
 
-  static const _avatarColors = [
-    Color(0xFF0F6B3C), Color(0xFF1D4ED8), Color(0xFF7C3AED),
-    Color(0xFFB45309), Color(0xFF0D9488), Color(0xFF9D174D),
-  ];
+  Future<void> _saveAll() async {
+    setState(() => _saving = true);
+    final l = AppLocalizations.of(context);
+    try {
+      await context.read<AppProvider>().updateProfile({
+        'full_name': _fullNameCtrl.text,
+        'phone': _phoneCtrl.text,
+        'address': _addressCtrl.text,
+        'date_of_birth': _dobCtrl.text,
+        'nationality': _nationalityCtrl.text,
+        'purpose_of_account': _purposeOfAccountCtrl.text,
+        'tax_residency': _taxResidencyCtrl.text,
+        'occupation': _occupation,
+        'source_of_wealth': _sourceOfWealth,
+        'source_of_funds': _sourceOfFunds,
+        'net_worth': _netWorth,
+        'purpose_of_trading': _purposeOfTrading,
+      });
+      if (mounted) {
+        setState(() { _editing = false; _saving = false; });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l.profileUpdated),
+          backgroundColor: TradEtTheme.positive,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ));
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l.saveFailed),
+          backgroundColor: TradEtTheme.negative,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final user = widget.user;
-    final name = user?.fullName ?? 'User';
     final email = user?.email ?? '';
 
     return Scaffold(
@@ -2500,50 +2896,62 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // ── Top row: back button (left) + small avatar (right) ───
+              // ── Top row: back + edit/save buttons ───────────────────
               Consumer<AppProvider>(
                 builder: (ctx, prov, _) {
-                  final bg = _avatarColors[
-                      prov.avatarColorIndex % _avatarColors.length];
-                  final imgBytes = prov.profileImageBytes;
-                  final initial = name.isNotEmpty
-                      ? name[0].toUpperCase() : '?';
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
+                    padding: const EdgeInsets.fromLTRB(4, 8, 8, 0),
                     child: Row(
                       children: [
-                        // Back button
                         IconButton(
                           icon: const Icon(Icons.arrow_back_ios_new_rounded,
                               color: Colors.white, size: 20),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const Spacer(),
-                        // Small circular avatar top-right
-                        GestureDetector(
-                          onTap: () =>
-                              _showAvatarOptionsFromState(context, prov),
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: Container(
-                              width: 42, height: 42,
-                              decoration: BoxDecoration(
-                                color: bg, shape: BoxShape.circle,
-                                border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.35),
-                                    width: 2),
-                              ),
-                              child: imgBytes != null
-                                  ? ClipOval(child: Image.memory(imgBytes,
-                                      width: 42, height: 42,
-                                      fit: BoxFit.cover))
-                                  : Center(child: Text(initial,
-                                      style: const TextStyle(fontSize: 17,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white))),
-                            ),
+                        if (!_editing)
+                          TextButton.icon(
+                            onPressed: () => setState(() => _editing = true),
+                            icon: const Icon(Icons.edit_outlined,
+                                color: TradEtTheme.accent, size: 16),
+                            label: Text(l.editProfile,
+                                style: const TextStyle(
+                                    color: TradEtTheme.accent, fontSize: 13)),
+                          )
+                        else ...[
+                          TextButton(
+                            onPressed: _saving
+                                ? null
+                                : () => setState(() => _editing = false),
+                            child: Text(l.cancelEdit,
+                                style: const TextStyle(
+                                    color: TradEtTheme.textSecondary,
+                                    fontSize: 13)),
                           ),
-                        ),
+                          const SizedBox(width: 4),
+                          _saving
+                              ? const SizedBox(
+                                  width: 20, height: 20,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: TradEtTheme.positive))
+                              : ElevatedButton(
+                                  onPressed: _saveAll,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: TradEtTheme.positive,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 8),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8)),
+                                  ),
+                                  child: Text(l.saveChanges,
+                                      style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700)),
+                                ),
+                          const SizedBox(width: 4),
+                        ],
                       ],
                     ),
                   );
@@ -2580,19 +2988,16 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                             color: TradEtTheme.textMuted)),
                     const SizedBox(height: 8),
                     _infoCard([
-                      _infoRow(l.basicInfo,
-                          '${user?.fullName ?? '--'}\n14 January 1995',
-                          editIcon: true),
-                      _infoRow(l.nationality, 'Ethiopia'),
-                      _infoRow(l.residentialAddress,
-                          'Komoros st 29, 489, Addis Ababa', editIcon: true),
-                      _infoRow(l.phone, '+251 921 970 367', editIcon: true),
-                      _infoRow(l.emailAddress,
-                          user?.email ?? '--', editIcon: true),
-                      _infoRow(l.purposeOfAccount, 'Investment', editIcon: true),
-                      _infoRow(l.taxResidency, 'Ethiopia', editIcon: true),
-                      _infoRow(l.riskAssessment, 'None',
-                          editIcon: true, isLast: true),
+                      _editableRow(l.fullName, _fullNameCtrl),
+                      _editableRow(l.dateOfBirth, _dobCtrl,
+                          keyboardType: TextInputType.datetime),
+                      _editableRow(l.nationality, _nationalityCtrl),
+                      _editableRow(l.residentialAddress, _addressCtrl),
+                      _editableRow(l.phone, _phoneCtrl,
+                          keyboardType: TextInputType.phone),
+                      _editableRow(l.purposeOfAccount, _purposeOfAccountCtrl),
+                      _editableRow(l.taxResidency, _taxResidencyCtrl,
+                          isLast: true),
                     ]),
                     const SizedBox(height: 20),
 
@@ -2605,7 +3010,7 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                     _infoCard([
                       _dropdownRow(
                         label: l.occupation,
-                        value: _occupation ?? 'Student',
+                        value: _occupation ?? _occupations.first,
                         options: _occupations,
                         onTap: () => _showPicker(
                           l.occupation, _occupations, _occupation,
@@ -2614,7 +3019,7 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                       ),
                       _dropdownRow(
                         label: l.sourceOfWealth,
-                        value: _sourceOfWealth ?? 'Personal Savings',
+                        value: _sourceOfWealth ?? _wealthSources.first,
                         options: _wealthSources,
                         onTap: () => _showPicker(
                           l.sourceOfWealth, _wealthSources, _sourceOfWealth,
@@ -2623,7 +3028,7 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                       ),
                       _dropdownRow(
                         label: l.sourceOfFund,
-                        value: _sourceOfFunds ?? 'Employment Income (Salary)',
+                        value: _sourceOfFunds ?? _fundSources.first,
                         options: _fundSources,
                         onTap: () => _showPicker(
                           l.sourceOfFund, _fundSources, _sourceOfFunds,
@@ -2632,7 +3037,7 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                       ),
                       _dropdownRow(
                         label: l.netWorth,
-                        value: _netWorth ?? 'ETB 0 – ETB 100,000',
+                        value: _netWorth ?? _netWorthRanges.first,
                         options: _netWorthRanges,
                         onTap: () => _showPicker(
                           l.netWorth, _netWorthRanges, _netWorth,
@@ -2641,8 +3046,7 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                       ),
                       _dropdownRow(
                         label: l.purposeOfTrading,
-                        value: _purposeOfTrading ??
-                            'Investing for Learning Purposes',
+                        value: _purposeOfTrading ?? _tradingPurposes.first,
                         options: _tradingPurposes,
                         isLast: true,
                         onTap: () => _showPicker(
@@ -2656,17 +3060,7 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(l.profileUpdated),
-                              backgroundColor: TradEtTheme.positive,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                            ),
-                          );
-                        },
+                        onPressed: _saving ? null : _saveAll,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: TradEtTheme.positive,
                           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -3303,3 +3697,217 @@ class _MethodTile extends StatelessWidget {
 }
 
 // SecurityLogSection lives in widgets/security_log_section.dart
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Appearance Screen
+// ═══════════════════════════════════════════════════════════════════════════
+
+class _AppearanceScreen extends StatelessWidget {
+  const _AppearanceScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 8, 16, 8),
+                child: Row(children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white, size: 20),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Text(l.appearance,
+                      style: const TextStyle(fontSize: 18,
+                          fontWeight: FontWeight.w700, color: Colors.white)),
+                ]),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    Consumer<AppProvider>(
+                      builder: (ctx, prov, _) => Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: TradEtTheme.cardBg,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                              color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            prov.isDarkMode
+                                ? Icons.dark_mode_rounded
+                                : Icons.light_mode_rounded,
+                            color: const Color(0xFF818CF8),
+                          ),
+                          title: Text(l.appearance,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500)),
+                          subtitle: Text(
+                            prov.isDarkMode ? l.darkMode : l.lightMode,
+                            style: const TextStyle(
+                                color: TradEtTheme.textMuted, fontSize: 11),
+                          ),
+                          trailing: Switch(
+                            value: prov.isDarkMode,
+                            onChanged: (_) => prov.toggleTheme(),
+                            activeThumbColor: TradEtTheme.positive,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.cardBg,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.language_rounded,
+                            color: Color(0xFF60A5FA)),
+                        title: Text(l.language,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500)),
+                        trailing: const LanguageSelector(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// About Us Screen
+// ═══════════════════════════════════════════════════════════════════════════
+
+class _AboutUsScreen extends StatelessWidget {
+  const _AboutUsScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 8, 16, 8),
+                child: Row(children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white, size: 20),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Text(l.aboutUs,
+                      style: const TextStyle(fontSize: 18,
+                          fontWeight: FontWeight.w700, color: Colors.white)),
+                ]),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF0F6B3C), Color(0xFF1B8A5A)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Column(children: [
+                        const Icon(Icons.bar_chart_rounded,
+                            color: Colors.white, size: 48),
+                        const SizedBox(height: 12),
+                        Text(l.appNameLocalized,
+                            style: const TextStyle(fontSize: 24,
+                                fontWeight: FontWeight.w800, color: Colors.white)),
+                        const SizedBox(height: 4),
+                        Text(l.byBankName,
+                            style: TextStyle(fontSize: 14,
+                                color: Colors.white.withValues(alpha: 0.7))),
+                        const SizedBox(height: 8),
+                        Text(l.appVersion,
+                            style: TextStyle(fontSize: 12,
+                                color: Colors.white.withValues(alpha: 0.5))),
+                      ]),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.cardBg,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                      ),
+                      child: Column(children: [
+                        _aboutItem(context, Icons.star_rate_rounded, l.rateUs,
+                            const Color(0xFFD4AF37), isFirst: true),
+                        Divider(height: 1, indent: 72,
+                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                        _aboutItem(context, Icons.article_outlined, l.ourBlog,
+                            const Color(0xFF60A5FA)),
+                        Divider(height: 1, indent: 72,
+                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                        _aboutItem(context, Icons.code_rounded,
+                            l.openSourceLicenses, TradEtTheme.textSecondary,
+                            isLast: true),
+                      ]),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _aboutItem(BuildContext context, IconData icon, String title,
+      Color color, {bool isFirst = false, bool isLast = false}) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      leading: Container(
+        width: 40, height: 40,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: color, size: 20),
+      ),
+      title: Text(title,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500,
+              color: Colors.white)),
+      trailing: const Icon(Icons.chevron_right_rounded,
+          color: TradEtTheme.textMuted, size: 20),
+      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$title — coming soon'),
+            behavior: SnackBarBehavior.floating)),
+    );
+  }
+}

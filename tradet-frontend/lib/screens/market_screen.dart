@@ -10,8 +10,23 @@ import '../widgets/price_change.dart';
 import '../widgets/mini_chart.dart';
 import '../widgets/responsive_layout.dart';
 import '../widgets/data_source_badge.dart';
+import '../l10n/app_localizations.dart';
 import 'trade_screen.dart';
 import '../widgets/disclaimer_footer.dart';
+
+/// Translate backend category names (English DB strings) to the UI language.
+String _localizedCategory(String name, AppLocalizations l) {
+  switch (name) {
+    case 'ECX Commodities':    return l.ecxCommodities;
+    case 'Islamic Banks':      return l.islamicBanks;
+    case 'Ethiopian Equities': return l.ethiopianEquities;
+    case 'Takaful & Insurance':return l.takafullInsurance;
+    case 'Sukuk':              return l.sukuk;
+    case 'Sukuk Bonds':        return l.sukukBonds;
+    case 'Halal Equities':     return l.halalEquities;
+    default:                   return name;
+  }
+}
 
 class MarketScreen extends StatefulWidget {
   const MarketScreen({super.key});
@@ -62,6 +77,7 @@ class _MarketScreenState extends State<MarketScreen> {
   @override
   Widget build(BuildContext context) {
     final wide = isWideScreen(context);
+    final l = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
@@ -83,9 +99,9 @@ class _MarketScreenState extends State<MarketScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Market',
-                          style: TextStyle(
+                        Text(
+                          l.market,
+                          style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -93,7 +109,7 @@ class _MarketScreenState extends State<MarketScreen> {
                           ),
                         ),
                         Text(
-                          'ገበያ • ${_getFilterLabel()}',
+                          '${l.market} • ${_getFilterLabel(l)}',
                           style: const TextStyle(
                             fontSize: 13,
                             color: TradEtTheme.textSecondary,
@@ -131,13 +147,13 @@ class _MarketScreenState extends State<MarketScreen> {
                       const Icon(Icons.arrow_back_ios_rounded,
                           size: 14, color: TradEtTheme.positive),
                       const SizedBox(width: 4),
-                      const Text('All Categories',
-                          style: TextStyle(
+                      Text(l.allCategories,
+                          style: const TextStyle(
                               fontSize: 13,
                               color: TradEtTheme.positive,
                               fontWeight: FontWeight.w600)),
                       const SizedBox(width: 8),
-                      Text('• $_selectedCategory',
+                      Text('• ${_localizedCategory(_selectedCategory!, l)}',
                           style: const TextStyle(
                               fontSize: 13, color: TradEtTheme.textMuted)),
                     ]),
@@ -151,12 +167,12 @@ class _MarketScreenState extends State<MarketScreen> {
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     children: [
-                      _filterPill('All', 'all'),
-                      _filterPill('Commodities', 'commodity'),
-                      _filterPill('Sukuk', 'sukuk'),
-                      _filterPill('Equities', 'equity'),
+                      _filterPill(l.all, 'all'),
+                      _filterPill(l.commodities, 'commodity'),
+                      _filterPill(l.sukuk, 'sukuk'),
+                      _filterPill(l.equities, 'equity'),
                       const SizedBox(width: 8),
-                      _halalToggle(),
+                      _halalToggle(l),
                       const SizedBox(width: 20),
                     ],
                   ),
@@ -204,7 +220,7 @@ class _MarketScreenState extends State<MarketScreen> {
                                 refresh: true,
                               ),
                               icon: const Icon(Icons.refresh, size: 18),
-                              label: const Text('Retry'),
+                              label: Text(l.retry),
                             ),
                           ],
                         ),
@@ -225,9 +241,9 @@ class _MarketScreenState extends State<MarketScreen> {
                             color: TradEtTheme.textMuted,
                           ),
                           const SizedBox(height: 12),
-                          const Text(
-                            'No assets found',
-                            style: TextStyle(color: TradEtTheme.textMuted),
+                          Text(
+                            l.noAssetsFound,
+                            style: const TextStyle(color: TradEtTheme.textMuted),
                           ),
                         ],
                       ),
@@ -257,6 +273,7 @@ class _MarketScreenState extends State<MarketScreen> {
 
   // ─── Web: Search bar with inline filters ───
   Widget _webSearchBar() {
+    final l = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
@@ -266,7 +283,7 @@ class _MarketScreenState extends State<MarketScreen> {
             style: const TextStyle(color: Colors.white, fontSize: 14),
             onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
             decoration: InputDecoration(
-              hintText: 'Search stocks, commodities, sukuk...',
+              hintText: l.searchStocks,
               prefixIcon: Icon(
                 Icons.search,
                 color: TradEtTheme.textMuted,
@@ -290,23 +307,24 @@ class _MarketScreenState extends State<MarketScreen> {
         ),
         const SizedBox(width: 16),
         // Inline filter chips
-        _filterPill('All', 'all'),
-        _filterPill('Commodities', 'commodity'),
-        _filterPill('Sukuk', 'sukuk'),
-        _filterPill('Equities', 'equity'),
+        _filterPill(l.all, 'all'),
+        _filterPill(l.commodities, 'commodity'),
+        _filterPill(l.sukuk, 'sukuk'),
+        _filterPill(l.equities, 'equity'),
         const SizedBox(width: 8),
-        _halalToggle(),
+        _halalToggle(l),
       ],
     );
   }
 
   Widget _mobileSearchBar() {
+    final l = AppLocalizations.of(context);
     return TextField(
       controller: _searchController,
       style: const TextStyle(color: Colors.white, fontSize: 14),
       onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
       decoration: InputDecoration(
-        hintText: 'Search stocks, commodities...',
+        hintText: l.searchStocks,
         prefixIcon: Icon(Icons.search, color: TradEtTheme.textMuted, size: 20),
         suffixIcon: _searchQuery.isNotEmpty
             ? IconButton(
@@ -327,6 +345,7 @@ class _MarketScreenState extends State<MarketScreen> {
 
   // ─── Web: Data table view — grouped by category when browsing all ───
   Widget _buildWebTable(List<Asset> filtered) {
+    final l = AppLocalizations.of(context);
     final showGrouped = _filter == 'all' &&
         _searchQuery.isEmpty &&
         !_shariaOnly &&
@@ -373,19 +392,19 @@ class _MarketScreenState extends State<MarketScreen> {
               child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                 GestureDetector(
                   onTap: () => setState(() => _selectedCategory = null),
-                  child: const Row(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(Icons.arrow_back_ios_rounded,
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.arrow_back_ios_rounded,
                         size: 13, color: TradEtTheme.positive),
-                    SizedBox(width: 4),
-                    Text('All Categories',
-                        style: TextStyle(
+                    const SizedBox(width: 4),
+                    Text(l.allCategories,
+                        style: const TextStyle(
                             fontSize: 13,
                             color: TradEtTheme.positive,
                             fontWeight: FontWeight.w600)),
                   ]),
                 ),
                 const SizedBox(width: 8),
-                Text('› $_selectedCategory',
+                Text('› ${_localizedCategory(_selectedCategory!, l)}',
                     style: const TextStyle(
                         fontSize: 13, color: TradEtTheme.textMuted)),
               ]),
@@ -402,30 +421,30 @@ class _MarketScreenState extends State<MarketScreen> {
                 color: TradEtTheme.divider.withValues(alpha: 0.3),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                SizedBox(width: 44), // icon space
-                SizedBox(width: 12),
-                Expanded(flex: 2, child: _TableHeader('Asset')),
-                Expanded(flex: 2, child: _TableHeader('Category')),
-                Expanded(flex: 1, child: _TableHeader('Bid')),
-                Expanded(flex: 1, child: _TableHeader('Ask')),
-                SizedBox(width: 60, child: _TableHeader('Chart')),
+                const SizedBox(width: 44), // icon space
+                const SizedBox(width: 12),
+                Expanded(flex: 2, child: _TableHeader(l.asset)),
+                Expanded(flex: 2, child: _TableHeader(l.category)),
+                Expanded(flex: 1, child: _TableHeader(l.bid)),
+                Expanded(flex: 1, child: _TableHeader(l.ask)),
+                SizedBox(width: 60, child: _TableHeader(l.chart)),
                 Expanded(
                   flex: 1,
                   child: Align(
                     alignment: Alignment.centerRight,
-                    child: _TableHeader('Price'),
+                    child: _TableHeader(l.price),
                   ),
                 ),
                 SizedBox(
                   width: 110,
                   child: Align(
                     alignment: Alignment.centerRight,
-                    child: _TableHeader('24h Change'),
+                    child: _TableHeader(l.change24h),
                   ),
                 ),
-                SizedBox(width: 160), // Buy/Sell + star + bell
+                const SizedBox(width: 160), // Buy/Sell + star + bell
               ],
             ),
           ),
@@ -506,6 +525,7 @@ class _MarketScreenState extends State<MarketScreen> {
   }
 
   Widget _buildCategorySection(String categoryName, List<Asset> assets) {
+    final l = AppLocalizations.of(context);
     final emoji = _categoryEmoji(categoryName);
     final sortedByChange = [...assets]
       ..sort((a, b) => (b.change24h ?? 0).compareTo(a.change24h ?? 0));
@@ -528,20 +548,20 @@ class _MarketScreenState extends State<MarketScreen> {
                 Text(emoji, style: const TextStyle(fontSize: 22)),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(categoryName,
+                  child: Text(_localizedCategory(categoryName, l),
                       style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),
                 ),
-                Text('${assets.length} assets',
+                Text('${assets.length} ${l.assetsCount}',
                     style: const TextStyle(
                         fontSize: 11, color: TradEtTheme.textMuted)),
                 const SizedBox(width: 10),
                 GestureDetector(
                   onTap: () => setState(() => _selectedCategory = categoryName),
-                  child: const Text('See all →',
-                      style: TextStyle(
+                  child: Text(l.seeAllArrow,
+                      style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: TradEtTheme.positive)),
@@ -581,16 +601,16 @@ class _MarketScreenState extends State<MarketScreen> {
     );
   }
 
-  String _getFilterLabel() {
+  String _getFilterLabel(AppLocalizations l) {
     switch (_filter) {
       case 'commodity':
-        return 'ECX Commodities';
+        return l.ecxCommodities;
       case 'sukuk':
-        return 'Sukuk Bonds';
+        return l.sukukBonds;
       case 'equity':
-        return 'Halal Equities';
+        return l.halalEquities;
       default:
-        return '38 Halal Assets';
+        return l.halalAssets;
     }
   }
 
@@ -624,7 +644,7 @@ class _MarketScreenState extends State<MarketScreen> {
     );
   }
 
-  Widget _halalToggle() {
+  Widget _halalToggle(AppLocalizations l) {
     return GestureDetector(
       onTap: () {
         setState(() => _shariaOnly = !_shariaOnly);
@@ -658,7 +678,7 @@ class _MarketScreenState extends State<MarketScreen> {
                   ),
                 ),
               Text(
-                'Halal Only',
+                l.halalOnly,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -1278,6 +1298,7 @@ class _QuickActions extends StatelessWidget {
   const _QuickActions({required this.asset});
 
   void _showCreateAlert(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final provider = context.read<AppProvider>();
     final priceCtrl = TextEditingController(
       text: asset.price?.toStringAsFixed(2) ?? '',
@@ -1294,7 +1315,7 @@ class _QuickActions extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
-            'Alert: ${asset.symbol}',
+            '${l.alertFor}: ${asset.symbol}',
             style: const TextStyle(color: Colors.white, fontSize: 18),
           ),
           content: SingleChildScrollView(
@@ -1303,7 +1324,7 @@ class _QuickActions extends StatelessWidget {
               children: [
                 if (asset.price != null)
                   Text(
-                    'Current: ${fmt.format(asset.price)} ETB',
+                    '${l.currentPriceLabel}: ${fmt.format(asset.price)} ETB',
                     style: const TextStyle(
                       fontSize: 12,
                       color: TradEtTheme.textSecondary,
@@ -1316,8 +1337,8 @@ class _QuickActions extends StatelessWidget {
                     decimal: true,
                   ),
                   style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: 'Target Price (ETB)',
+                  decoration: InputDecoration(
+                    labelText: l.targetPrice,
                     suffixText: 'ETB',
                   ),
                 ),
@@ -1353,7 +1374,7 @@ class _QuickActions extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  'Above',
+                                  l.above,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     color: condition == 'above'
@@ -1397,7 +1418,7 @@ class _QuickActions extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  'Below',
+                                  l.below,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     color: condition == 'below'
@@ -1419,9 +1440,9 @@ class _QuickActions extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(color: TradEtTheme.textSecondary),
+              child: Text(
+                l.cancel,
+                style: const TextStyle(color: TradEtTheme.textSecondary),
               ),
             ),
             ElevatedButton(
@@ -1438,7 +1459,7 @@ class _QuickActions extends StatelessWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Alert set for ${asset.symbol}'),
+                        content: Text('${l.createAlert} — ${asset.symbol}'),
                         backgroundColor: TradEtTheme.positive,
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -1446,7 +1467,7 @@ class _QuickActions extends StatelessWidget {
                   }
                 } catch (_) {}
               },
-              child: const Text('Create Alert'),
+              child: Text(l.createAlert),
             ),
           ],
         ),
@@ -1456,6 +1477,7 @@ class _QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     const iconSize = 20.0;
     const padding = 6.0;
 
@@ -1480,14 +1502,14 @@ class _QuickActions extends StatelessWidget {
               children: [
                 // Sell button first
                 if (hasHolding) ...[
-                  _MktBtn('Sell', TradEtTheme.negative,
+                  _MktBtn(l.sell, TradEtTheme.negative,
                       () => Navigator.of(context).push(
                           appRoute(context, TradeScreen(asset: asset, initialSell: true)))),
                   const SizedBox(width: 6),
                 ],
                 // Buy button after
                 if (hasCash) ...[
-                  _MktBtn('Buy', TradEtTheme.positive,
+                  _MktBtn(l.buy, TradEtTheme.positive,
                       () => Navigator.of(context).push(
                           appRoute(context, TradeScreen(asset: asset)))),
                   const SizedBox(width: 4),

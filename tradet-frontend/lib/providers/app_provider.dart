@@ -445,6 +445,23 @@ class AppProvider extends ChangeNotifier {
     if (uid.isNotEmpty) SecurityLogService.record(SecurityEvent.logout, userId: uid);
   }
 
+  /// Re-fetches the user profile from the API and notifies listeners.
+  Future<void> refreshProfile() async {
+    try {
+      _user = await _api.getProfile();
+      notifyListeners();
+    } catch (_) {
+      // silently ignore — stale data stays
+    }
+  }
+
+  /// Updates profile fields via API and refreshes local state.
+  Future<void> updateProfile(Map<String, dynamic> fields) async {
+    final updated = await _api.updateProfile(fields);
+    _user = updated;
+    notifyListeners();
+  }
+
   /// Submits KYC identity documents and refreshes the user profile on success.
   Future<bool> submitKyc({
     required String idType,
