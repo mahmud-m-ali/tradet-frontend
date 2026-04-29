@@ -942,6 +942,17 @@ class AppLocalizations {
   String get tradingPurposePreserveCapital => _t({'en': 'Preserve capital', 'am': 'ካፒታል ጠብቅ', 'ti': 'ካፒታል ሓሉ', 'om': 'Kaappitaala tiksi', 'so': 'Ilaalin raasumaalka', 'gur': 'ካፒታል ጠብቅ'});
   String get tradingPurposeExploratory => _t({'en': 'Exploratory investing', 'am': 'አሳሽ ኢንቨስትመንት', 'ti': 'ናይ ምፍታሽ ኢንቨስትመንት', 'om': 'Invastimantii qormaataa', 'so': 'Maalgelin baadh-raac', 'gur': 'አሳሽ ኢንቨስትመንት'});
 
+  // ─── Profile screen missing keys ─────────────────────────
+  String get personalInformation => _t({'en': 'Personal Information', 'am': 'የግል መረጃ', 'ti': 'ናይ ውልቀ ሓበሬታ', 'om': 'Odeeffannoo dhuunfaa', 'so': 'Macluumaadka Shakhsiga', 'gur': 'ናይ ግለ ሓበሬታ'});
+  String get subtitleStandardsCert => _t({'en': 'Standards & certification', 'am': 'ደረጃዎች እና ምስክርነት', 'ti': 'ደረጃታት ምስክርነት', 'om': 'Mallattoowwan fi ragaa', 'so': 'Heerarka & xaqiijinta', 'gur': 'ደረጃዎቸ ምስክርነት'});
+  String get nationalBankLabel => _t({'en': 'National Bank', 'am': 'ብሔራዊ ባንክ', 'ti': 'ሃገራዊ ባንኪ', 'om': 'Baankii Biyyaalessaa', 'so': 'Bangiga Qaranka', 'gur': 'ሃገራዊ ባንኪ'});
+  String get faqAndSupport => _t({'en': 'FAQ & Support', 'am': 'ጥ.ይ.ጠ. እና ድጋፍ', 'ti': 'ሕቶ ሓጋዚ', 'om': 'Gaaffilee fi deggersa', 'so': 'Su\'aalaha & Taageerada', 'gur': 'ጥ.ይ.ጠ. ድጋፍ'});
+  String get tier1VerifiedStep => _t({'en': 'Tier 1 Verified', 'am': 'ደረጃ 1 ተረጋግጧል', 'ti': 'ደረጃ 1 ተረጋጊጹ', 'om': 'Sadarkaa 1 Mirkanaawe', 'so': 'Heer 1 La Xaqiijiyay', 'gur': 'ደረጃ 1 ተረጋግጧ'});
+  String get kycInProgress => _t({'en': 'KYC Tier 1 — In Progress', 'am': 'KYC ደረጃ 1 — በሂደት', 'ti': 'KYC ደረጃ 1 — ኣብ ምክያድ', 'om': 'KYC Sadarkaa 1 — Adeemaa', 'so': 'KYC Heer 1 — Socda', 'gur': 'KYC ደረጃ 1 — ሂደት'});
+  String get shariaAaoifi => _t({'en': 'Sharia (AAOIFI)', 'am': 'ሸሪዓ (AAOIFI)', 'ti': 'ሸሪዓ (AAOIFI)', 'om': "Shari'aa (AAOIFI)", 'so': 'Shariicada (AAOIFI)', 'gur': 'ሸሪዓ (AAOIFI)'});
+  String get ribaFree => _t({'en': 'Riba-Free', 'am': 'ሪባ-ነጻ', 'ti': 'ሪባ-ናጻ', 'om': 'Riba-Bilisaa', 'so': 'Riba-Lacag la\'aanta', 'gur': 'ሪባ-ነጻ'});
+  String get noShortSell => _t({'en': 'No Short Sell', 'am': 'አጭር ሽያጭ የለም', 'ti': 'ሓጺር ሽያጥ የልቦ', 'om': 'Gurgurtaa gabaabduu hin jiru', 'so': 'Ganacsiga Gaaban ma jiro', 'gur': 'አጭር ሽያጭ የለም'});
+
   /// Multi-language translation helper.
   String _t(Map<String, String> translations) {
     return translations[locale.languageCode] ?? translations['en']!;

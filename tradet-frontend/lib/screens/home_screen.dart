@@ -298,21 +298,24 @@ class AppWebSidebar extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 3),
-                        const Row(
-                          children: [
-                            Icon(Icons.verified_rounded,
-                                size: 11, color: TradEtTheme.positive),
-                            SizedBox(width: 3),
-                            Text(
-                              'Sharia Certified',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: TradEtTheme.positive,
-                                fontWeight: FontWeight.w600,
+                        Builder(builder: (context) {
+                          final l = AppLocalizations.of(context);
+                          return Row(
+                            children: [
+                              const Icon(Icons.verified_rounded,
+                                  size: 11, color: TradEtTheme.positive),
+                              const SizedBox(width: 3),
+                              Text(
+                                l.shariaCertified,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: TradEtTheme.positive,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          );
+                        }),
                       ],
                     ),
                   ),

@@ -108,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
           _menuItem(context,
               icon: Icons.person_outline_rounded,
               label: l.account,
-              subtitle: '${l.profileInformation}, ${l.verificationStatus}...',
+              subtitle: '${l.personalInformation}, ${l.verificationStatus}...',
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => _AccountMenuScreen(user: user)))),
         ]),
@@ -401,7 +401,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             // Left: Account info + payments
             Expanded(
-              flex: 3,
+              flex: 4,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -410,15 +410,15 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 20),
-            // Right: Compliance + Settings + Notifications + Help + Security
+            // Right: Settings + Compliance + Notifications + Help + Security
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _webComplianceCard(context),
-                  const SizedBox(height: 16),
                   _webSettingsCard(context, provider),
+                  const SizedBox(height: 16),
+                  _webComplianceCard(context),
                   const SizedBox(height: 16),
                   _webNotificationsCard(context),
                   const SizedBox(height: 16),
@@ -639,18 +639,18 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _cardHeader(Icons.verified_user_rounded, l.compliance,
-              'Standards & certification', TradEtTheme.positive),
+              l.subtitleStandardsCert, TradEtTheme.positive),
           const SizedBox(height: 18),
-          _webComplianceItem(Icons.verified_rounded, 'Sharia (AAOIFI)',
-              'Halal screened', TradEtTheme.positive),
-          _webComplianceItem(Icons.account_balance_rounded, 'ECX Regulated',
-              'Ethiopian rules', const Color(0xFF60A5FA)),
-          _webComplianceItem(Icons.security_rounded, 'NBE Supervised',
-              'National Bank', const Color(0xFF818CF8)),
-          _webComplianceItem(Icons.money_off_rounded, 'Riba-Free',
-              'No interest', const Color(0xFF22D3EE)),
-          _webComplianceItem(Icons.block_rounded, 'No Short Sell',
-              'Spot trading only', TradEtTheme.warning, isLast: true),
+          _webComplianceItem(Icons.verified_rounded, l.shariaAaoifi,
+              l.halalScreened, TradEtTheme.positive),
+          _webComplianceItem(Icons.account_balance_rounded, l.ecxRegulated,
+              l.ethiopianRules, const Color(0xFF60A5FA)),
+          _webComplianceItem(Icons.security_rounded, l.nbeSupervised,
+              l.nationalBankLabel, const Color(0xFF818CF8)),
+          _webComplianceItem(Icons.money_off_rounded, l.ribaFree,
+              l.noInterestLabel, const Color(0xFF22D3EE)),
+          _webComplianceItem(Icons.block_rounded, l.noShortSell,
+              l.spotTradingOnly, TradEtTheme.warning, isLast: true),
           const SizedBox(height: 14),
           const Divider(color: TradEtTheme.divider, thickness: 0.4),
           const SizedBox(height: 10),
@@ -773,7 +773,7 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _cardHeader(Icons.notifications_outlined, l.notifications,
-              'Alerts & messaging', TradEtTheme.accent),
+              l.subtitleAlertsMessaging, TradEtTheme.accent),
           const SizedBox(height: 16),
           _webSettingRow(
             icon: Icons.show_chart_rounded,
@@ -817,7 +817,7 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _cardHeader(Icons.help_outline_rounded, l.help,
-              'FAQ & Support', TradEtTheme.positive),
+              l.faqAndSupport, TradEtTheme.positive),
           const SizedBox(height: 16),
           _webSettingRow(
             icon: Icons.support_agent_rounded,
@@ -917,8 +917,8 @@ class ProfileScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cardHeader(Icons.settings_rounded, 'Preferences',
-              'Settings & preferences', TradEtTheme.accent),
+          _cardHeader(Icons.settings_rounded, l.preferences,
+              l.settingsAndPreferences, TradEtTheme.accent),
           const SizedBox(height: 18),
           _webSettingRow(
             icon: provider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
@@ -1097,8 +1097,8 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _cardHeader(Icons.person_outline_rounded, l.profileInformation,
-                  l.subtitlePersonalDetails, const Color(0xFF22D3EE)),
+              _cardHeader(Icons.person_outline_rounded, l.personalInformation,
+                  l.personalInformationSub, const Color(0xFF22D3EE)),
               const SizedBox(height: 18),
               _accountInfoRow(l.fullName, user?.fullName ?? '--'),
               _accountInfoRow(l.emailAddress, user?.email ?? '--'),
@@ -1263,7 +1263,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              isVerified ? l.kycVerified : l.kycPending,
+              isVerified ? l.kycTier1Verified : l.kycInProgress,
               style: TextStyle(
                 color: isVerified ? TradEtTheme.positive : TradEtTheme.warning,
                 fontWeight: FontWeight.w600, fontSize: 13,
@@ -1739,7 +1739,7 @@ class _AccountMenuScreen extends StatelessWidget {
                   child: _subItem(context,
                     icon: Icons.badge_outlined,
                     color: const Color(0xFF22D3EE),
-                    title: l.profileInformation,
+                    title: l.personalInformation,
                     subtitle: l.subtitlePersonalDetails,
                     isLast: true,
                     onTap: () => Navigator.push(context,
@@ -1824,7 +1824,7 @@ class _ProfileInformationMenuScreen extends StatelessWidget {
                           color: Colors.white, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    Text(l.profileInformation,
+                    Text(l.personalInformation,
                         style: const TextStyle(fontSize: 18,
                             fontWeight: FontWeight.w700, color: Colors.white)),
                   ],
@@ -1977,7 +1977,7 @@ class _ProfileInformationMenuScreen extends StatelessWidget {
                       _subItem(context,
                         icon: Icons.badge_outlined,
                         color: const Color(0xFF22D3EE),
-                        title: l.profileInformation,
+                        title: l.personalInformation,
                         subtitle: l.subtitlePersonalDetails,
                         onTap: () => Navigator.push(context,
                             MaterialPageRoute(builder: (_) =>
