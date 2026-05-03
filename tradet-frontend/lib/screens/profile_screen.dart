@@ -81,8 +81,8 @@ class ProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: TradEtTheme.positive.withValues(alpha: 0.5)),
                       ),
-                      child: const Text('Upgrade',
-                          style: TextStyle(
+                      child: Text(l.upgrade,
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 13,
                               fontWeight: FontWeight.w600)),
@@ -150,13 +150,13 @@ class ProfileScreen extends StatelessWidget {
           _menuDivider(),
           _menuItem(context,
               icon: Icons.lightbulb_outline_rounded,
-              label: 'Learn',
+              label: l.learn,
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const _LearnScreen()))),
           _menuDivider(),
           _menuItem(context,
               icon: Icons.campaign_outlined,
-              label: 'Inbox',
+              label: l.inbox,
               badge: 4,
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const _InboxScreen()))),
@@ -185,7 +185,7 @@ class ProfileScreen extends StatelessWidget {
           _menuDivider(),
           _menuItem(context,
               icon: Icons.notifications_outlined,
-              label: 'Notification setting',
+              label: l.notificationSetting,
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const _NotificationsMenuScreen()))),
         ]),
@@ -5132,6 +5132,7 @@ class _InviteFriendsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -5154,16 +5155,16 @@ class _InviteFriendsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               // Headline
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
-                    Text('Ends in 15 days',
-                        style: TextStyle(fontSize: 13,
+                    Text(l.endsInDays,
+                        style: const TextStyle(fontSize: 13,
                             color: TradEtTheme.textSecondary)),
-                    SizedBox(height: 6),
-                    Text('Earn 500 per friend',
-                        style: TextStyle(fontSize: 28,
+                    const SizedBox(height: 6),
+                    Text(l.earn500PerFriend,
+                        style: const TextStyle(fontSize: 28,
                             fontWeight: FontWeight.w800,
                             color: Colors.white)),
                   ],
@@ -5174,10 +5175,10 @@ class _InviteFriendsScreen extends StatelessWidget {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(8, 0, 0, 8),
-                      child: Text('Your friends have to do',
-                          style: TextStyle(fontSize: 15,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
+                      child: Text(l.yourFriendsHaveToDo,
+                          style: const TextStyle(fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: Colors.white)),
                     ),
@@ -5189,16 +5190,16 @@ class _InviteFriendsScreen extends StatelessWidget {
                             color: TradEtTheme.divider.withValues(alpha: 0.3)),
                       ),
                       child: Column(children: [
-                        _stepRow(Icons.link_rounded, 'Sign up with your link',
-                            'And verify their identity'),
+                        _stepRow(Icons.link_rounded, l.signUpWithLink,
+                            l.verifyIdentity),
                         _stepDivider(),
                         _stepRow(Icons.attach_money_rounded,
-                            'Add money to their account',
-                            'Via debit card or bank transfer'),
+                            l.addMoneyToAccount,
+                            l.viaDebitOrBank),
                         _stepDivider(),
                         _stepRow(Icons.bar_chart_rounded,
-                            'Make 3 trade orders of 1000 minimum each',
-                            "Some cash transactions, like to self and others bank account don't count",
+                            l.make3TradeOrders,
+                            l.cashTxNotCount,
                             isLast: true),
                       ]),
                     ),
@@ -5211,19 +5212,19 @@ class _InviteFriendsScreen extends StatelessWidget {
                             color: TradEtTheme.divider.withValues(alpha: 0.3)),
                       ),
                       child: Column(children: [
-                        _navRow(context, 'Past invites'),
+                        _navRow(context, l.pastInvites),
                         Divider(height: 1, indent: 20,
                             color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                        _navRow(context, 'Get help'),
+                        _navRow(context, l.getHelp),
                       ]),
                     ),
                     const SizedBox(height: 16),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                          'offer end at each end of the month. Max 5 invites per month. T&C apply',
+                          l.inviteOfferTerms,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 11,
+                          style: const TextStyle(fontSize: 11,
                               color: TradEtTheme.textMuted)),
                     ),
                     const SizedBox(height: 16),
@@ -5232,8 +5233,8 @@ class _InviteFriendsScreen extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Invite link copied — share with your friends!'),
+                            SnackBar(
+                              content: Text(l.inviteLinkCopied),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -5245,8 +5246,8 @@ class _InviteFriendsScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(28)),
                         ),
-                        child: const Text('Invite friends',
-                            style: TextStyle(fontSize: 15,
+                        child: Text(l.inviteFriendsButton,
+                            style: const TextStyle(fontSize: 15,
                                 fontWeight: FontWeight.w700)),
                       ),
                     ),
@@ -5315,6 +5316,7 @@ class _LearnScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -5332,8 +5334,8 @@ class _LearnScreen extends StatelessWidget {
                       onPressed: () => Navigator.pop(context),
                     ),
                     const SizedBox(width: 4),
-                    const Text('Learn',
-                        style: TextStyle(fontSize: 18,
+                    Text(l.learn,
+                        style: const TextStyle(fontSize: 18,
                             fontWeight: FontWeight.w700, color: Colors.white)),
                   ],
                 ),
@@ -5343,28 +5345,28 @@ class _LearnScreen extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                   children: [
                     _learnTile(context, Icons.school_rounded,
-                        'Trading Basics',
-                        'Understand the fundamentals of commodity trading.',
+                        l.learnTradingBasics,
+                        l.learnTradingBasicsDesc,
                         TradEtTheme.positive),
                     const SizedBox(height: 12),
                     _learnTile(context, Icons.mosque_rounded,
-                        'Sharia & Islamic Finance',
-                        'Learn how AAOIFI screens halal investments.',
+                        l.learnShariaFinance,
+                        l.learnShariaFinanceDesc,
                         const Color(0xFFD4AF37)),
                     const SizedBox(height: 12),
                     _learnTile(context, Icons.show_chart_rounded,
-                        'Reading Charts',
-                        'Master candlestick patterns and indicators.',
+                        l.learnCharts,
+                        l.learnChartsDesc,
                         const Color(0xFF60A5FA)),
                     const SizedBox(height: 12),
                     _learnTile(context, Icons.security_rounded,
-                        'Risk Management',
-                        'Protect your capital — diversification & position sizing.',
+                        l.learnRiskMgmt,
+                        l.learnRiskMgmtDesc,
                         const Color(0xFF818CF8)),
                     const SizedBox(height: 12),
                     _learnTile(context, Icons.account_balance_rounded,
-                        'Ethiopian Markets',
-                        'ECX, ESX, NBE — how local markets work.',
+                        l.learnEthiopianMarkets,
+                        l.learnEthiopianMarketsDesc,
                         const Color(0xFF22D3EE)),
                   ],
                 ),
@@ -5478,16 +5480,16 @@ class _InboxScreen extends StatelessWidget {
                       onPressed: () => Navigator.pop(context),
                     ),
                     const SizedBox(width: 4),
-                    const Text('Inbox',
-                        style: TextStyle(fontSize: 18,
+                    Text(AppLocalizations.of(context).inbox,
+                        style: const TextStyle(fontSize: 18,
                             fontWeight: FontWeight.w700, color: Colors.white)),
                     const Spacer(),
                     TextButton(
                       onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Marked all as read'),
+                          SnackBar(content: Text(AppLocalizations.of(context).markedAllRead),
                               behavior: SnackBarBehavior.floating)),
-                      child: const Text('Mark all read',
-                          style: TextStyle(fontSize: 12,
+                      child: Text(AppLocalizations.of(context).markAllRead,
+                          style: const TextStyle(fontSize: 12,
                               color: TradEtTheme.accent)),
                     ),
                   ],

@@ -305,7 +305,14 @@ class DashboardScreen extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => const OrdersScreen(openOnly: true)),
+                    builder: (_) => Scaffold(
+                      backgroundColor: TradEtTheme.surface,
+                      body: const Material(
+                        color: Colors.transparent,
+                        child: OrdersScreen(openOnly: true),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

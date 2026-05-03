@@ -83,7 +83,15 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => Scaffold(body: _screenFor(i))),
+        MaterialPageRoute(
+          builder: (_) => Scaffold(
+            backgroundColor: TradEtTheme.surface,
+            body: Material(
+              color: Colors.transparent,
+              child: _screenFor(i),
+            ),
+          ),
+        ),
       );
     }
   }
