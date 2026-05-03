@@ -52,28 +52,48 @@ List<_NavItem> _mobileNavItems(AppLocalizations l) => [
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  List<Widget> get _screens => [
-    DashboardScreen(onNavigateTo: (i) => setState(() => _currentIndex = i)),
-    const MarketScreen(),
-    const PortfolioScreen(),
-    const OrdersScreen(),
-    const WatchlistScreen(),
-    const AlertsScreen(),
-    const NewsScreen(),
-    const ZakatScreen(),
-    const ConverterScreen(),
-    const AnalyticsScreen(),
-    const TransactionsScreen(),
-    const ProfileScreen(),
-    const CorporateEventsScreen(), // index 12 — accessed from dashboard card on desktop
-  ];
+  /// Builds the screen for an index. Tab indexes (0–3) and the desktop
+  /// sidebar items render inline (no pushed route). The mobile push
+  /// path uses [_pushNonTab] with the same factory.
+  Widget _screenFor(int i) {
+    switch (i) {
+      case 0: return DashboardScreen(onNavigateTo: _onNavigateTo);
+      case 1: return const MarketScreen();
+      case 2: return const PortfolioScreen();
+      case 3: return const OrdersScreen();
+      case 4: return const WatchlistScreen();
+      case 5: return const AlertsScreen();
+      case 6: return const NewsScreen();
+      case 7: return const ZakatScreen();
+      case 8: return const ConverterScreen();
+      case 9: return const AnalyticsScreen();
+      case 10: return const TransactionsScreen();
+      case 11: return const ProfileScreen();
+      case 12: return const CorporateEventsScreen();
+      default: return DashboardScreen(onNavigateTo: _onNavigateTo);
+    }
+  }
+
+  /// Mobile navigation. Indexes 0–3 switch the bottom-nav tab.
+  /// Indexes 4+ push the screen as a route, hiding the bottom nav and
+  /// enabling native back-arrow behavior.
+  void _onNavigateTo(int i) {
+    if (i < 4) {
+      setState(() => _currentIndex = i);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => Scaffold(body: _screenFor(i))),
+      );
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AppProvider>().loadAllData();
-      context.read<AppProvider>().setGlobalNav((i) => setState(() => _currentIndex = i));
+      context.read<AppProvider>().setGlobalNav(_onNavigateTo);
     });
   }
 
@@ -131,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          Expanded(child: _screens[_currentIndex]),
+          Expanded(child: _screenFor(_currentIndex)),
         ],
       ),
       bottomNavigationBar: Container(
@@ -219,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onProfileTap: () => setState(() => _currentIndex = 11),
                         onAnalyticsTap: () => setState(() => _currentIndex = 9),
                       ),
-                      Expanded(child: _screens[_currentIndex]),
+                      Expanded(child: _screenFor(_currentIndex)),
                     ],
                   ),
                 ),
