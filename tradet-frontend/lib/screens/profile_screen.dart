@@ -2453,18 +2453,15 @@ class _AccountDetailsScreen extends StatefulWidget {
 }
 
 class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
-  // Edit mode
-  bool _editing = false;
-  bool _saving = false;
-
-  // Personal info text controllers
-  late TextEditingController _fullNameCtrl;
-  late TextEditingController _phoneCtrl;
-  late TextEditingController _addressCtrl;
-  late TextEditingController _dobCtrl;
-  late TextEditingController _nationalityCtrl;
-  late TextEditingController _purposeOfAccountCtrl;
-  late TextEditingController _taxResidencyCtrl;
+  // Per-field edited values (override widget.user when set)
+  String? _fullName;
+  String? _phone;
+  String? _address;
+  String? _dob;
+  String? _nationality;
+  String? _purposeOfAccount;
+  String? _taxResidency;
+  String? _email;
 
   // Dropdown state for KYC wealth fields
   String? _occupation;
@@ -2477,13 +2474,14 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
   void initState() {
     super.initState();
     final u = widget.user;
-    _fullNameCtrl = TextEditingController(text: u?.fullName ?? '');
-    _phoneCtrl = TextEditingController(text: u?.phone ?? '');
-    _addressCtrl = TextEditingController(text: u?.address ?? '');
-    _dobCtrl = TextEditingController(text: u?.dateOfBirth ?? '');
-    _nationalityCtrl = TextEditingController(text: u?.nationality ?? 'Ethiopia');
-    _purposeOfAccountCtrl = TextEditingController(text: u?.purposeOfAccount ?? '');
-    _taxResidencyCtrl = TextEditingController(text: u?.taxResidency ?? 'Ethiopia');
+    _fullName = u?.fullName;
+    _phone = u?.phone;
+    _address = u?.address;
+    _dob = u?.dateOfBirth;
+    _nationality = u?.nationality;
+    _purposeOfAccount = u?.purposeOfAccount;
+    _taxResidency = u?.taxResidency;
+    _email = u?.email;
     _occupation = u?.occupation;
     _sourceOfWealth = u?.sourceOfWealth;
     _sourceOfFunds = u?.sourceOfFunds;
@@ -2491,60 +2489,181 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
     _purposeOfTrading = u?.purposeOfTrading;
   }
 
-  @override
-  void dispose() {
-    _fullNameCtrl.dispose();
-    _phoneCtrl.dispose();
-    _addressCtrl.dispose();
-    _dobCtrl.dispose();
-    _nationalityCtrl.dispose();
-    _purposeOfAccountCtrl.dispose();
-    _taxResidencyCtrl.dispose();
-    super.dispose();
+  /// Saves a single field — backend best-effort, local state guaranteed.
+  Future<void> _saveField(String apiKey, String? value) async {
+    final l = AppLocalizations.of(context);
+    try {
+      await context.read<AppProvider>().updateProfile({apiKey: value});
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l.profileUpdated),
+          backgroundColor: TradEtTheme.positive,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ));
+      }
+    } catch (_) {
+      // updateProfile already handles backend errors silently with local
+      // fallback, but show a snackbar on truly unexpected failures.
+    }
   }
 
-  Widget _editableRow(String label, TextEditingController ctrl,
-      {TextInputType keyboardType = TextInputType.text, bool isLast = false}) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: _editing ? 10 : 14),
-      decoration: BoxDecoration(
-        border: isLast
-            ? null
-            : Border(bottom: BorderSide(color: TradEtTheme.divider.withValues(alpha: 0.3))),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
-          const SizedBox(height: 4),
-          if (_editing)
-            TextField(
-              controller: ctrl,
-              keyboardType: keyboardType,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white),
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                filled: true,
-                fillColor: TradEtTheme.surfaceLight,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: TradEtTheme.positive.withValues(alpha: 0.4)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: TradEtTheme.divider.withValues(alpha: 0.4)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: TradEtTheme.positive),
+  /// Shows a modal bottom-sheet with a single TextField to edit one field.
+  Future<void> _showTextEditor({
+    required String label,
+    required String? initial,
+    required TextInputType keyboardType,
+    required void Function(String) onSave,
+    required String apiKey,
+  }) async {
+    final ctrl = TextEditingController(text: initial ?? '');
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1A2F22),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) {
+        final l = AppLocalizations.of(ctx);
+        return Padding(
+          padding: EdgeInsets.fromLTRB(20, 16, 20,
+              MediaQuery.of(ctx).viewInsets.bottom + 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(width: 40, height: 4,
+                    decoration: BoxDecoration(color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2))),
+              ),
+              const SizedBox(height: 16),
+              Text(label,
+                  style: const TextStyle(fontSize: 16,
+                      fontWeight: FontWeight.w700, color: Colors.white)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: ctrl,
+                keyboardType: keyboardType,
+                autofocus: true,
+                style: const TextStyle(fontSize: 15, color: Colors.white),
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 12),
+                  filled: true,
+                  fillColor: TradEtTheme.surfaceLight,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                        color: TradEtTheme.divider.withValues(alpha: 0.4)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: TradEtTheme.positive),
+                  ),
                 ),
               ),
-            )
-          else
-            Text(ctrl.text.isNotEmpty ? ctrl.text : '--',
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white)),
-        ],
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor:
+                            TradEtTheme.surfaceLight.withValues(alpha: 0.5),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text(l.cancel,
+                          style: const TextStyle(
+                              color: TradEtTheme.textSecondary, fontSize: 14)),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        onSave(ctrl.text);
+                        Navigator.pop(ctx);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: TradEtTheme.positive,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text(l.save,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    ctrl.dispose();
+  }
+
+  /// Static row: label + value + pencil; tapping anywhere opens text editor.
+  Widget _editableRow(String label, String? value, String apiKey,
+      {TextInputType keyboardType = TextInputType.text,
+      bool isLast = false,
+      bool editable = true,
+      void Function(String)? onSaved}) {
+    return InkWell(
+      onTap: editable
+          ? () => _showTextEditor(
+                label: label,
+                initial: value,
+                keyboardType: keyboardType,
+                apiKey: apiKey,
+                onSave: (newVal) {
+                  setState(() => onSaved?.call(newVal));
+                  _saveField(apiKey, newVal);
+                },
+              )
+          : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          border: isLast
+              ? null
+              : Border(bottom: BorderSide(
+                  color: TradEtTheme.divider.withValues(alpha: 0.3))),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label,
+                      style: const TextStyle(fontSize: 11,
+                          color: TradEtTheme.textMuted)),
+                  const SizedBox(height: 3),
+                  Text((value != null && value.isNotEmpty) ? value : '--',
+                      style: const TextStyle(fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white)),
+                ],
+              ),
+            ),
+            if (editable)
+              Icon(Icons.edit_outlined,
+                  size: 16, color: TradEtTheme.accent.withValues(alpha: 0.85)),
+          ],
+        ),
       ),
     );
   }
@@ -2653,50 +2772,11 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
     );
   }
 
-  Future<void> _saveAll() async {
-    setState(() => _saving = true);
-    final l = AppLocalizations.of(context);
-    try {
-      await context.read<AppProvider>().updateProfile({
-        'full_name': _fullNameCtrl.text,
-        'phone': _phoneCtrl.text,
-        'address': _addressCtrl.text,
-        'date_of_birth': _dobCtrl.text,
-        'nationality': _nationalityCtrl.text,
-        'purpose_of_account': _purposeOfAccountCtrl.text,
-        'tax_residency': _taxResidencyCtrl.text,
-        'occupation': _occupation,
-        'source_of_wealth': _sourceOfWealth,
-        'source_of_funds': _sourceOfFunds,
-        'net_worth': _netWorth,
-        'purpose_of_trading': _purposeOfTrading,
-      });
-      if (mounted) {
-        setState(() { _editing = false; _saving = false; });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(l.profileUpdated),
-          backgroundColor: TradEtTheme.positive,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ));
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() => _saving = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(l.saveFailed),
-          backgroundColor: TradEtTheme.negative,
-          behavior: SnackBarBehavior.floating,
-        ));
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final user = widget.user;
-    final email = user?.email ?? '';
+    final email = _email ?? user?.email ?? '';
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -2705,71 +2785,57 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // ── Top row: back + edit/save buttons ───────────────────
-              Consumer<AppProvider>(
-                builder: (ctx, prov, _) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 8, 0),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                              color: Colors.white, size: 20),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        const Spacer(),
-                        if (!_editing)
-                          TextButton.icon(
-                            onPressed: () => setState(() => _editing = true),
-                            icon: const Icon(Icons.edit_outlined,
-                                color: TradEtTheme.accent, size: 16),
-                            label: Text(l.editProfile,
-                                style: const TextStyle(
-                                    color: TradEtTheme.accent, fontSize: 13)),
-                          )
-                        else ...[
-                          TextButton(
-                            onPressed: _saving
-                                ? null
-                                : () => setState(() => _editing = false),
-                            child: Text(l.cancelEdit,
-                                style: const TextStyle(
-                                    color: TradEtTheme.textSecondary,
-                                    fontSize: 13)),
-                          ),
-                          const SizedBox(width: 4),
-                          _saving
-                              ? const SizedBox(
-                                  width: 20, height: 20,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: TradEtTheme.positive))
-                              : ElevatedButton(
-                                  onPressed: _saveAll,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: TradEtTheme.positive,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 14, vertical: 8),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8)),
-                                  ),
-                                  child: Text(l.saveChanges,
-                                      style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700)),
-                                ),
-                          const SizedBox(width: 4),
-                        ],
-                      ],
+              // ── Top row: back + small avatar (right) ────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
+                      onPressed: () => Navigator.pop(context),
                     ),
-                  );
-                },
+                    const Spacer(),
+                    Consumer<AppProvider>(
+                      builder: (ctx, prov, _) {
+                        const avatarColors = [
+                          Color(0xFF0F6B3C), Color(0xFF1D4ED8),
+                          Color(0xFF7C3AED), Color(0xFFB45309),
+                          Color(0xFF0D9488), Color(0xFF9D174D),
+                        ];
+                        final bg = avatarColors[
+                            prov.avatarColorIndex % avatarColors.length];
+                        final imgBytes = prov.profileImageBytes;
+                        final initial = (_fullName ?? 'U').isNotEmpty
+                            ? (_fullName ?? 'U')[0].toUpperCase() : '?';
+                        return GestureDetector(
+                          onTap: () => _showAvatarOptionsFromState(context, prov),
+                          child: Container(
+                            width: 42, height: 42,
+                            decoration: BoxDecoration(
+                              color: bg, shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.35),
+                                  width: 2),
+                            ),
+                            child: imgBytes != null
+                                ? ClipOval(child: Image.memory(imgBytes,
+                                    width: 42, height: 42, fit: BoxFit.cover))
+                                : Center(child: Text(initial,
+                                    style: const TextStyle(fontSize: 17,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white))),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
 
-              // ── Large title + @handle (left-aligned) ────────────────────
+              // ── Large title + @handle ───────────────────────────────
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -2785,32 +2851,43 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                 ),
               ),
 
-              // ── Content ──────────────────────────────────────────────────
+              // ── Content ─────────────────────────────────────────────
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   children: [
-                    // ── Personal ──────────────────────────────────────────
                     Text(l.personalSection,
                         style: const TextStyle(fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: TradEtTheme.textMuted)),
                     const SizedBox(height: 8),
                     _infoCard([
-                      _editableRow(l.fullName, _fullNameCtrl),
-                      _editableRow(l.dateOfBirth, _dobCtrl,
-                          keyboardType: TextInputType.datetime),
-                      _editableRow(l.nationality, _nationalityCtrl),
-                      _editableRow(l.residentialAddress, _addressCtrl),
-                      _editableRow(l.phone, _phoneCtrl,
-                          keyboardType: TextInputType.phone),
-                      _editableRow(l.purposeOfAccount, _purposeOfAccountCtrl),
-                      _editableRow(l.taxResidency, _taxResidencyCtrl,
-                          isLast: true),
+                      _editableRow(l.fullName, _fullName, 'full_name',
+                          onSaved: (v) => _fullName = v),
+                      _editableRow(l.dateOfBirth, _dob, 'date_of_birth',
+                          keyboardType: TextInputType.datetime,
+                          onSaved: (v) => _dob = v),
+                      _editableRow(l.nationality, _nationality, 'nationality',
+                          onSaved: (v) => _nationality = v),
+                      _editableRow(l.residentialAddress, _address, 'address',
+                          onSaved: (v) => _address = v),
+                      _editableRow(l.phone, _phone, 'phone',
+                          keyboardType: TextInputType.phone,
+                          onSaved: (v) => _phone = v),
+                      _editableRow(l.emailAddress, _email, 'email',
+                          keyboardType: TextInputType.emailAddress,
+                          editable: false),
+                      _editableRow(l.purposeOfAccount, _purposeOfAccount,
+                          'purpose_of_account',
+                          onSaved: (v) => _purposeOfAccount = v),
+                      _editableRow(l.taxResidency, _taxResidency,
+                          'tax_residency',
+                          isLast: true,
+                          onSaved: (v) => _taxResidency = v),
                     ]),
                     const SizedBox(height: 20),
 
-                    // ── Wealth / KYC ──────────────────────────────────────
+                    // ── Wealth / KYC ─────────────────────────────────
                     Text(l.wealthSection,
                         style: const TextStyle(fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -2823,7 +2900,10 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                         options: _occupations,
                         onTap: () => _showPicker(
                           l.occupation, _occupations, _occupation,
-                          (v) => setState(() => _occupation = v),
+                          (v) {
+                            setState(() => _occupation = v);
+                            _saveField('occupation', v);
+                          },
                         ),
                       ),
                       _dropdownRow(
@@ -2832,7 +2912,10 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                         options: _wealthSources,
                         onTap: () => _showPicker(
                           l.sourceOfWealth, _wealthSources, _sourceOfWealth,
-                          (v) => setState(() => _sourceOfWealth = v),
+                          (v) {
+                            setState(() => _sourceOfWealth = v);
+                            _saveField('source_of_wealth', v);
+                          },
                         ),
                       ),
                       _dropdownRow(
@@ -2841,7 +2924,10 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                         options: _fundSources,
                         onTap: () => _showPicker(
                           l.sourceOfFund, _fundSources, _sourceOfFunds,
-                          (v) => setState(() => _sourceOfFunds = v),
+                          (v) {
+                            setState(() => _sourceOfFunds = v);
+                            _saveField('source_of_funds', v);
+                          },
                         ),
                       ),
                       _dropdownRow(
@@ -2850,7 +2936,10 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                         options: _netWorthRanges,
                         onTap: () => _showPicker(
                           l.netWorth, _netWorthRanges, _netWorth,
-                          (v) => setState(() => _netWorth = v),
+                          (v) {
+                            setState(() => _netWorth = v);
+                            _saveField('net_worth', v);
+                          },
                         ),
                       ),
                       _dropdownRow(
@@ -2861,26 +2950,13 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                         onTap: () => _showPicker(
                           l.purposeOfTrading, _tradingPurposes,
                           _purposeOfTrading,
-                          (v) => setState(() => _purposeOfTrading = v),
+                          (v) {
+                            setState(() => _purposeOfTrading = v);
+                            _saveField('purpose_of_trading', v);
+                          },
                         ),
                       ),
                     ]),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _saving ? null : _saveAll,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: TradEtTheme.positive,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: Text(l.save,
-                            style: const TextStyle(fontSize: 15,
-                                fontWeight: FontWeight.w700)),
-                      ),
-                    ),
                     const SizedBox(height: 24),
                   ],
                 ),

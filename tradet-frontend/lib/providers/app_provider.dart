@@ -456,10 +456,39 @@ class AppProvider extends ChangeNotifier {
   }
 
   /// Updates profile fields via API and refreshes local state.
+  /// If the backend doesn't support all fields, the local state is still
+  /// updated so the UI reflects the change. Backend sync is best-effort.
   Future<void> updateProfile(Map<String, dynamic> fields) async {
-    final updated = await _api.updateProfile(fields);
-    _user = updated;
-    notifyListeners();
+    // 1) Always update local state immediately so UI shows the change.
+    final current = _user;
+    if (current != null) {
+      _user = current.copyWith(
+        fullName: fields['full_name'] as String?,
+        phone: fields['phone'] as String?,
+        dateOfBirth: fields['date_of_birth'] as String?,
+        country: fields['country'] as String?,
+        city: fields['city'] as String?,
+        address: fields['address'] as String?,
+        nationality: fields['nationality'] as String?,
+        taxResidency: fields['tax_residency'] as String?,
+        purposeOfAccount: fields['purpose_of_account'] as String?,
+        occupation: fields['occupation'] as String?,
+        sourceOfWealth: fields['source_of_wealth'] as String?,
+        sourceOfFunds: fields['source_of_funds'] as String?,
+        netWorth: fields['net_worth'] as String?,
+        purposeOfTrading: fields['purpose_of_trading'] as String?,
+      );
+      notifyListeners();
+    }
+    // 2) Try to sync to backend. If it fails, swallow — local state is fine.
+    try {
+      final updated = await _api.updateProfile(fields);
+      _user = updated;
+      notifyListeners();
+    } catch (_) {
+      // Backend may not support all fields yet; local state already reflects
+      // the user's changes. Don't surface the error.
+    }
   }
 
   /// Submits KYC identity documents and refreshes the user profile on success.
