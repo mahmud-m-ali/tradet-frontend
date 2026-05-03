@@ -56,21 +56,41 @@ class ProfileScreen extends StatelessWidget {
       children: [
         // ── Header ──────────────────────────────────────────────────────────
         Container(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           child: Column(
             children: [
+              // Top bar: X close + Upgrade pill
               Row(
                 children: [
-                  const SizedBox(width: 32),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white, size: 24),
+                    onPressed: () => Navigator.of(context).maybePop(),
+                  ),
                   const Spacer(),
-                  _mobileAvatar(context, provider, user, size: 72),
-                  const Spacer(),
-                  const SizedBox(width: 32),
+                  GestureDetector(
+                    onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const _UpgradeScreen())),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.positive.withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: TradEtTheme.positive.withValues(alpha: 0.5)),
+                      ),
+                      child: const Text('Upgrade',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                  ),
                 ],
               ),
+              const SizedBox(height: 8),
+              _mobileAvatar(context, provider, user, size: 80),
               const SizedBox(height: 12),
               Text(name,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700,
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700,
                       color: Colors.white)),
               const SizedBox(height: 4),
               Row(
@@ -79,25 +99,24 @@ class ProfileScreen extends StatelessWidget {
                   Text('@${email.split('@').first}',
                       style: const TextStyle(color: TradEtTheme.accent, fontSize: 13)),
                   const SizedBox(width: 6),
-                  const Icon(Icons.qr_code_2_rounded, size: 16,
-                      color: TradEtTheme.textSecondary),
+                  const Icon(Icons.qr_code_2_rounded, size: 18, color: Colors.white),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
               Row(
                 children: [
-                  Expanded(child: _statCard(
-                    icon: Icons.verified_rounded,
-                    label: l.verificationTier,
-                    value: l.tier1,
-                    color: TradEtTheme.positive,
+                  Expanded(child: _headerStatCard(
+                    icon: Icons.check_circle,
+                    title: l.verificationTier,
+                    subtitle: l.tier1,
                   )),
-                  const SizedBox(width: 10),
-                  Expanded(child: _statCard(
+                  const SizedBox(width: 12),
+                  Expanded(child: _headerStatCard(
                     icon: Icons.person_add_alt_1_rounded,
-                    label: l.inviteFriends,
-                    value: l.inviteEarn,
-                    color: TradEtTheme.accent,
+                    title: l.inviteFriends,
+                    subtitle: l.inviteEarn,
+                    onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => _InviteFriendsScreen(user: user))),
                   )),
                 ],
               ),
@@ -105,115 +124,80 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
 
-        // ── 1. Account ───────────────────────────────────────────────────
-        _menuCard([
-          _menuItem(context,
-              icon: Icons.person_outline_rounded,
-              label: l.account,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => _ProfileInformationMenuScreen(user: user)))),
-        ]),
-        const SizedBox(height: 10),
-
-        // ── 2. Security ───────────────────────────────────────────────────
-        _menuCard([
-          _menuItem(context,
-              icon: Icons.shield_outlined,
-              label: l.security,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const SecurityScreen()))),
-        ]),
-        const SizedBox(height: 10),
-
-        // ── 3. Privacy ────────────────────────────────────────────────────
-        _menuCard([
-          _menuItem(context,
-              icon: Icons.visibility_outlined,
-              label: l.privacy,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const PrivacyControlsScreen()))),
-        ]),
-        const SizedBox(height: 10),
-
-        // ── 4. Notifications ──────────────────────────────────────────────
-        _menuCard([
-          _menuItem(context,
-              icon: Icons.notifications_outlined,
-              label: l.notifications,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const _NotificationsMenuScreen()))),
-        ]),
-        const SizedBox(height: 10),
-
-        // ── 5. Help ───────────────────────────────────────────────────────
+        // ── Card 1: Help / Account / Compliance / Learn / Inbox ─────────
         _menuCard([
           _menuItem(context,
               icon: Icons.help_outline_rounded,
               label: l.help,
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const _HelpMenuScreen()))),
-        ]),
-        const SizedBox(height: 10),
-
-        // ── 6. Appearance ─────────────────────────────────────────────────
-        _menuCard([
+          _menuDivider(),
           _menuItem(context,
-              icon: Icons.palette_outlined,
-              label: l.appearance,
+              icon: Icons.person_outline_rounded,
+              label: l.account,
               onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const _AppearanceScreen()))),
-        ]),
-        const SizedBox(height: 10),
-
-        // ── 7. Compliance & Documents ─────────────────────────────────────
-        _menuCard([
+                  MaterialPageRoute(builder: (_) => _ProfileInformationMenuScreen(user: user)))),
+          _menuDivider(),
           _menuItem(context,
               icon: Icons.description_outlined,
               label: l.complianceDocuments,
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => _ComplianceDocsScreen()))),
+          _menuDivider(),
+          _menuItem(context,
+              icon: Icons.lightbulb_outline_rounded,
+              label: 'Learn',
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const _LearnScreen()))),
+          _menuDivider(),
+          _menuItem(context,
+              icon: Icons.campaign_outlined,
+              label: 'Inbox',
+              badge: 4,
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const _InboxScreen()))),
         ]),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
 
-        // ── 8. About us ───────────────────────────────────────────────────
+        // ── Card 2: Security / Privacy / Appearance / Notification setting ─
+        _menuCard([
+          _menuItem(context,
+              icon: Icons.shield_outlined,
+              label: l.security,
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const SecurityScreen()))),
+          _menuDivider(),
+          _menuItem(context,
+              icon: Icons.visibility_outlined,
+              label: l.privacy,
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const PrivacyControlsScreen()))),
+          _menuDivider(),
+          _menuItem(context,
+              icon: Icons.palette_outlined,
+              label: l.appearance,
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const _AppearanceScreen()))),
+          _menuDivider(),
+          _menuItem(context,
+              icon: Icons.notifications_outlined,
+              label: 'Notification setting',
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const _NotificationsMenuScreen()))),
+        ]),
+        const SizedBox(height: 12),
+
+        // ── Card 3: About us / Log out ──────────────────────────────────
         _menuCard([
           _menuItem(context,
               icon: Icons.info_outline_rounded,
               label: l.aboutUs,
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const _AboutUsScreen()))),
-        ]),
-        const SizedBox(height: 10),
-
-        // ── 9. Upgrade ────────────────────────────────────────────────────
-        _menuCard([
-          _menuItem(context,
-              icon: Icons.workspace_premium_outlined,
-              label: 'Upgrade',
-              iconColor: const Color(0xFFF59E0B),
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const _UpgradeScreen()))),
-        ]),
-        const SizedBox(height: 10),
-
-        // ── 10. Invite friends ────────────────────────────────────────────
-        _menuCard([
-          _menuItem(context,
-              icon: Icons.person_add_alt_1_rounded,
-              label: 'Invite Friends',
-              iconColor: TradEtTheme.accent,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => _InviteFriendsScreen(user: user)))),
-        ]),
-        const SizedBox(height: 16),
-
-        // ── Logout ────────────────────────────────────────────────────────
-        _menuCard([
+          _menuDivider(),
           _menuItem(context,
               icon: Icons.logout_rounded,
               label: l.logout,
-              labelColor: TradEtTheme.negative,
-              iconColor: TradEtTheme.negative,
               onTap: () async {
                 await provider.logout();
                 if (context.mounted) {
@@ -233,9 +217,9 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Text(l.appVersion,
                   style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
-              Text('${l.bankNameLocalized} Research Inc.',
-                  style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
-              Text('${l.lastLogin}: ${_lastLoginLabel(context)}',
+              const Text('Amber Research Inc',
+                  style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted)),
+              Text('${l.lastLogin} ${_lastLoginLabel(context)}',
                   style: const TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
             ],
           ),
@@ -245,44 +229,48 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Widget _headerStatCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: Colors.white, size: 26),
+            const SizedBox(height: 12),
+            Text(title,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600)),
+            const SizedBox(height: 2),
+            Text(subtitle,
+                style: const TextStyle(
+                    color: TradEtTheme.textMuted, fontSize: 11),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis),
+          ],
+        ),
+      ),
+    );
+  }
+
   String _lastLoginLabel(BuildContext context) {
     final now = DateTime.now();
     final langCode = context.read<AppProvider>().langCode;
     final datePart = EthiopianDate.formatDate(now, langCode);
     return '$datePart ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
-  }
-
-  Widget _statCard({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: color),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: const TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
-                Text(value,
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _menuCard(List<Widget> children) {
@@ -1924,90 +1912,82 @@ class _NotificationsMenuScreen extends StatefulWidget {
 }
 
 class _NotificationsMenuScreenState extends State<_NotificationsMenuScreen> {
-  bool _personalisedTradEt = true;
-  bool _personalisedPartners = false;
-  bool _tradeVolatility = true;
-  bool _commodityVolatility = true;
+  // 5 categories × 3 channels (push, email, in-app)
+  final List<_NotifCategory> _categories = [
+    _NotifCategory('Personalized TradEt offers', [true, true, true]),
+    _NotifCategory('Personalized partners offers', [true, true, true]),
+    _NotifCategory('Trade volatility alert', [true, true, true]),
+    _NotifCategory('Commodity volatility alert', [true, true, true]),
+    _NotifCategory('Personal price alert', [true, true, true]),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final items = [
-      _NotifToggle(
-        title: l.privacyPersonalizedOffers,
-        icon: Icons.local_offer_outlined,
-        color: TradEtTheme.accent,
-        value: _personalisedTradEt,
-        onChanged: (v) => setState(() => _personalisedTradEt = v),
-      ),
-      _NotifToggle(
-        title: l.privacyPartnerOffers,
-        icon: Icons.handshake_outlined,
-        color: const Color(0xFF60A5FA),
-        value: _personalisedPartners,
-        onChanged: (v) => setState(() => _personalisedPartners = v),
-      ),
-      _NotifToggle(
-        title: l.tradeVolatilityAlert,
-        icon: Icons.show_chart_rounded,
-        color: TradEtTheme.positive,
-        value: _tradeVolatility,
-        onChanged: (v) => setState(() => _tradeVolatility = v),
-      ),
-      _NotifToggle(
-        title: l.commodityVolatilityAlert,
-        icon: Icons.trending_up_rounded,
-        color: const Color(0xFF818CF8),
-        value: _commodityVolatility,
-        onChanged: (v) => setState(() => _commodityVolatility = v),
-      ),
-    ];
-    return _SubMenuScaffold(
-      title: l.notifications,
-      icon: Icons.notifications_outlined,
-      iconColor: TradEtTheme.accent,
-      subtitle: l.subtitleAlertsMessaging,
-      children: [
-        for (int i = 0; i < items.length; i++) ...[
-          items[i].build(context),
-          if (i < items.length - 1)
-            Divider(height: 1, indent: 76,
-                color: TradEtTheme.divider.withValues(alpha: 0.3)),
+    return _XCloseScaffold(
+      title: 'Notifications',
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: TradEtTheme.cardBg,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (int c = 0; c < _categories.length; c++) ...[
+                  if (c > 0) const SizedBox(height: 18),
+                  Text(_categories[c].title,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 6),
+                  _channelRow(c, 0, 'Push notification'),
+                  _channelRow(c, 1, 'Email'),
+                  _channelRow(c, 2, 'In-app recommendation'),
+                ],
+              ],
+            ),
+          ),
         ],
-      ],
+      ),
+    );
+  }
+
+  Widget _channelRow(int cat, int ch, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(label,
+                style: const TextStyle(
+                    color: TradEtTheme.textSecondary, fontSize: 13)),
+          ),
+          Transform.scale(
+            scale: 0.85,
+            child: Switch(
+              value: _categories[cat].channels[ch],
+              activeThumbColor: Colors.white,
+              activeTrackColor: TradEtTheme.positive,
+              onChanged: (v) =>
+                  setState(() => _categories[cat].channels[ch] = v),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _NotifToggle {
+class _NotifCategory {
   final String title;
-  final IconData icon;
-  final Color color;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-  _NotifToggle({
-    required this.title,
-    required this.icon,
-    required this.color,
-    required this.value,
-    required this.onChanged,
-  });
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      leading: Container(width: 40, height: 40,
-        decoration: BoxDecoration(color: color.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(12)),
-        child: Icon(icon, color: color, size: 20)),
-      title: Text(title, style: const TextStyle(fontSize: 14,
-          fontWeight: FontWeight.w600, color: Colors.white)),
-      trailing: Switch(
-        value: value,
-        onChanged: onChanged,
-        activeThumbColor: TradEtTheme.positive,
-      ),
-    );
-  }
+  final List<bool> channels;
+  _NotifCategory(this.title, this.channels);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -2039,79 +2019,190 @@ class _HelpMenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
+    final user = context.read<AppProvider>().user;
+    final fullName = user?.fullName ?? 'there';
+    final firstName = fullName.split(' ').first;
+
     final items = <Map<String, dynamic>>[
       {
-        'icon': Icons.flag_outlined,
-        'color': TradEtTheme.positive,
-        'title': l.gettingStarted,
+        'icon': Icons.help_outline_rounded,
+        'title': 'Get started',
         'body': 'Learn how to set up your TradEt account, navigate the app, and place your first trade.',
       },
       {
-        'icon': Icons.show_chart_rounded,
-        'color': const Color(0xFF60A5FA),
-        'title': l.tradingHelp,
+        'icon': Icons.candlestick_chart_outlined,
+        'title': 'Trading',
         'body': 'Understand how trading works on TradEt, including order types, ECX session hours, and Sharia screening.',
       },
       {
-        'icon': Icons.account_balance_wallet_outlined,
-        'color': const Color(0xFF818CF8),
-        'title': l.depositWithdrawalHelp,
+        'icon': Icons.account_balance_outlined,
+        'title': 'Deposit and withdrawal',
         'body': 'Find guidance on how to deposit funds, withdraw to your bank, and manage payment methods.',
       },
       {
         'icon': Icons.badge_outlined,
-        'color': const Color(0xFF22D3EE),
-        'title': l.profileKycHelp,
+        'title': 'Profile and kyc',
         'body': 'Complete your KYC verification, update personal information, and manage tier requirements.',
       },
       {
-        'icon': Icons.shield_outlined,
-        'color': TradEtTheme.warning,
-        'title': l.securityFraudHelp,
+        'icon': Icons.security_rounded,
+        'title': 'Security and fraud',
         'body': 'Tips for keeping your account safe, recognizing fraud, and recovering compromised access.',
       },
       {
-        'icon': Icons.support_agent_rounded,
-        'color': TradEtTheme.accent,
-        'title': l.supportCenter,
-        'body': '__contact__',
+        'icon': Icons.menu_book_outlined,
+        'title': 'Frequently asked questions',
+        'body': 'Browse common questions and answers about TradEt.',
       },
     ];
-    return _SubMenuScaffold(
-      title: l.help,
-      icon: Icons.help_outline_rounded,
-      iconColor: TradEtTheme.positive,
-      subtitle: l.subtitleFaqHelp,
-      children: [
-        for (int i = 0; i < items.length; i++) ...[
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-            leading: Container(width: 40, height: 40,
-              decoration: BoxDecoration(
-                  color: (items[i]['color'] as Color).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12)),
-              child: Icon(items[i]['icon'] as IconData,
-                  color: items[i]['color'] as Color, size: 20)),
-            title: Text(items[i]['title'] as String,
-                style: const TextStyle(fontSize: 14,
-                    fontWeight: FontWeight.w600, color: Colors.white)),
-            trailing: const Icon(Icons.chevron_right_rounded,
-                color: TradEtTheme.textMuted, size: 20),
-            onTap: () {
-              if (items[i]['body'] == '__contact__') {
-                showContactUsDialog(context);
-              } else {
-                _showHelpDialog(context,
-                    items[i]['title'] as String, items[i]['body'] as String);
-              }
-            },
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Header: X close
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white, size: 24),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              // Title
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Hi $firstName,\nhow can we help?',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          height: 1.2)),
+                ),
+              ),
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: TradEtTheme.cardBg,
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.search, color: Colors.white, size: 22),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                          decoration: const InputDecoration(
+                            hintText: 'Ask anything ...',
+                            hintStyle: TextStyle(color: TradEtTheme.textMuted),
+                            border: InputBorder.none,
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.cardBg,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                      ),
+                      child: Column(
+                        children: [
+                          for (int i = 0; i < items.length; i++) ...[
+                            ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                              leading: Container(
+                                width: 36, height: 36,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(items[i]['icon'] as IconData,
+                                    color: TradEtTheme.primary, size: 20),
+                              ),
+                              title: Text(items[i]['title'] as String,
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500)),
+                              onTap: () => _showHelpDialog(context,
+                                  items[i]['title'] as String,
+                                  items[i]['body'] as String),
+                            ),
+                            if (i < items.length - 1)
+                              Divider(height: 1, indent: 64,
+                                  color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Premium support button
+                    InkWell(
+                      onTap: () => showContactUsDialog(context),
+                      borderRadius: BorderRadius.circular(18),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              TradEtTheme.primary.withValues(alpha: 0.7),
+                              TradEtTheme.positive.withValues(alpha: 0.7),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36, height: 36,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.workspace_premium_rounded,
+                                  color: TradEtTheme.primary, size: 20),
+                            ),
+                            const SizedBox(width: 14),
+                            const Text('Premium Support',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          if (i < items.length - 1)
-            Divider(height: 1, indent: 76,
-                color: TradEtTheme.divider.withValues(alpha: 0.3)),
-        ],
-      ],
+        ),
+      ),
     );
   }
 }
@@ -3804,110 +3895,61 @@ class _AppearanceScreenState extends State<_AppearanceScreen> {
 class _AboutUsScreen extends StatelessWidget {
   const _AboutUsScreen();
 
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4, 8, 16, 8),
-                child: Row(children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                        color: Colors.white, size: 20),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Text(l.aboutUs,
-                      style: const TextStyle(fontSize: 18,
-                          fontWeight: FontWeight.w700, color: Colors.white)),
-                ]),
-              ),
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF0F6B3C), Color(0xFF1B8A5A)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Column(children: [
-                        const Icon(Icons.bar_chart_rounded,
-                            color: Colors.white, size: 48),
-                        const SizedBox(height: 12),
-                        Text(l.appNameLocalized,
-                            style: const TextStyle(fontSize: 24,
-                                fontWeight: FontWeight.w800, color: Colors.white)),
-                        const SizedBox(height: 4),
-                        Text(l.byBankName,
-                            style: TextStyle(fontSize: 14,
-                                color: Colors.white.withValues(alpha: 0.7))),
-                        const SizedBox(height: 8),
-                        Text(l.appVersion,
-                            style: TextStyle(fontSize: 12,
-                                color: Colors.white.withValues(alpha: 0.5))),
-                      ]),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: TradEtTheme.cardBg,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                      ),
-                      child: Column(children: [
-                        _aboutItem(context, Icons.star_rate_rounded, l.rateUs,
-                            const Color(0xFFD4AF37), isFirst: true),
-                        Divider(height: 1, indent: 72,
-                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                        _aboutItem(context, Icons.article_outlined, l.ourBlog,
-                            const Color(0xFF60A5FA)),
-                        Divider(height: 1, indent: 72,
-                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                        _aboutItem(context, Icons.code_rounded,
-                            l.openSourceLicenses, TradEtTheme.textSecondary,
-                            isLast: true),
-                      ]),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+  Widget _aboutCard(List<Widget> children) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: TradEtTheme.cardBg,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
       ),
+      child: Column(children: children),
     );
   }
 
-  Widget _aboutItem(BuildContext context, IconData icon, String title,
-      Color color, {bool isFirst = false, bool isLast = false}) {
+  Widget _aboutItem(BuildContext context, IconData icon, String title) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: Container(
-        width: 40, height: 40,
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(12),
+        width: 36, height: 36,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
         ),
-        child: Icon(icon, color: color, size: 20),
+        child: Icon(icon, color: TradEtTheme.primary, size: 20),
       ),
       title: Text(title,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500,
               color: Colors.white)),
-      trailing: const Icon(Icons.chevron_right_rounded,
-          color: TradEtTheme.textMuted, size: 20),
       onTap: () => _profileMenuAction(context, title),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return _XCloseScaffold(
+      title: l.aboutUs,
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+        children: [
+          _aboutCard([
+            _aboutItem(context, Icons.star_rate_rounded, l.rateUs),
+          ]),
+          _aboutCard([
+            _aboutItem(context, Icons.article_outlined, l.ourBlog),
+            Divider(height: 1, indent: 64,
+                color: TradEtTheme.divider.withValues(alpha: 0.3)),
+            _aboutItem(context, Icons.close_rounded, 'Follow us on X'),
+            Divider(height: 1, indent: 64,
+                color: TradEtTheme.divider.withValues(alpha: 0.3)),
+            _aboutItem(context, Icons.facebook_rounded, 'Like us on Facebook'),
+          ]),
+          _aboutCard([
+            _aboutItem(context, Icons.description_outlined, l.openSourceLicenses),
+          ]),
+        ],
+      ),
     );
   }
 }
@@ -4467,65 +4509,175 @@ class PrivacyControlsScreen extends StatefulWidget {
 }
 
 class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
-  final Map<String, bool> _toggles = {
-    'Hide balance': false,
-    'Show my birthday': false,
-    'Show my plan': true,
-    'Social media and advertising': false,
-  };
+  final List<_PrivacyToggle> _items = [
+    _PrivacyToggle(
+      icon: Icons.visibility_off_outlined,
+      title: 'Hide balance',
+      description: 'Hide amount for all balance and transaction',
+      value: false,
+    ),
+    _PrivacyToggle(
+      icon: Icons.chat_bubble_outline_rounded,
+      title: 'Make me discoverable',
+      description: 'By phone number and TradEt user name',
+      value: true,
+    ),
+    _PrivacyToggle(
+      icon: Icons.person_outline_rounded,
+      title: 'Show full name and picture',
+      description:
+          'Share my full name and photo with other TradEt customers when they search my user name, phone number or e-mail',
+      value: true,
+    ),
+    _PrivacyToggle(
+      icon: Icons.favorite_outline_rounded,
+      title: 'Show my plan',
+      description:
+          'Your contact on TradEt will see your plan and be able to gift it or upgrade you',
+      value: true,
+    ),
+    _PrivacyToggle(
+      icon: Icons.cake_outlined,
+      title: 'Show my birthday',
+      description: 'Your contact on TradEt will see your birthday',
+      value: true,
+    ),
+    _PrivacyToggle(
+      icon: Icons.campaign_outlined,
+      title: 'Social media & advertising platforms',
+      description:
+          'I\'m happy for TradEt to share information, such as my name, email address and app events with social media and advertising platforms to allow to advertise to me',
+      value: true,
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return _XCloseScaffold(
+      title: 'Privacy',
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: TradEtTheme.cardBg,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+            ),
+            child: Column(
+              children: [
+                for (int i = 0; i < _items.length; i++) ...[
+                  _privacyRow(i),
+                  if (i < _items.length - 1)
+                    Divider(height: 1, indent: 60,
+                        color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _privacyRow(int i) {
+    final item = _items[i];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(item.icon, color: Colors.white, size: 22),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item.title,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700)),
+                const SizedBox(height: 2),
+                Text(item.description,
+                    style: const TextStyle(
+                        color: TradEtTheme.textMuted,
+                        fontSize: 12,
+                        height: 1.3)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Switch(
+            value: item.value,
+            activeThumbColor: Colors.white,
+            activeTrackColor: TradEtTheme.positive,
+            onChanged: (v) => setState(() => item.value = v),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PrivacyToggle {
+  final IconData icon;
+  final String title;
+  final String description;
+  bool value;
+  _PrivacyToggle({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.value,
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// X-close scaffold (Figma-style modal pages)
+// ═══════════════════════════════════════════════════════════════════════════
+
+class _XCloseScaffold extends StatelessWidget {
+  final String title;
+  final Widget body;
+  final EdgeInsets headerPadding;
+  const _XCloseScaffold({
+    required this.title,
+    required this.body,
+    this.headerPadding = const EdgeInsets.fromLTRB(8, 8, 16, 16),
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: TradEtTheme.surface,
+      backgroundColor: Colors.transparent,
       body: Container(
         decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
         child: SafeArea(
-          child: Column(children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
-              child: Row(children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: Colors.white, size: 20),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const Icon(Icons.visibility_outlined,
-                    color: Color(0xFF60A5FA), size: 20),
-                const SizedBox(width: 10),
-                const Text('Privacy',
-                    style: TextStyle(color: Colors.white,
-                        fontSize: 17, fontWeight: FontWeight.w700)),
-              ]),
-            ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                children: [
-                  for (final entry in _toggles.entries)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      decoration: BoxDecoration(
-                        color: TradEtTheme.cardBg,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                      ),
-                      child: SwitchListTile(
-                        title: Text(entry.key,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600)),
-                        value: entry.value,
-                        onChanged: (v) =>
-                            setState(() => _toggles[entry.key] = v),
-                      ),
+          child: Column(
+            children: [
+              Padding(
+                padding: headerPadding,
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white, size: 24),
+                      onPressed: () => Navigator.pop(context),
                     ),
-                ],
+                    const Spacer(),
+                    Text(title,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700)),
+                    const Spacer(),
+                    const SizedBox(width: 48),
+                  ],
+                ),
               ),
-            ),
-          ]),
+              Expanded(child: body),
+            ],
+          ),
         ),
       ),
     );
@@ -4536,109 +4688,230 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
 // Upgrade Screen
 // ═══════════════════════════════════════════════════════════════════════════
 
-class _UpgradeScreen extends StatelessWidget {
+class _UpgradeScreen extends StatefulWidget {
   const _UpgradeScreen();
 
-  void _showComingSoon(BuildContext context, String tier) {
+  @override
+  State<_UpgradeScreen> createState() => _UpgradeScreenState();
+}
+
+class _UpgradeScreenState extends State<_UpgradeScreen> {
+  int _selected = 1; // 0 Standard, 1 Premium, 2 Elite
+
+  static const _tabs = ['Standard', 'Premium', 'Elite'];
+
+  static const _premiumFeatures = [
+    ['Discounted Commissions', 'Reduced brokerage fees (1% per trade) to reward higher volume.'],
+    ['Advanced Analytics', 'Real-time technical indicators and charting tools.'],
+    ['Price Alerts', 'Unlimited SMS and push-notification alerts for target price movements on the ESX/ECX.'],
+    ['Priority Support', 'Dedicated "Fast Track" customer service for trade inquiries.'],
+  ];
+
+  static const _eliteFeatures = [
+    ['Web Terminal Access', 'A professional-grade desktop trading platform for multi-monitor setups.'],
+    ['Advanced Risk Modeling', 'Proprietary tools to simulate portfolio performance.'],
+    ['Institutional Data Feeds', 'Level 2 market data (showing the full order book depth of the ESX).'],
+    ['Early Access', 'First-look availability for new asset classes, such as new commodity listings.'],
+  ];
+
+  static const _standardFeatures = [
+    ['1.5% flat commission', 'Sharia-compliant flat commission, no Riba.'],
+    ['Basic charting', 'Standard candlestick and line charts.'],
+    ['Market alerts', 'Standard price and market notifications.'],
+  ];
+
+  void _showComingSoon(String tier) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$tier subscription — Coming soon'),
+        content: Text('Join $tier — Coming soon — payment integration in progress'),
         backgroundColor: TradEtTheme.cardBg,
       ),
     );
   }
 
-  Widget _planCard(BuildContext context, {
-    required String tier,
-    required String price,
-    required List<Color> gradient,
-    required IconData icon,
-    required List<String> features,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: gradient,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: gradient.first.withValues(alpha: 0.3),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+  Widget _featureRow(String title, String desc) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: Colors.white, size: 22),
-              ),
-              const SizedBox(width: 12),
-              Text(tier,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.3)),
-              const Spacer(),
-              Text(price,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700)),
-            ],
-          ),
-          const SizedBox(height: 18),
-          for (final f in features)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.check_circle_rounded,
-                      color: Colors.white, size: 18),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(f,
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 13)),
-                  ),
-                ],
-              ),
-            ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => _showComingSoon(context, tier),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: gradient.first,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-              child: const Text('Subscribe',
-                  style: TextStyle(fontWeight: FontWeight.w700)),
-            ),
-          ),
+          Text(title,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700)),
+          const SizedBox(height: 2),
+          Text(desc,
+              style: const TextStyle(
+                  color: TradEtTheme.textMuted, fontSize: 12, height: 1.3)),
         ],
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final tier = _tabs[_selected];
+    final features = _selected == 0
+        ? _standardFeatures
+        : _selected == 1
+            ? _premiumFeatures
+            : _eliteFeatures;
+    final platform = _selected == 1
+        ? 'Mobile App Only.'
+        : _selected == 2
+            ? 'Mobile App + Web Terminal.'
+            : 'Mobile App.';
+    final pricing = _selected == 1
+        ? '1000 ETB / Month.'
+        : _selected == 2
+            ? '3000 ETB / Month.'
+            : 'Free — current plan.';
+
+    return _XCloseScaffold(
+      title: 'Upgrade plan',
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+        children: [
+          // Segmented control
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: TradEtTheme.cardBg,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              children: [
+                for (int i = 0; i < _tabs.length; i++)
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selected = i),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: _selected == i
+                              ? TradEtTheme.positive.withValues(alpha: 0.7)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(_tabs[i],
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Feature card
+          Container(
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 4),
+            decoration: BoxDecoration(
+              color: TradEtTheme.cardBg,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (_selected == 0)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: Text('Your current plan',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700)),
+                  ),
+                for (final f in features) _featureRow(f[0], f[1]),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Platform + pricing
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            decoration: BoxDecoration(
+              color: TradEtTheme.cardBg,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Platform: $platform',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 8),
+                Text('Pricing: $pricing',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          // See all benefits
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () => _showComingSoon(tier),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                backgroundColor: Colors.white.withValues(alpha: 0.15),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28)),
+              ),
+              child: const Text('See all benefits',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600)),
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Join tier (only for Premium/Elite)
+          if (_selected != 0)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => _showComingSoon(tier),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: TradEtTheme.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28)),
+                ),
+                child: Text('Join $tier',
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w700)),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Invite Friends Screen — matches Figma "Earn 500 per friend"
+// ═══════════════════════════════════════════════════════════════════════════
+
+class _InviteFriendsScreen extends StatelessWidget {
+  final dynamic user;
+  const _InviteFriendsScreen({required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -4649,53 +4922,116 @@ class _UpgradeScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
+              // Top bar
               Padding(
-                padding: const EdgeInsets.fromLTRB(4, 8, 16, 8),
-                child: Row(children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                        color: Colors.white, size: 20),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Text('Upgrade',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white)),
-                ]),
+                padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(height: 8),
+              // Headline
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    Text('Ends in 15 days',
+                        style: TextStyle(fontSize: 13,
+                            color: TradEtTheme.textSecondary)),
+                    SizedBox(height: 6),
+                    Text('Earn 500 per friend',
+                        style: TextStyle(fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   children: [
-                    _planCard(context,
-                      tier: 'Premium',
-                      price: '\$9.99/mo',
-                      gradient: const [
-                        Color(0xFFF59E0B),
-                        Color(0xFFD97706),
-                      ],
-                      icon: Icons.workspace_premium_rounded,
-                      features: const [
-                        'Lower commission (1.0%)',
-                        'Priority support',
-                        'Advanced analytics',
-                      ],
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(8, 0, 0, 8),
+                      child: Text('Your friends have to do',
+                          style: TextStyle(fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white)),
                     ),
-                    _planCard(context,
-                      tier: 'Elite',
-                      price: '\$29.99/mo',
-                      gradient: const [
-                        Color(0xFF7C3AED),
-                        Color(0xFF1D4ED8),
-                      ],
-                      icon: Icons.diamond_rounded,
-                      features: const [
-                        'Zero commission on first 10 trades/month',
-                        'Dedicated advisor',
-                        'Early IPO access',
-                        'Custom Sharia screening',
-                      ],
+                    Container(
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.cardBg,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                      ),
+                      child: Column(children: [
+                        _stepRow(Icons.link_rounded, 'Sign up with your link',
+                            'And verify their identity'),
+                        _stepDivider(),
+                        _stepRow(Icons.attach_money_rounded,
+                            'Add money to their account',
+                            'Via debit card or bank transfer'),
+                        _stepDivider(),
+                        _stepRow(Icons.bar_chart_rounded,
+                            'Make 3 trade orders of 1000 minimum each',
+                            "Some cash transactions, like to self and others bank account don't count",
+                            isLast: true),
+                      ]),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.cardBg,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                      ),
+                      child: Column(children: [
+                        _navRow(context, 'Past invites'),
+                        Divider(height: 1, indent: 20,
+                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
+                        _navRow(context, 'Get help'),
+                      ]),
+                    ),
+                    const SizedBox(height: 16),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                          'offer end at each end of the month. Max 5 invites per month. T&C apply',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 11,
+                              color: TradEtTheme.textMuted)),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Invite link copied — share with your friends!'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: TradEtTheme.surface,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28)),
+                        ),
+                        child: const Text('Invite friends',
+                            style: TextStyle(fontSize: 15,
+                                fontWeight: FontWeight.w700)),
+                      ),
                     ),
                   ],
                 ),
@@ -4706,78 +5042,62 @@ class _UpgradeScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Invite Friends Screen
-// ═══════════════════════════════════════════════════════════════════════════
-
-class _InviteFriendsScreen extends StatelessWidget {
-  final dynamic user;
-  const _InviteFriendsScreen({this.user});
-
-  String _referralCode() {
-    final id = user?.id?.toString() ?? user?.email?.toString().split('@').first ?? 'USER123';
-    return 'TRADET-$id';
-  }
-
-  void _showSharingSnack(BuildContext context, String channel) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$channel — Sharing coming soon'),
-        backgroundColor: TradEtTheme.cardBg,
-      ),
-    );
-  }
-
-  Widget _shareIcon(BuildContext context, IconData icon, String label, Color color) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _showSharingSnack(context, label),
-        child: Column(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: color.withValues(alpha: 0.3)),
-              ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(height: 6),
-            Text(label,
-                style: const TextStyle(
-                    color: TradEtTheme.textMuted, fontSize: 10)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _statTile(String label, String value) {
-    return Expanded(
-      child: Column(
+  Widget _stepRow(IconData icon, String title, String sub,
+      {bool isLast = false}) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(value,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          Text(label,
-              style: const TextStyle(
-                  color: TradEtTheme.textMuted, fontSize: 11),
-              textAlign: TextAlign.center),
+          Icon(icon, size: 20, color: Colors.white),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style: const TextStyle(fontSize: 14,
+                        fontWeight: FontWeight.w600, color: Colors.white)),
+                const SizedBox(height: 4),
+                Text(sub,
+                    style: const TextStyle(fontSize: 12,
+                        color: TradEtTheme.textMuted, height: 1.4)),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
+  Widget _stepDivider() => Divider(height: 1, indent: 50,
+      color: TradEtTheme.divider.withValues(alpha: 0.3));
+
+  Widget _navRow(BuildContext context, String label) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+      title: Text(label,
+          style: const TextStyle(fontSize: 14,
+              fontWeight: FontWeight.w500, color: Colors.white)),
+      trailing: const Icon(Icons.chevron_right_rounded,
+          color: TradEtTheme.textMuted, size: 20),
+      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$label — coming soon'),
+            behavior: SnackBarBehavior.floating)),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Learn Screen — placeholder for educational content
+// ═══════════════════════════════════════════════════════════════════════════
+
+class _LearnScreen extends StatelessWidget {
+  const _LearnScreen();
+
   @override
   Widget build(BuildContext context) {
-    final code = _referralCode();
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -4786,167 +5106,185 @@ class _InviteFriendsScreen extends StatelessWidget {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(4, 8, 16, 8),
-                child: Row(children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                        color: Colors.white, size: 20),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Text('Invite Friends',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white)),
-                ]),
+                padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 4),
+                    const Text('Learn',
+                        style: TextStyle(fontSize: 18,
+                            fontWeight: FontWeight.w700, color: Colors.white)),
+                  ],
+                ),
               ),
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                   children: [
-                    // Hero card
-                    Container(
-                      padding: const EdgeInsets.all(22),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF0F6B3C),
-                            Color(0xFF1B8A5A),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.card_giftcard_rounded,
-                                color: Colors.white, size: 36),
-                          ),
-                          const SizedBox(height: 14),
-                          const Text('Invite & Earn',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w800)),
-                          const SizedBox(height: 6),
-                          const Text(
-                            'Get 100 ETB credit when your friend signs up and completes KYC',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.white, fontSize: 12),
-                          ),
-                        ],
-                      ),
+                    _learnTile(context, Icons.school_rounded,
+                        'Trading Basics',
+                        'Understand the fundamentals of commodity trading.',
+                        TradEtTheme.positive),
+                    const SizedBox(height: 12),
+                    _learnTile(context, Icons.mosque_rounded,
+                        'Sharia & Islamic Finance',
+                        'Learn how AAOIFI screens halal investments.',
+                        const Color(0xFFD4AF37)),
+                    const SizedBox(height: 12),
+                    _learnTile(context, Icons.show_chart_rounded,
+                        'Reading Charts',
+                        'Master candlestick patterns and indicators.',
+                        const Color(0xFF60A5FA)),
+                    const SizedBox(height: 12),
+                    _learnTile(context, Icons.security_rounded,
+                        'Risk Management',
+                        'Protect your capital — diversification & position sizing.',
+                        const Color(0xFF818CF8)),
+                    const SizedBox(height: 12),
+                    _learnTile(context, Icons.account_balance_rounded,
+                        'Ethiopian Markets',
+                        'ECX, ESX, NBE — how local markets work.',
+                        const Color(0xFF22D3EE)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _learnTile(BuildContext context, IconData icon, String title,
+      String sub, Color color) {
+    return GestureDetector(
+      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$title — coming soon'),
+              behavior: SnackBarBehavior.floating)),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: TradEtTheme.cardBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44, height: 44,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 14,
+                      fontWeight: FontWeight.w600, color: Colors.white)),
+                  const SizedBox(height: 4),
+                  Text(sub, style: const TextStyle(fontSize: 12,
+                      color: TradEtTheme.textMuted, height: 1.4)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded,
+                color: TradEtTheme.textMuted, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Inbox Screen — mock unread messages
+// ═══════════════════════════════════════════════════════════════════════════
+
+class _InboxScreen extends StatelessWidget {
+  const _InboxScreen();
+
+  static const _messages = [
+    {
+      'icon': Icons.campaign_rounded,
+      'title': 'Welcome to TradEt',
+      'sub': 'Get started with your first Sharia-compliant trade.',
+      'time': '2h ago',
+      'color': Color(0xFF22D3EE),
+    },
+    {
+      'icon': Icons.trending_up_rounded,
+      'title': 'Coffee price hit your alert',
+      'sub': 'ECX-COF reached 4,200 ETB/qt — tap to view market.',
+      'time': '5h ago',
+      'color': Color(0xFF34D399),
+    },
+    {
+      'icon': Icons.verified_rounded,
+      'title': 'KYC verified',
+      'sub': 'Your Tier 1 verification is complete. You can now trade.',
+      'time': '1d ago',
+      'color': Color(0xFFD4AF37),
+    },
+    {
+      'icon': Icons.security_rounded,
+      'title': 'New device sign-in',
+      'sub': 'A new Chrome on Mac signed in to your account.',
+      'time': '3d ago',
+      'color': Color(0xFFEF4444),
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
+                      onPressed: () => Navigator.pop(context),
                     ),
-                    const SizedBox(height: 16),
-                    // Referral code box
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: TradEtTheme.cardBg,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Your Referral Code',
-                              style: TextStyle(
-                                  color: TradEtTheme.textMuted,
-                                  fontSize: 11)),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 12),
-                                  decoration: BoxDecoration(
-                                    color: TradEtTheme.surface,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                        color: TradEtTheme.divider
-                                            .withValues(alpha: 0.4)),
-                                  ),
-                                  child: Text(code,
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 0.5)),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  Clipboard.setData(ClipboardData(text: code));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Copied to clipboard'),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.copy_rounded, size: 16),
-                                label: const Text('Copy'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: TradEtTheme.positive,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 12),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                    const SizedBox(width: 4),
+                    const Text('Inbox',
+                        style: TextStyle(fontSize: 18,
+                            fontWeight: FontWeight.w700, color: Colors.white)),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Marked all as read'),
+                              behavior: SnackBarBehavior.floating)),
+                      child: const Text('Mark all read',
+                          style: TextStyle(fontSize: 12,
+                              color: TradEtTheme.accent)),
                     ),
-                    const SizedBox(height: 16),
-                    // Share buttons
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: TradEtTheme.cardBg,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                            color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Share via',
-                              style: TextStyle(
-                                  color: TradEtTheme.textMuted,
-                                  fontSize: 11)),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              _shareIcon(context, Icons.chat_bubble_rounded,
-                                  'WhatsApp', const Color(0xFF25D366)),
-                              _shareIcon(context, Icons.send_rounded,
-                                  'Telegram', const Color(0xFF0088CC)),
-                              _shareIcon(context, Icons.sms_rounded, 'SMS',
-                                  const Color(0xFFF59E0B)),
-                              _shareIcon(context, Icons.email_rounded, 'Email',
-                                  const Color(0xFF60A5FA)),
-                              _shareIcon(context, Icons.link_rounded, 'Link',
-                                  const Color(0xFF818CF8)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Stats card
-                    Container(
-                      padding: const EdgeInsets.all(18),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                  itemCount: _messages.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  itemBuilder: (ctx, i) {
+                    final m = _messages[i];
+                    return Container(
+                      padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: TradEtTheme.cardBg,
                         borderRadius: BorderRadius.circular(14),
@@ -4954,14 +5292,47 @@ class _InviteFriendsScreen extends StatelessWidget {
                             color: TradEtTheme.divider.withValues(alpha: 0.3)),
                       ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _statTile('Friends Invited', '0'),
-                          _statTile('Successful Referrals', '0'),
-                          _statTile('Earned Credit', '0 ETB'),
+                          Container(
+                            width: 40, height: 40,
+                            decoration: BoxDecoration(
+                              color: (m['color'] as Color).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(m['icon'] as IconData,
+                                color: m['color'] as Color, size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(m['title'] as String,
+                                          style: const TextStyle(fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white)),
+                                    ),
+                                    Text(m['time'] as String,
+                                        style: const TextStyle(fontSize: 11,
+                                            color: TradEtTheme.textMuted)),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(m['sub'] as String,
+                                    style: const TextStyle(fontSize: 12,
+                                        color: TradEtTheme.textSecondary,
+                                        height: 1.4)),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
             ],
@@ -4971,3 +5342,4 @@ class _InviteFriendsScreen extends StatelessWidget {
     );
   }
 }
+
