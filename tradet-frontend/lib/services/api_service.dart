@@ -299,17 +299,17 @@ class ApiService {
     return User.fromJson(data);
   }
 
-  /// Updates the user's profile fields. Returns the updated User on success.
-  /// Gracefully handles backends that don't yet support all fields.
+  /// Updates the user's profile fields on the backend.
+  /// Returns the updated User on success.
+  /// Throws [ApiException] on 405 (PUT not supported), 404, or network error
+  /// so callers can fall back to their own local state.
   Future<User> updateProfile(Map<String, dynamic> fields) async {
-    // Remove null values before sending
     fields.removeWhere((_, v) => v == null || (v is String && v.isEmpty));
     final response = await _put('/auth/profile', body: fields);
     if (response.statusCode == 200 || response.statusCode == 204) {
-      // Refetch the profile to get the server-confirmed values
       return getProfile();
     }
-    throw ApiException('Failed to update profile (${response.statusCode})');
+    throw ApiException('Profile update not supported (${response.statusCode})');
   }
 
   /// Saves user preferences to the server (avatar_color, profile_image).

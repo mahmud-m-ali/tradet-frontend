@@ -59,13 +59,17 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           child: Column(
             children: [
-              // Top bar: X close + Upgrade pill
+              // Top bar: back arrow (when pushable) + Upgrade pill
               Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white, size: 24),
-                    onPressed: () => Navigator.of(context).maybePop(),
-                  ),
+                  if (Navigator.of(context).canPop())
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white, size: 20),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  else
+                    const SizedBox(width: 8),
                   const Spacer(),
                   GestureDetector(
                     onTap: () => Navigator.push(context,
@@ -2761,6 +2765,222 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
     );
   }
 
+  static const _countries = [
+    'Ethiopia', 'Kenya', 'Sudan', 'South Sudan', 'Somalia', 'Djibouti',
+    'Eritrea', 'Uganda', 'Tanzania', 'Rwanda', 'Burundi', 'Egypt',
+    'United States', 'United Kingdom', 'Canada', 'Germany', 'France',
+    'Italy', 'Spain', 'Netherlands', 'Sweden', 'Norway', 'Switzerland',
+    'United Arab Emirates', 'Saudi Arabia', 'Qatar', 'Kuwait', 'Bahrain',
+    'Oman', 'Turkey', 'Egypt', 'Morocco', 'Tunisia', 'India', 'China',
+    'Japan', 'South Korea', 'Singapore', 'Malaysia', 'Indonesia',
+    'Australia', 'New Zealand', 'Brazil', 'Argentina', 'Mexico',
+    'South Africa', 'Nigeria', 'Ghana', 'Other',
+  ];
+
+  /// Date-of-birth picker. Saves ISO yyyy-mm-dd to backend, displays dd MMM yyyy.
+  Future<void> _pickDate() async {
+    DateTime initial = DateTime(2000, 1, 1);
+    if (_dob != null && _dob!.isNotEmpty) {
+      final parsed = DateTime.tryParse(_dob!);
+      if (parsed != null) initial = parsed;
+    }
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.dark(
+            primary: TradEtTheme.positive,
+            onPrimary: Colors.white,
+            surface: TradEtTheme.cardBg,
+            onSurface: Colors.white,
+          ),
+          dialogBackgroundColor: TradEtTheme.cardBg,
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) {
+      final iso = '${picked.year.toString().padLeft(4, '0')}-'
+          '${picked.month.toString().padLeft(2, '0')}-'
+          '${picked.day.toString().padLeft(2, '0')}';
+      setState(() => _dob = iso);
+      await _saveField('date_of_birth', iso);
+    }
+  }
+
+  /// Country/region picker — bottom sheet with searchable list.
+  Future<void> _pickCountry({
+    required String title,
+    required String? current,
+    required String apiKey,
+    required void Function(String) onSaved,
+  }) async {
+    String query = '';
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1A2F22),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) {
+        return StatefulBuilder(builder: (ctx, setSt) {
+          final filtered = _countries
+              .where((c) => c.toLowerCase().contains(query.toLowerCase()))
+              .toList();
+          return Padding(
+            padding: EdgeInsets.fromLTRB(16, 12, 16,
+                MediaQuery.of(ctx).viewInsets.bottom + 16),
+            child: SizedBox(
+              height: MediaQuery.of(ctx).size.height * 0.7,
+              child: Column(
+                children: [
+                  Container(width: 40, height: 4,
+                      decoration: BoxDecoration(color: Colors.white24,
+                          borderRadius: BorderRadius.circular(2))),
+                  const SizedBox(height: 12),
+                  Text(title,
+                      style: const TextStyle(fontSize: 16,
+                          fontWeight: FontWeight.w700, color: Colors.white)),
+                  const SizedBox(height: 12),
+                  TextField(
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: 'Search...',
+                      hintStyle: const TextStyle(color: TradEtTheme.textMuted),
+                      prefixIcon: const Icon(Icons.search,
+                          color: TradEtTheme.textMuted, size: 20),
+                      filled: true,
+                      fillColor: TradEtTheme.surfaceLight,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    onChanged: (v) => setSt(() => query = v),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: filtered.length,
+                      separatorBuilder: (_, __) => Divider(height: 1,
+                          color: TradEtTheme.divider.withValues(alpha: 0.2)),
+                      itemBuilder: (_, i) {
+                        final c = filtered[i];
+                        final selected = c == current;
+                        return ListTile(
+                          dense: true,
+                          title: Text(c, style: TextStyle(fontSize: 14,
+                              color: selected ? TradEtTheme.positive : Colors.white,
+                              fontWeight: selected ? FontWeight.w600 : FontWeight.normal)),
+                          trailing: selected
+                              ? const Icon(Icons.check_rounded,
+                                  color: TradEtTheme.positive, size: 18)
+                              : null,
+                          onTap: () => Navigator.pop(ctx, c),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
+    if (result != null) {
+      setState(() => onSaved(result));
+      await _saveField(apiKey, result);
+    }
+  }
+
+  /// Static row that opens a date picker on tap.
+  Widget _datePickerRow(String label, String? value, {bool isLast = false}) {
+    String display = '--';
+    if (value != null && value.isNotEmpty) {
+      final parsed = DateTime.tryParse(value);
+      if (parsed != null) {
+        const months = ['Jan','Feb','Mar','Apr','May','Jun',
+                        'Jul','Aug','Sep','Oct','Nov','Dec'];
+        display = '${parsed.day} ${months[parsed.month - 1]} ${parsed.year}';
+      } else {
+        display = value;
+      }
+    }
+    return InkWell(
+      onTap: _pickDate,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          border: isLast
+              ? null
+              : Border(bottom: BorderSide(
+                  color: TradEtTheme.divider.withValues(alpha: 0.3))),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: const TextStyle(fontSize: 11,
+                      color: TradEtTheme.textMuted)),
+                  const SizedBox(height: 3),
+                  Text(display, style: const TextStyle(fontSize: 13,
+                      fontWeight: FontWeight.w500, color: Colors.white)),
+                ],
+              ),
+            ),
+            const Icon(Icons.calendar_today_rounded,
+                size: 16, color: TradEtTheme.accent),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Static row that opens a country picker on tap.
+  Widget _countryPickerRow(String label, String? value, String apiKey,
+      void Function(String) onSaved, {bool isLast = false}) {
+    return InkWell(
+      onTap: () => _pickCountry(
+        title: label, current: value, apiKey: apiKey, onSaved: onSaved),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          border: isLast
+              ? null
+              : Border(bottom: BorderSide(
+                  color: TradEtTheme.divider.withValues(alpha: 0.3))),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: const TextStyle(fontSize: 11,
+                      color: TradEtTheme.textMuted)),
+                  const SizedBox(height: 3),
+                  Text((value != null && value.isNotEmpty) ? value : '--',
+                      style: const TextStyle(fontSize: 13,
+                          fontWeight: FontWeight.w500, color: Colors.white)),
+                ],
+              ),
+            ),
+            const Icon(Icons.public_rounded,
+                size: 16, color: TradEtTheme.accent),
+          ],
+        ),
+      ),
+    );
+  }
+
   static const _occupations = [
     'Public Sector Employee (Government)',
     'Private Sector Employee',
@@ -2957,11 +3177,9 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                     _infoCard([
                       _editableRow(l.fullName, _fullName, 'full_name',
                           onSaved: (v) => _fullName = v),
-                      _editableRow(l.dateOfBirth, _dob, 'date_of_birth',
-                          keyboardType: TextInputType.datetime,
-                          onSaved: (v) => _dob = v),
-                      _editableRow(l.nationality, _nationality, 'nationality',
-                          onSaved: (v) => _nationality = v),
+                      _datePickerRow(l.dateOfBirth, _dob),
+                      _countryPickerRow(l.nationality, _nationality,
+                          'nationality', (v) => _nationality = v),
                       _editableRow(l.residentialAddress, _address, 'address',
                           onSaved: (v) => _address = v),
                       _editableRow(l.phone, _phone, 'phone',
@@ -2973,10 +3191,9 @@ class _AccountDetailsScreenState extends State<_AccountDetailsScreen> {
                       _editableRow(l.purposeOfAccount, _purposeOfAccount,
                           'purpose_of_account',
                           onSaved: (v) => _purposeOfAccount = v),
-                      _editableRow(l.taxResidency, _taxResidency,
-                          'tax_residency',
-                          isLast: true,
-                          onSaved: (v) => _taxResidency = v),
+                      _countryPickerRow(l.taxResidency, _taxResidency,
+                          'tax_residency', (v) => _taxResidency = v,
+                          isLast: true),
                     ]),
                     const SizedBox(height: 20),
 

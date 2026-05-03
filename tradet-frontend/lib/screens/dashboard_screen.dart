@@ -10,6 +10,7 @@ import '../widgets/language_selector.dart';
 import '../widgets/dashboard_widgets.dart';
 import 'analytics_screen.dart';
 import 'transactions_screen.dart';
+import 'orders_screen.dart';
 import 'profile_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -301,7 +302,11 @@ class DashboardScreen extends StatelessWidget {
                 label: l.openOrders,
                 value: '${provider.orders.where((o) => o.isPending).length}',
                 color: TradEtTheme.primaryLight,
-                onTap: onNavigateTo != null ? () => onNavigateTo(3) : null,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const OrdersScreen(openOnly: true)),
+                ),
               ),
             ),
             const SizedBox(width: 12),

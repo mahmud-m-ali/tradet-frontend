@@ -953,6 +953,11 @@ class AppLocalizations {
   String get ribaFree => _t({'en': 'Riba-Free', 'am': 'ሪባ-ነጻ', 'ti': 'ሪባ-ናጻ', 'om': 'Riba-Bilisaa', 'so': 'Riba-Lacag la\'aanta', 'gur': 'ሪባ-ነጻ'});
   String get noShortSell => _t({'en': 'No Short Sell', 'am': 'አጭር ሽያጭ የለም', 'ti': 'ሓጺር ሽያጥ የልቦ', 'om': 'Gurgurtaa gabaabduu hin jiru', 'so': 'Ganacsiga Gaaban ma jiro', 'gur': 'አጭር ሽያጭ የለም'});
 
+  // ─── Orders extras ────────────────────────────────────────
+  String get pendingOrders => _t({'en': 'Pending orders awaiting fill', 'am': 'መሙላት የሚጠብቁ ትዕዛዞች', 'ti': 'መሙላእ ዝጽበዩ ትእዛዛት', 'om': 'Ajajamoo guuttamuu eegan', 'so': 'Dalabaadka sugaya buuxinta', 'gur': 'መሙላት የሚጠባ ትዕዛዞች'});
+  String get noOpenOrders => _t({'en': 'No open orders', 'am': 'ክፍት ትዕዛዝ የለም', 'ti': 'ክፉት ትእዛዝ የልቦን', 'om': 'Ajaja banaa hin jiru', 'so': 'Ma jiraan dalabaad furan', 'gur': 'ክፉት ትዕዛዝ የለም'});
+  String get noOpenOrdersDesc => _t({'en': "All your orders have been filled or cancelled. Tap any asset to place a new order.", 'am': 'ሁሉም ትዕዛዞችዎ ተሞልተዋል ወይም ተሰርዘዋል። አዲስ ትዕዛዝ ለመስጠት ማንኛውንም ንብረት ይጫኑ።', 'ti': 'ኩሉ ትእዛዛትኩም ተሞሊኦም ወይ ተሳርዞም ኣለዉ።', 'om': "Ajajawwan kee hundi guutamaniiru ykn haqamaniiru.", 'so': "Dhammaan dalabkaagu waa la buuxiyay ama la baajiyay.", 'gur': 'ሁሉ ትዕዛዞቸ ተሞልተዋ ወይ ተሰርዘዋ።'});
+
   /// Multi-language translation helper.
   String _t(Map<String, String> translations) {
     return translations[locale.languageCode] ?? translations['en']!;

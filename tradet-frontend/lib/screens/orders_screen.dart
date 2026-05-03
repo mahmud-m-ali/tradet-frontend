@@ -12,7 +12,11 @@ import '../widgets/disclaimer_footer.dart';
 import 'trade_screen.dart';
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key});
+  /// When true, the screen filters to pending/open orders only and
+  /// changes the title to "Open orders". Used when launched from the
+  /// dashboard "Open orders" stat card.
+  final bool openOnly;
+  const OrdersScreen({super.key, this.openOnly = false});
 
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
@@ -185,17 +189,28 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 0),
               child: Row(
                 children: [
+                  if (!wide && Navigator.of(context).canPop())
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white, size: 20),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l.orders,
+                        Text(widget.openOnly ? l.openOrders : l.orders,
                             style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
                                 letterSpacing: -0.5)),
-                        Text('${l.orders} • ${l.tradeHistory}',
+                        Text(widget.openOnly
+                                ? l.pendingOrders
+                                : '${l.orders} • ${l.tradeHistory}',
                             style: const TextStyle(
                                 fontSize: 13,
                                 color: TradEtTheme.textSecondary)),
@@ -281,13 +296,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
             Expanded(
               child: Consumer<AppProvider>(
                 builder: (context, provider, _) {
-                  if (provider.isLoading && provider.orders.isEmpty) {
+                  final allOrders = provider.orders;
+                  final filtered = widget.openOnly
+                      ? allOrders.where((o) => o.isPending).toList()
+                      : allOrders;
+                  if (provider.isLoading && allOrders.isEmpty) {
                     return const Center(
                       child: CircularProgressIndicator(color: TradEtTheme.positive));
                   }
-                  if (provider.orders.isEmpty) return _emptyState();
-                  if (wide) return _buildWebTable(provider, fmt);
-                  return _buildMobileList(provider, fmt);
+                  if (filtered.isEmpty) {
+                    return _emptyState(openOnly: widget.openOnly);
+                  }
+                  if (wide) return _buildWebTable(provider, fmt, filtered);
+                  return _buildMobileList(provider, fmt, filtered);
                 },
               ),
             ),
@@ -297,34 +318,39 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  Widget _emptyState() {
+  Widget _emptyState({bool openOnly = false}) {
+    final l = AppLocalizations.of(context);
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: TradEtTheme.cardBg,
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: TradEtTheme.cardBg,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.receipt_long_outlined,
+                  size: 48, color: TradEtTheme.textMuted),
             ),
-            child: const Icon(Icons.receipt_long_outlined,
-                size: 48, color: TradEtTheme.textMuted),
-          ),
-          const SizedBox(height: 16),
-          Text(AppLocalizations.of(context).noOrdersYet,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w600, fontSize: 16, color: Colors.white)),
-          const SizedBox(height: 4),
-          Text(AppLocalizations.of(context).noOrdersYet,
-              style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13)),
-        ],
+            const SizedBox(height: 16),
+            Text(openOnly ? l.noOpenOrders : l.noOrdersYet,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600, fontSize: 16, color: Colors.white)),
+            const SizedBox(height: 6),
+            Text(openOnly ? l.noOpenOrdersDesc : l.noOrdersYet,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13, height: 1.5)),
+          ],
+        ),
       ),
     );
   }
 
   // ─── Web: Table layout ───
-  Widget _buildWebTable(AppProvider provider, NumberFormat fmt) {
+  Widget _buildWebTable(AppProvider provider, NumberFormat fmt, List<Order> orders) {
     final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -364,15 +390,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 borderRadius: const BorderRadius.vertical(bottom: Radius.circular(14)),
               ),
               child: ListView.builder(
-                itemCount: provider.orders.length + 1,
+                itemCount: orders.length + 1,
                 itemBuilder: (context, index) {
-                  if (index == provider.orders.length) {
+                  if (index == orders.length) {
                     return const Padding(
                       padding: EdgeInsets.all(16),
                       child: DisclaimerFooter(),
                     );
                   }
-                  final order = provider.orders[index];
+                  final order = orders[index];
                   return _WebOrderRow(order: order, fmt: fmt, isEven: index.isEven);
                 },
               ),
@@ -384,8 +410,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   // ─── Mobile: Card list (unchanged) ───
-  Widget _buildMobileList(AppProvider provider, NumberFormat fmt) {
-    final count = provider.orders.length;
+  Widget _buildMobileList(AppProvider provider, NumberFormat fmt, List<Order> orders) {
+    final count = orders.length;
     return RefreshIndicator(
       color: TradEtTheme.positive,
       backgroundColor: TradEtTheme.cardBg,
@@ -401,7 +427,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               child: DisclaimerFooter(),
             );
           }
-          final order = provider.orders[index];
+          final order = orders[index];
           return _OrderCard(order: order, fmt: fmt);
         },
       ),
