@@ -126,29 +126,33 @@ class _SecurityScreenState extends State<SecurityScreen> {
 
   Widget _buildAppBar() {
     final l = AppLocalizations.of(context);
+    final showBack = !isWideScreen(context) && Navigator.of(context).canPop();
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isWideScreen(context))
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-              onPressed: () => Navigator.pop(context),
-            ),
-          if (!isWideScreen(context))
-            const SizedBox(width: 4),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
+              if (showBack)
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                ),
               Text(l.security,
                   style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: Colors.white)),
-              Text(l.protectYourAccount,
-                  style: const TextStyle(
-                      fontSize: 11, color: TradEtTheme.textSecondary)),
             ],
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: showBack ? 36 : 0),
+            child: Text(l.protectYourAccount,
+                style: const TextStyle(
+                    fontSize: 11, color: TradEtTheme.textSecondary)),
           ),
         ],
       ),

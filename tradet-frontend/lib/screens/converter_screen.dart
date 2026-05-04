@@ -133,8 +133,11 @@ class _ConverterScreenState extends State<ConverterScreen> {
                 ),
               ],
             ),
-            Text(l.nbeExchangeRates,
-                style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+            Padding(
+              padding: EdgeInsets.only(left: !wide && Navigator.of(context).canPop() ? 36 : 0),
+              child: Text(l.nbeExchangeRates,
+                  style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+            ),
             const SizedBox(height: 14),
             // Live exchange rate ticker
             Consumer<AppProvider>(

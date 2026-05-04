@@ -187,37 +187,28 @@ class _OrdersScreenState extends State<OrdersScreen> {
             Padding(
               padding: EdgeInsets.fromLTRB(
                   wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 0),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (!wide && Navigator.of(context).canPop())
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                            color: Colors.white, size: 20),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(widget.openOnly ? l.openOrders : l.orders,
+                  Row(
+                    children: [
+                      if (!wide && Navigator.of(context).canPop())
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white, size: 20),
+                          onPressed: () => Navigator.of(context).pop(),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                        ),
+                      Expanded(
+                        child: Text(widget.openOnly ? l.openOrders : l.orders,
                             style: const TextStyle(
-                                fontSize: 28,
+                                fontSize: 22,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
                                 letterSpacing: -0.5)),
-                        Text(widget.openOnly
-                                ? l.pendingOrders
-                                : '${l.orders} • ${l.tradeHistory}',
-                            style: const TextStyle(
-                                fontSize: 13,
-                                color: TradEtTheme.textSecondary)),
-                      ],
-                    ),
-                  ),
-                  Consumer<AppProvider>(
+                      ),
+                      Consumer<AppProvider>(
                     builder: (context, provider, _) {
                       if (provider.orders.isEmpty) return const SizedBox.shrink();
                       return Padding(
@@ -271,21 +262,32 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       );
                     },
                   ),
-                  GestureDetector(
-                    onTap: () => context.read<AppProvider>().loadOrders(),
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Container(
-                        width: 40, height: 40,
-                        decoration: BoxDecoration(
-                          color: TradEtTheme.cardBg,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: TradEtTheme.divider),
+                      GestureDetector(
+                        onTap: () => context.read<AppProvider>().loadOrders(),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Container(
+                            width: 40, height: 40,
+                            decoration: BoxDecoration(
+                              color: TradEtTheme.cardBg,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: TradEtTheme.divider),
+                            ),
+                            child: const Icon(Icons.refresh_rounded,
+                                size: 20, color: TradEtTheme.textSecondary),
+                          ),
                         ),
-                        child: const Icon(Icons.refresh_rounded,
-                            size: 20, color: TradEtTheme.textSecondary),
                       ),
-                    ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: !wide && Navigator.of(context).canPop() ? 36 : 0),
+                    child: Text(widget.openOnly
+                            ? l.pendingOrders
+                            : '${l.orders} • ${l.tradeHistory}',
+                        style: const TextStyle(
+                            fontSize: 13,
+                            color: TradEtTheme.textSecondary)),
                   ),
                 ],
               ),

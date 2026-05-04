@@ -68,74 +68,79 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             children: [
               // Header
               Padding(
-                padding: EdgeInsets.fromLTRB(wide ? 32 : 4, wide ? 24 : 8, wide ? 32 : 20, 0),
-                child: Row(
+                padding: EdgeInsets.fromLTRB(wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (!wide && Navigator.of(context).canPop())
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                            color: Colors.white, size: 20),
-                        onPressed: () => Navigator.of(context).pop(),
-                        tooltip: l.back,
-                      ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(l.transactions,
+                    Row(
+                      children: [
+                        if (!wide && Navigator.of(context).canPop())
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                                color: Colors.white, size: 20),
+                            onPressed: () => Navigator.of(context).pop(),
+                            tooltip: l.back,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                          ),
+                        Expanded(
+                          child: Text(l.transactions,
                               style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                   letterSpacing: -0.5)),
-                          Text(l.cashBalance,
-                              style: const TextStyle(
-                                  fontSize: 13,
-                                  color: TradEtTheme.textSecondary)),
-                        ],
-                      ),
-                    ),
-                    Consumer<AppProvider>(
-                      builder: (context, provider, _) => Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (provider.transactions.isNotEmpty)
-                            GestureDetector(
-                              onTap: () => _showExportSheet(context, provider.transactions),
-                              child: MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: Container(
-                                  width: 40, height: 40,
-                                  decoration: BoxDecoration(
-                                    color: TradEtTheme.cardBg,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: TradEtTheme.divider),
+                        ),
+                        Consumer<AppProvider>(
+                          builder: (context, provider, _) => Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (provider.transactions.isNotEmpty)
+                                GestureDetector(
+                                  onTap: () => _showExportSheet(context, provider.transactions),
+                                  child: MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: Container(
+                                      width: 40, height: 40,
+                                      decoration: BoxDecoration(
+                                        color: TradEtTheme.cardBg,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: TradEtTheme.divider),
+                                      ),
+                                      child: const Icon(Icons.download_rounded,
+                                          size: 20, color: TradEtTheme.primaryLight),
+                                    ),
                                   ),
-                                  child: const Icon(Icons.download_rounded,
-                                      size: 20, color: TradEtTheme.primaryLight),
+                                ),
+                              if (provider.transactions.isNotEmpty)
+                                const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: _load,
+                                child: MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: Container(
+                                    width: 40, height: 40,
+                                    decoration: BoxDecoration(
+                                      color: TradEtTheme.cardBg,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: TradEtTheme.divider),
+                                    ),
+                                    child: const Icon(Icons.refresh_rounded,
+                                        size: 20, color: TradEtTheme.textSecondary),
+                                  ),
                                 ),
                               ),
-                            ),
-                          if (provider.transactions.isNotEmpty)
-                            const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: _load,
-                            child: MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: Container(
-                                width: 40, height: 40,
-                                decoration: BoxDecoration(
-                                  color: TradEtTheme.cardBg,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: TradEtTheme.divider),
-                                ),
-                                child: const Icon(Icons.refresh_rounded,
-                                    size: 20, color: TradEtTheme.textSecondary),
-                              ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: !wide && Navigator.of(context).canPop() ? 36 : 0),
+                      child: Text(l.cashBalance,
+                          style: const TextStyle(
+                              fontSize: 13,
+                              color: TradEtTheme.textSecondary)),
                     ),
                   ],
                 ),

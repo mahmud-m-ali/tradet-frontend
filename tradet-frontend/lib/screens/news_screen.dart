@@ -138,8 +138,11 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                       ),
                     ],
                   ),
-                  Text(l.financialIslamicNews,
-                      style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+                  Padding(
+                    padding: EdgeInsets.only(left: !wide && Navigator.of(context).canPop() ? 36 : 0),
+                    child: Text(l.financialIslamicNews,
+                        style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+                  ),
                 ],
               ),
             ),

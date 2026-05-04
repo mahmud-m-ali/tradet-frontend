@@ -35,6 +35,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     final fmt = NumberFormat('#,##0.00', 'en');
     final wide = isWideScreen(context);
     final hPad = wide ? 32.0 : 20.0;
+    final showBack = !wide && Navigator.of(context).canPop();
 
     return Container(
       decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
@@ -50,7 +51,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                 children: [
                   Row(
                     children: [
-                      if (!wide && Navigator.of(context).canPop())
+                      if (showBack)
                         IconButton(
                           icon: const Icon(Icons.arrow_back_ios_new_rounded,
                               color: Colors.white, size: 20),
@@ -68,7 +69,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 4),
+                    padding: EdgeInsets.only(left: showBack ? 36 : 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

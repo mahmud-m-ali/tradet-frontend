@@ -79,8 +79,11 @@ class _ZakatScreenState extends State<ZakatScreen> {
                 ),
               ],
             ),
-            Text(l.zakatSubtitle,
-                style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+            Padding(
+              padding: EdgeInsets.only(left: !wide && Navigator.of(context).canPop() ? 36 : 0),
+              child: Text(l.zakatSubtitle,
+                  style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+            ),
             const SizedBox(height: 24),
 
             // Info card
