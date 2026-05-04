@@ -95,13 +95,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                         ),
-                      const Icon(Icons.bar_chart_rounded,
-                          color: TradEtTheme.primaryLight, size: 26),
-                      const SizedBox(width: 10),
                       Text(
                         l.analytics,
                         style: const TextStyle(
-                          fontSize: 26,
+                          fontSize: 22,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
                           letterSpacing: -0.5,

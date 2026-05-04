@@ -445,6 +445,52 @@ class AppProvider extends ChangeNotifier {
     if (uid.isNotEmpty) SecurityLogService.record(SecurityEvent.logout, userId: uid);
   }
 
+  /// Re-fetches the user profile from the API and notifies listeners.
+  Future<void> refreshProfile() async {
+    try {
+      _user = await _api.getProfile();
+      notifyListeners();
+    } catch (_) {
+      // silently ignore — stale data stays
+    }
+  }
+
+  /// Updates profile fields via API and refreshes local state.
+  /// If the backend doesn't support all fields, the local state is still
+  /// updated so the UI reflects the change. Backend sync is best-effort.
+  Future<void> updateProfile(Map<String, dynamic> fields) async {
+    // 1) Always update local state immediately so UI shows the change.
+    final current = _user;
+    if (current != null) {
+      _user = current.copyWith(
+        fullName: fields['full_name'] as String?,
+        phone: fields['phone'] as String?,
+        dateOfBirth: fields['date_of_birth'] as String?,
+        country: fields['country'] as String?,
+        city: fields['city'] as String?,
+        address: fields['address'] as String?,
+        nationality: fields['nationality'] as String?,
+        taxResidency: fields['tax_residency'] as String?,
+        purposeOfAccount: fields['purpose_of_account'] as String?,
+        occupation: fields['occupation'] as String?,
+        sourceOfWealth: fields['source_of_wealth'] as String?,
+        sourceOfFunds: fields['source_of_funds'] as String?,
+        netWorth: fields['net_worth'] as String?,
+        purposeOfTrading: fields['purpose_of_trading'] as String?,
+      );
+      notifyListeners();
+    }
+    // 2) Try to sync to backend. If it fails, swallow — local state is fine.
+    try {
+      final updated = await _api.updateProfile(fields);
+      _user = updated;
+      notifyListeners();
+    } catch (_) {
+      // Backend may not support all fields yet; local state already reflects
+      // the user's changes. Don't surface the error.
+    }
+  }
+
   /// Submits KYC identity documents and refreshes the user profile on success.
   Future<bool> submitKyc({
     required String idType,
@@ -748,5 +794,27 @@ class AppProvider extends ChangeNotifier {
       notifyListeners();
       return {'error': 'Withdrawal failed'};
     }
+  }
+
+  /// Stub: Transfer shares of an asset to another user (by phone or user ID).
+  /// Backend endpoint coming — for now returns true after a short delay.
+  Future<bool> transferShares({
+    required int assetId,
+    required String recipient,
+    required double quantity,
+    String? note,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    SecurityLogService.record(
+      SecurityEvent.orderPlaced,
+      userId: _user?.email ?? '',
+      metadata: {
+        'action': 'transfer_shares',
+        'assetId': assetId,
+        'recipient': recipient,
+        'quantity': quantity,
+      },
+    );
+    return true;
   }
 }

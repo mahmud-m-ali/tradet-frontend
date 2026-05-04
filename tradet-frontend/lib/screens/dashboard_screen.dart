@@ -10,6 +10,7 @@ import '../widgets/language_selector.dart';
 import '../widgets/dashboard_widgets.dart';
 import 'analytics_screen.dart';
 import 'transactions_screen.dart';
+import 'orders_screen.dart';
 import 'profile_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -301,7 +302,18 @@ class DashboardScreen extends StatelessWidget {
                 label: l.openOrders,
                 value: '${provider.orders.where((o) => o.isPending).length}',
                 color: TradEtTheme.primaryLight,
-                onTap: onNavigateTo != null ? () => onNavigateTo(3) : null,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => Scaffold(
+                      backgroundColor: TradEtTheme.surface,
+                      body: const Material(
+                        color: Colors.transparent,
+                        child: OrdersScreen(openOnly: true),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -668,11 +680,12 @@ class _ShariaComplianceScoreCard extends StatelessWidget {
             ? TradEtTheme.warning
             : TradEtTheme.negative;
 
+    final l = AppLocalizations.of(context);
     final label = score >= 0.9
-        ? 'AAOIFI Compliant'
+        ? l.aaaoifiCompliant
         : score >= 0.7
-            ? 'Mostly Compliant'
-            : 'Review Required';
+            ? l.mostlyCompliant
+            : l.reviewRequired;
 
     if (compact) {
       // Compact: matches StatCard layout — icon+label on top, value, sublabel
@@ -723,8 +736,8 @@ class _ShariaComplianceScoreCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            const Text('Sharia Score',
-                style: TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
+            Text(AppLocalizations.of(context).shariaScore,
+                style: const TextStyle(fontSize: 11, color: TradEtTheme.textMuted),
                 overflow: TextOverflow.ellipsis),
           ],
         ),
@@ -746,7 +759,7 @@ class _ShariaComplianceScoreCard extends StatelessWidget {
             children: [
               Icon(Icons.stars_rounded, size: 18, color: color),
               const SizedBox(width: 8),
-              const Text('Sharia Compliance Score',
+              Text(AppLocalizations.of(context).shariaComplianceScore,
                   style: TextStyle(
                       color: TradEtTheme.textSecondary,
                       fontSize: 13,
@@ -780,7 +793,7 @@ class _ShariaComplianceScoreCard extends StatelessWidget {
               const SizedBox(width: 8),
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
-                child: Text('of portfolio value',
+                child: Text(AppLocalizations.of(context).ofPortfolioValue,
                     style: const TextStyle(
                         color: TradEtTheme.textMuted, fontSize: 12)),
               ),
@@ -799,11 +812,11 @@ class _ShariaComplianceScoreCard extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              Text('${fmt.format(compliantValue)} ETB compliant',
+              Text('${fmt.format(compliantValue)} ETB ${l.compliant}',
                   style: const TextStyle(
                       color: TradEtTheme.textMuted, fontSize: 11)),
               const Spacer(),
-              Text('AAOIFI Standard No. 21',
+              Text(AppLocalizations.of(context).aaaoifiStandardNo21,
                   style: const TextStyle(
                       color: TradEtTheme.textMuted, fontSize: 11)),
             ],
@@ -832,7 +845,8 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
   Widget build(BuildContext context) {
     final name = widget.user?.fullName ?? '';
     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
-    final isVerified = widget.user?.kycStatus == 'verified';
+    // Hardcoded unread inbox count for now (matches Inbox menu badge).
+    const int _unreadInboxCount = 4;
 
     return Consumer<AppProvider>(
       builder: (context, prov, _) {
@@ -876,8 +890,8 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
                             ),
                           ),
                   ),
-                  // KYC verified dot
-                  if (isVerified)
+                  // Unread inbox messages indicator (red dot)
+                  if (_unreadInboxCount > 0)
                     Positioned(
                       bottom: 1,
                       right: 1,
@@ -885,7 +899,7 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
                         width: 10,
                         height: 10,
                         decoration: BoxDecoration(
-                          color: TradEtTheme.positive,
+                          color: const Color(0xFFEF4444),
                           shape: BoxShape.circle,
                           border: Border.all(color: TradEtTheme.primaryDark, width: 1.5),
                         ),
@@ -925,13 +939,13 @@ class _TradeFab extends StatelessWidget {
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
-            SizedBox(width: 6),
-            Text('Trade Now',
-                style: TextStyle(
+            const Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
+            const SizedBox(width: 6),
+            Text(AppLocalizations.of(context).tradeNow,
+                style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
                     fontSize: 15,

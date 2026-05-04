@@ -12,7 +12,11 @@ import '../widgets/disclaimer_footer.dart';
 import 'trade_screen.dart';
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key});
+  /// When true, the screen filters to pending/open orders only and
+  /// changes the title to "Open orders". Used when launched from the
+  /// dashboard "Open orders" stat card.
+  final bool openOnly;
+  const OrdersScreen({super.key, this.openOnly = false});
 
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
@@ -165,25 +169,7 @@ class OrdersScreen extends StatefulWidget {
   }
 }
 
-class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.index == 1 && !_tabController.indexIsChanging) {
-        context.read<AppProvider>().loadOrderEvents();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -201,26 +187,28 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
             Padding(
               padding: EdgeInsets.fromLTRB(
                   wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 0),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l.orders,
+                  Row(
+                    children: [
+                      if (!wide && Navigator.of(context).canPop())
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white, size: 20),
+                          onPressed: () => Navigator.of(context).pop(),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                        ),
+                      Expanded(
+                        child: Text(widget.openOnly ? l.openOrders : l.orders,
                             style: const TextStyle(
-                                fontSize: 28,
+                                fontSize: 22,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
                                 letterSpacing: -0.5)),
-                        Text('${l.orders} • ${l.tradeHistory}',
-                            style: const TextStyle(
-                                fontSize: 13,
-                                color: TradEtTheme.textSecondary)),
-                      ],
-                    ),
-                  ),
-                  Consumer<AppProvider>(
+                      ),
+                      Consumer<AppProvider>(
                     builder: (context, provider, _) {
                       if (provider.orders.isEmpty) return const SizedBox.shrink();
                       return Padding(
@@ -274,106 +262,56 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                       );
                     },
                   ),
-                  GestureDetector(
-                    onTap: () => context.read<AppProvider>().loadOrders(),
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Container(
-                        width: 40, height: 40,
-                        decoration: BoxDecoration(
-                          color: TradEtTheme.cardBg,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: TradEtTheme.divider),
+                      GestureDetector(
+                        onTap: () => context.read<AppProvider>().loadOrders(),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Container(
+                            width: 40, height: 40,
+                            decoration: BoxDecoration(
+                              color: TradEtTheme.cardBg,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: TradEtTheme.divider),
+                            ),
+                            child: const Icon(Icons.refresh_rounded,
+                                size: 20, color: TradEtTheme.textSecondary),
+                          ),
                         ),
-                        child: const Icon(Icons.refresh_rounded,
-                            size: 20, color: TradEtTheme.textSecondary),
                       ),
-                    ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: !wide && Navigator.of(context).canPop() ? 36 : 0),
+                    child: Text(widget.openOnly
+                            ? l.pendingOrders
+                            : '${l.orders} • ${l.tradeHistory}',
+                        style: const TextStyle(
+                            fontSize: 13,
+                            color: TradEtTheme.textSecondary)),
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Tab bar
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: wide ? 32 : 20),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: TradEtTheme.cardBg,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  indicator: BoxDecoration(
-                    color: TradEtTheme.primary.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  dividerColor: Colors.transparent,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: TradEtTheme.textMuted,
-                  labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                  tabs: [
-                    Tab(text: l.orders),
-                    Tab(text: l.securityLog),
-                  ],
-                ),
               ),
             ),
             const SizedBox(height: 12),
 
             // Content
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Tab 1: Orders
-                  Consumer<AppProvider>(
-                    builder: (context, provider, _) {
-                      if (provider.isLoading && provider.orders.isEmpty) {
-                        return const Center(
-                          child: CircularProgressIndicator(color: TradEtTheme.positive));
-                      }
-                      if (provider.orders.isEmpty) return _emptyState();
-                      if (wide) return _buildWebTable(provider, fmt);
-                      return _buildMobileList(provider, fmt);
-                    },
-                  ),
-                  // Tab 2: Event Log
-                  Consumer<AppProvider>(
-                    builder: (context, provider, _) {
-                      if (provider.orderEvents.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: const BoxDecoration(
-                                    color: TradEtTheme.cardBg, shape: BoxShape.circle),
-                                child: const Icon(Icons.history_rounded,
-                                    size: 48, color: TradEtTheme.textMuted),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(l.noOrdersYet,
-                                  style: const TextStyle(fontWeight: FontWeight.w600,
-                                      fontSize: 16, color: Colors.white)),
-                              const SizedBox(height: 4),
-                              Text(l.noOrdersYet,
-                                  style: const TextStyle(
-                                      color: TradEtTheme.textMuted, fontSize: 13)),
-                            ],
-                          ),
-                        );
-                      }
-                      return wide
-                          ? _buildEventWebTable(provider, fmt)
-                          : _buildEventMobileList(provider, fmt);
-                    },
-                  ),
-                ],
+              child: Consumer<AppProvider>(
+                builder: (context, provider, _) {
+                  final allOrders = provider.orders;
+                  final filtered = widget.openOnly
+                      ? allOrders.where((o) => o.isPending).toList()
+                      : allOrders;
+                  if (provider.isLoading && allOrders.isEmpty) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: TradEtTheme.positive));
+                  }
+                  if (filtered.isEmpty) {
+                    return _emptyState(openOnly: widget.openOnly);
+                  }
+                  if (wide) return _buildWebTable(provider, fmt, filtered);
+                  return _buildMobileList(provider, fmt, filtered);
+                },
               ),
             ),
           ],
@@ -382,100 +320,39 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildEventMobileList(AppProvider provider, NumberFormat fmt) {
-    return RefreshIndicator(
-      color: TradEtTheme.positive,
-      backgroundColor: TradEtTheme.cardBg,
-      onRefresh: () => provider.loadOrderEvents(),
-      child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
-        itemCount: provider.orderEvents.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
-        itemBuilder: (context, i) => _EventCard(event: provider.orderEvents[i], fmt: fmt),
-      ),
-    );
-  }
-
-  Widget _buildEventWebTable(AppProvider provider, NumberFormat fmt) {
-    final wide = isWideScreen(context);
+  Widget _emptyState({bool openOnly = false}) {
     final l = AppLocalizations.of(context);
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: wide ? 32 : 20),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: TradEtTheme.primaryDark.withValues(alpha: 0.5),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
-              border: Border.all(color: TradEtTheme.divider.withValues(alpha: 0.3)),
-            ),
-            child: Row(
-              children: [
-                SizedBox(width: 90, child: _TH(l.activity)),
-                const SizedBox(width: 12),
-                SizedBox(width: 64, child: _TH(l.type)),
-                const SizedBox(width: 12),
-                Expanded(flex: 2, child: _TH(l.asset)),
-                Expanded(flex: 1, child: _TH(l.quantity)),
-                Expanded(flex: 1, child: _TH(l.price)),
-                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH(l.total))),
-                Expanded(flex: 1, child: Align(alignment: Alignment.centerRight, child: _TH(l.date))),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                  right: BorderSide(color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                  bottom: BorderSide(color: TradEtTheme.divider.withValues(alpha: 0.3)),
-                ),
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(14)),
-              ),
-              child: ListView.builder(
-                itemCount: provider.orderEvents.length,
-                itemBuilder: (context, i) {
-                  final e = provider.orderEvents[i];
-                  return _EventWebRow(event: e, fmt: fmt, isEven: i.isEven);
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _emptyState() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: TradEtTheme.cardBg,
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: TradEtTheme.cardBg,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.receipt_long_outlined,
+                  size: 48, color: TradEtTheme.textMuted),
             ),
-            child: const Icon(Icons.receipt_long_outlined,
-                size: 48, color: TradEtTheme.textMuted),
-          ),
-          const SizedBox(height: 16),
-          Text(AppLocalizations.of(context).noOrdersYet,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w600, fontSize: 16, color: Colors.white)),
-          const SizedBox(height: 4),
-          Text(AppLocalizations.of(context).noOrdersYet,
-              style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13)),
-        ],
+            const SizedBox(height: 16),
+            Text(openOnly ? l.noOpenOrders : l.noOrdersYet,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600, fontSize: 16, color: Colors.white)),
+            const SizedBox(height: 6),
+            Text(openOnly ? l.noOpenOrdersDesc : l.noOrdersYet,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13, height: 1.5)),
+          ],
+        ),
       ),
     );
   }
 
   // ─── Web: Table layout ───
-  Widget _buildWebTable(AppProvider provider, NumberFormat fmt) {
+  Widget _buildWebTable(AppProvider provider, NumberFormat fmt, List<Order> orders) {
     final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -515,15 +392,15 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                 borderRadius: const BorderRadius.vertical(bottom: Radius.circular(14)),
               ),
               child: ListView.builder(
-                itemCount: provider.orders.length + 1,
+                itemCount: orders.length + 1,
                 itemBuilder: (context, index) {
-                  if (index == provider.orders.length) {
+                  if (index == orders.length) {
                     return const Padding(
                       padding: EdgeInsets.all(16),
                       child: DisclaimerFooter(),
                     );
                   }
-                  final order = provider.orders[index];
+                  final order = orders[index];
                   return _WebOrderRow(order: order, fmt: fmt, isEven: index.isEven);
                 },
               ),
@@ -535,8 +412,8 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
   }
 
   // ─── Mobile: Card list (unchanged) ───
-  Widget _buildMobileList(AppProvider provider, NumberFormat fmt) {
-    final count = provider.orders.length;
+  Widget _buildMobileList(AppProvider provider, NumberFormat fmt, List<Order> orders) {
+    final count = orders.length;
     return RefreshIndicator(
       color: TradEtTheme.positive,
       backgroundColor: TradEtTheme.cardBg,
@@ -552,7 +429,7 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
               child: DisclaimerFooter(),
             );
           }
-          final order = provider.orders[index];
+          final order = orders[index];
           return _OrderCard(order: order, fmt: fmt);
         },
       ),
@@ -926,202 +803,3 @@ class _OrderCard extends StatelessWidget {
   }
 }
 
-// ─── Event Log widgets ───
-
-Color _eventColor(String eventType) {
-  return switch (eventType) {
-    'placed' => TradEtTheme.accent,
-    'filled' => TradEtTheme.positive,
-    'cancelled' => TradEtTheme.negative,
-    'partial_fill' => TradEtTheme.warning,
-    'expired' => TradEtTheme.textMuted,
-    _ => TradEtTheme.textMuted,
-  };
-}
-
-IconData _eventIcon(String eventType) {
-  return switch (eventType) {
-    'placed' => Icons.pending_outlined,
-    'filled' => Icons.check_circle_outline,
-    'cancelled' => Icons.cancel_outlined,
-    'partial_fill' => Icons.incomplete_circle,
-    'expired' => Icons.timer_off_outlined,
-    _ => Icons.history_rounded,
-  };
-}
-
-class _EventCard extends StatelessWidget {
-  final dynamic event;
-  final NumberFormat fmt;
-  const _EventCard({required this.event, required this.fmt});
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final color = _eventColor(event.eventType as String);
-    final isBuy = event.orderType == 'buy';
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: TradEtTheme.cardBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 38, height: 38,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(_eventIcon(event.eventType as String), color: color, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      (event.eventType as String).toUpperCase().replaceAll('_', ' '),
-                      style: TextStyle(fontWeight: FontWeight.w700,
-                          fontSize: 12, color: color),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: (isBuy ? TradEtTheme.positive : TradEtTheme.negative)
-                            .withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Text(
-                        '${isBuy ? l.buy.toUpperCase() : l.sell.toUpperCase()} ${event.symbol}',
-                        style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: isBuy ? TradEtTheme.positive : TradEtTheme.negative),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '${event.quantity} × ${fmt.format(event.price)} ETB  |  ${fmt.format(event.amount)} ETB',
-                  style: const TextStyle(fontSize: 12, color: TradEtTheme.textSecondary),
-                ),
-                const SizedBox(height: 2),
-                Text(event.createdAt as String,
-                    style: const TextStyle(fontSize: 10, color: TradEtTheme.textMuted)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EventWebRow extends StatelessWidget {
-  final dynamic event;
-  final NumberFormat fmt;
-  final bool isEven;
-  const _EventWebRow({required this.event, required this.fmt, required this.isEven});
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final color = _eventColor(event.eventType as String);
-    final isBuy = event.orderType == 'buy';
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: isEven ? TradEtTheme.cardBg.withValues(alpha: 0.3) : Colors.transparent,
-        border: Border(bottom: BorderSide(
-            color: TradEtTheme.divider.withValues(alpha: 0.15))),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 90,
-            child: Row(
-              children: [
-                Icon(_eventIcon(event.eventType as String), color: color, size: 14),
-                const SizedBox(width: 5),
-                Flexible(
-                  child: Text(
-                    (event.eventType as String).toUpperCase().replaceAll('_', ' '),
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 64,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-              decoration: BoxDecoration(
-                color: (isBuy ? TradEtTheme.positive : TradEtTheme.negative)
-                    .withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                isBuy ? l.buy.toUpperCase() : l.sell.toUpperCase(),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: isBuy ? TradEtTheme.positive : TradEtTheme.negative),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(event.symbol as String,
-                    style: const TextStyle(fontWeight: FontWeight.w700,
-                        fontSize: 13, color: Colors.white)),
-                Text(event.assetName as String,
-                    style: const TextStyle(fontSize: 10, color: TradEtTheme.textMuted),
-                    overflow: TextOverflow.ellipsis),
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text('${event.quantity}',
-                style: const TextStyle(fontSize: 12, color: Colors.white)),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text('${fmt.format(event.price)} ETB',
-                style: const TextStyle(fontSize: 12, color: Colors.white)),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text('${fmt.format(event.amount)} ETB',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
-                    color: Colors.white),
-                textAlign: TextAlign.right),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text(event.createdAt as String,
-                style: const TextStyle(fontSize: 10, color: TradEtTheme.textMuted),
-                textAlign: TextAlign.right),
-          ),
-        ],
-      ),
-    );
-  }
-}

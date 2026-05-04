@@ -11,6 +11,7 @@ class WhiteLabel {
   static const String appName = 'TradEt';
   static const String appNameAmharic = 'ትሬድኢት';
   static const String bankName = 'Amber';
+  static const String bankNameAmharic = 'አምበር';
   static const String tagline = 'Sharia-Compliant Trading';
   static const String taglineAmharic = 'ሸሪዓ-ተኳሃኝ ንግድ';
   static const Color brandColor = Color(0xFF1B8A5A); // Primary green

@@ -493,15 +493,15 @@ class _CorporateEventsScreenState extends State<CorporateEventsScreen> {
               color: TradEtTheme.cardBg,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.arrow_back_rounded,
+            child: const Icon(Icons.arrow_back_ios_new_rounded,
                 size: 18, color: Colors.white),
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(l.corporateEvents,
             style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
                 color: Colors.white)),
         centerTitle: true,
         actions: actions,
@@ -657,6 +657,7 @@ class _MonthGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final now = DateTime.now();
     final isCurrentMonth = DateFormat('MMMM yyyy').format(now) == month;
 
@@ -683,8 +684,8 @@ class _MonthGroup extends StatelessWidget {
                     color: TradEtTheme.primaryLight.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text('Current',
-                      style: TextStyle(
+                  child: Text(l.current,
+                      style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                           color: TradEtTheme.primaryLight)),
@@ -832,8 +833,8 @@ class _EventRow extends StatelessWidget {
                         color: TradEtTheme.positive.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      child: const Text('Held',
-                          style: TextStyle(
+                      child: Text(l.held,
+                          style: const TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
                               color: TradEtTheme.positive)),

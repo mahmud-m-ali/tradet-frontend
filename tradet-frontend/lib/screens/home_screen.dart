@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
-import '../white_label.dart';
 import '../widgets/language_selector.dart';
 import '../widgets/responsive_layout.dart';
 import 'dashboard_screen.dart';
@@ -53,28 +52,56 @@ List<_NavItem> _mobileNavItems(AppLocalizations l) => [
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  List<Widget> get _screens => [
-    DashboardScreen(onNavigateTo: (i) => setState(() => _currentIndex = i)),
-    const MarketScreen(),
-    const PortfolioScreen(),
-    const OrdersScreen(),
-    const WatchlistScreen(),
-    const AlertsScreen(),
-    const NewsScreen(),
-    const ZakatScreen(),
-    const ConverterScreen(),
-    const AnalyticsScreen(),
-    const TransactionsScreen(),
-    const ProfileScreen(),
-    const CorporateEventsScreen(), // index 12 — accessed from dashboard card on desktop
-  ];
+  /// Builds the screen for an index. Tab indexes (0–3) and the desktop
+  /// sidebar items render inline (no pushed route). The mobile push
+  /// path uses [_pushNonTab] with the same factory.
+  Widget _screenFor(int i) {
+    switch (i) {
+      case 0: return DashboardScreen(onNavigateTo: _onNavigateTo);
+      case 1: return const MarketScreen();
+      case 2: return const PortfolioScreen();
+      case 3: return const OrdersScreen();
+      case 4: return const WatchlistScreen();
+      case 5: return const AlertsScreen();
+      case 6: return const NewsScreen();
+      case 7: return const ZakatScreen();
+      case 8: return const ConverterScreen();
+      case 9: return const AnalyticsScreen();
+      case 10: return const TransactionsScreen();
+      case 11: return const ProfileScreen();
+      case 12: return const CorporateEventsScreen();
+      default: return DashboardScreen(onNavigateTo: _onNavigateTo);
+    }
+  }
+
+  /// Mobile navigation. Indexes 0–3 switch the bottom-nav tab.
+  /// Indexes 4+ push the screen as a route, hiding the bottom nav and
+  /// enabling native back-arrow behavior.
+  void _onNavigateTo(int i) {
+    if (i < 4) {
+      setState(() => _currentIndex = i);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => Scaffold(
+            backgroundColor: TradEtTheme.surface,
+            body: Material(
+              color: Colors.transparent,
+              child: _screenFor(i),
+            ),
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AppProvider>().loadAllData();
-      context.read<AppProvider>().setGlobalNav((i) => setState(() => _currentIndex = i));
+      context.read<AppProvider>().setGlobalNav(_onNavigateTo);
     });
   }
 
@@ -120,19 +147,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Icon(Icons.play_circle_outline,
                           size: 14, color: TradEtTheme.accent),
                       const SizedBox(width: 6),
-                      const Text('DEMO MODE — Data is simulated for presentation',
-                          style: TextStyle(
+                      Text(AppLocalizations.of(context).demoModeBanner,
+                          style: const TextStyle(
                               color: TradEtTheme.accent,
                               fontSize: 11,
                               fontWeight: FontWeight.w600)),
                       const Spacer(),
-                      const Text('Exit', style: TextStyle(color: TradEtTheme.accent, fontSize: 11)),
+                      Text(AppLocalizations.of(context).exitDemoMode, style: const TextStyle(color: TradEtTheme.accent, fontSize: 11)),
                     ],
                   ),
                 ),
               ),
             ),
-          Expanded(child: _screens[_currentIndex]),
+          Expanded(child: _screenFor(_currentIndex)),
         ],
       ),
       bottomNavigationBar: Container(
@@ -180,12 +207,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       const Icon(Icons.play_circle_outline, size: 14, color: TradEtTheme.accent),
                       const SizedBox(width: 6),
-                      const Text('DEMO MODE — All data is simulated for presentation purposes',
-                          style: TextStyle(color: TradEtTheme.accent, fontSize: 11,
+                      Text(AppLocalizations.of(context).demoModeBannerFull,
+                          style: const TextStyle(color: TradEtTheme.accent, fontSize: 11,
                               fontWeight: FontWeight.w600)),
                       const Spacer(),
-                      const Text('Exit Demo →',
-                          style: TextStyle(color: TradEtTheme.accent, fontSize: 11,
+                      Text(AppLocalizations.of(context).exitDemoModeArrow,
+                          style: const TextStyle(color: TradEtTheme.accent, fontSize: 11,
                               fontWeight: FontWeight.w600)),
                     ],
                   ),
@@ -220,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onProfileTap: () => setState(() => _currentIndex = 11),
                         onAnalyticsTap: () => setState(() => _currentIndex = 9),
                       ),
-                      Expanded(child: _screens[_currentIndex]),
+                      Expanded(child: _screenFor(_currentIndex)),
                     ],
                   ),
                 ),
@@ -283,7 +310,7 @@ class AppWebSidebar extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          WhiteLabel.appName,
+                          AppLocalizations.of(context).appNameLocalized,
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
@@ -292,28 +319,31 @@ class AppWebSidebar extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'by ${WhiteLabel.bankName} • ${WhiteLabel.appNameAmharic}',
+                          AppLocalizations.of(context).byBankName,
                           style: const TextStyle(
                             fontSize: 11,
                             color: TradEtTheme.textMuted,
                           ),
                         ),
                         const SizedBox(height: 3),
-                        const Row(
-                          children: [
-                            Icon(Icons.verified_rounded,
-                                size: 11, color: TradEtTheme.positive),
-                            SizedBox(width: 3),
-                            Text(
-                              'Sharia Certified',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: TradEtTheme.positive,
-                                fontWeight: FontWeight.w600,
+                        Builder(builder: (context) {
+                          final l = AppLocalizations.of(context);
+                          return Row(
+                            children: [
+                              const Icon(Icons.verified_rounded,
+                                  size: 11, color: TradEtTheme.positive),
+                              const SizedBox(width: 3),
+                              Text(
+                                l.shariaCertified,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: TradEtTheme.positive,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          );
+                        }),
                       ],
                     ),
                   ),
@@ -459,6 +489,7 @@ class _WebTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, provider, _) {
+        final l = AppLocalizations.of(context);
         final user = provider.user;
         final imgBytes = provider.profileImageBytes;
         final initials = (user?.fullName.isNotEmpty == true)
@@ -466,7 +497,7 @@ class _WebTopBar extends StatelessWidget {
             : '?';
 
         return Container(
-          height: 52,
+          height: 80,
           padding: const EdgeInsets.symmetric(horizontal: 24),
           decoration: BoxDecoration(
             color: TradEtTheme.primaryDark,
@@ -485,7 +516,7 @@ class _WebTopBar extends StatelessWidget {
               // Analytics
               _topBarIcon(
                 icon: Icons.bar_chart_rounded,
-                tooltip: 'Analytics',
+                tooltip: l.analytics,
                 onTap: onAnalyticsTap,
               ),
               // Refresh
@@ -505,7 +536,7 @@ class _WebTopBar extends StatelessWidget {
                     )
                   : _topBarIcon(
                       icon: Icons.refresh_rounded,
-                      tooltip: 'Refresh',
+                      tooltip: l.refresh,
                       onTap: () => provider.loadAllData(),
                     ),
               _divider(),

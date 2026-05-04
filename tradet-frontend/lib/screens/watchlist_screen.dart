@@ -35,6 +35,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     final fmt = NumberFormat('#,##0.00', 'en');
     final wide = isWideScreen(context);
     final hPad = wide ? 32.0 : 20.0;
+    final showBack = !wide && Navigator.of(context).canPop();
 
     return Container(
       decoration: BoxDecoration(gradient: TradEtTheme.bgGradient),
@@ -45,21 +46,33 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
             // ── Header ──
             Padding(
               padding: EdgeInsets.fromLTRB(hPad, wide ? 24 : 16, hPad, 0),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.star_rounded,
-                      color: Color(0xFFFF8C00), size: 28),
-                  const SizedBox(width: 10),
-                  Expanded(
+                  Row(
+                    children: [
+                      if (showBack)
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white, size: 20),
+                          onPressed: () => Navigator.of(context).pop(),
+                          tooltip: l.back,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                        ),
+                      Text(l.watchlist,
+                          style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              letterSpacing: -0.5)),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: showBack ? 36 : 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l.watchlist,
-                            style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                                letterSpacing: -0.5)),
                         Consumer<AppProvider>(
                           builder: (_, p, __) => Text(
                             '${p.watchlist.length} ${l.assetsTracked}',
@@ -109,8 +122,14 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
 
                   return ListView.builder(
                     padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 24),
-                    itemCount: watchlist.length,
+                    itemCount: watchlist.length + 1,
                     itemBuilder: (context, i) {
+                      if (i == watchlist.length) {
+                        return const Padding(
+                          padding: EdgeInsets.fromLTRB(0, 8, 0, 12),
+                          child: DisclaimerFooter(),
+                        );
+                      }
                       final asset = watchlist[i];
                       final change = asset.change24h ?? 0.0;
 
@@ -188,11 +207,6 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                   );
                 },
               ),
-            ),
-            // Disclaimer
-            Padding(
-              padding: EdgeInsets.fromLTRB(hPad, 4, hPad, 12),
-              child: const DisclaimerFooter(),
             ),
           ],
         ),

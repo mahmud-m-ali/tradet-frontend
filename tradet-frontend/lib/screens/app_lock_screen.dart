@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../services/app_lock_service.dart';
 import '../theme.dart';
-import '../white_label.dart';
 
 /// Shown when the app returns from background (60s+ backgrounded) or on first
 /// launch if a PIN has been set. User must authenticate to continue.
@@ -101,7 +100,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
                         color: Colors.white, size: 32),
                   ),
                   const SizedBox(height: 20),
-                  Text(WhiteLabel.appName,
+                  Text(AppLocalizations.of(context).appNameLocalized,
                       style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,

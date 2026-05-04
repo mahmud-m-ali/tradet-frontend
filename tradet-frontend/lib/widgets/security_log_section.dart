@@ -95,7 +95,7 @@ class _SecurityLogSectionState extends State<SecurityLogSection> {
                   IconButton(
                     icon: const Icon(Icons.refresh, size: 18,
                         color: TradEtTheme.textSecondary),
-                    tooltip: 'Refresh',
+                    tooltip: AppLocalizations.of(context).refresh,
                     onPressed: _load,
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
@@ -121,11 +121,11 @@ class _SecurityLogSectionState extends State<SecurityLogSection> {
                 ),
               )
             else if (_entries.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Center(
-                  child: Text('No security events recorded',
-                      style: TextStyle(color: TradEtTheme.textSecondary, fontSize: 13)),
+                  child: Text(AppLocalizations.of(context).noSecurityEvents,
+                      style: const TextStyle(color: TradEtTheme.textSecondary, fontSize: 13)),
                 ),
               )
             else if (wide)

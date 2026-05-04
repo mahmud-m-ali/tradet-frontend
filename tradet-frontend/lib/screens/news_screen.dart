@@ -121,10 +121,28 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l.newsFeedTitle, style: const TextStyle(fontSize: 28,
-                      fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
-                  Text(l.financialIslamicNews,
-                      style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+                  Row(
+                    children: [
+                      if (!wide && Navigator.of(context).canPop())
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white, size: 20),
+                          onPressed: () => Navigator.of(context).pop(),
+                          tooltip: l.back,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                        ),
+                      Expanded(
+                        child: Text(l.newsFeedTitle, style: const TextStyle(fontSize: 22,
+                            fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: !wide && Navigator.of(context).canPop() ? 36 : 0),
+                    child: Text(l.financialIslamicNews,
+                        style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+                  ),
                 ],
               ),
             ),
@@ -167,15 +185,20 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                               onRefresh: _loadNews,
                               color: TradEtTheme.positive,
                               child: ListView.builder(
-                                padding: EdgeInsets.symmetric(horizontal: wide ? 32 : 16),
-                                itemCount: _articles.length,
-                                itemBuilder: (ctx, i) => _buildArticleCard(_articles[i]),
+                                padding: EdgeInsets.fromLTRB(
+                                    wide ? 32 : 16, 0, wide ? 32 : 16, 16),
+                                itemCount: _articles.length + 1,
+                                itemBuilder: (ctx, i) {
+                                  if (i == _articles.length) {
+                                    return const Padding(
+                                      padding: EdgeInsets.only(top: 12),
+                                      child: DisclaimerFooter(),
+                                    );
+                                  }
+                                  return _buildArticleCard(_articles[i]);
+                                },
                               ),
                             ),
-            ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 4, 20, 16),
-              child: DisclaimerFooter(),
             ),
           ],
         ),

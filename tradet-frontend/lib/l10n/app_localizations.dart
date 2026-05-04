@@ -343,6 +343,10 @@ class AppLocalizations {
 
   // ─── Market screen ───────────────────────────────
   String get allCategories => _t({'en': 'All Categories', 'am': 'ሁሉም ምድቦች', 'ti': 'ኩሉ ክፍልታት', 'om': 'Gosota hunda', 'so': 'Dhammaan qaybaha', 'gur': 'ሁሉ ምድቦች'});
+  String get islamicBanks => _t({'en': 'Islamic Banks', 'am': 'እስላማዊ ባንኮች', 'ti': 'ኢስላማዊ ባንክታት', 'om': 'Baankiiwwan Islaamaa', 'so': 'Bangiyada Islaamiga', 'gur': 'እስላማዊ ባንኮች'});
+  String get ethiopianEquities => _t({'en': 'Ethiopian Equities', 'am': 'ኢትዮጵያዊ አክሲዮኖች', 'ti': 'ኢትዮጵያዊ ኣክስዮናት', 'om': 'Aksiyoonota Itoophiyaa', 'so': 'Sahaamaha Itoobiya', 'gur': 'ኢትዮጵያዊ አክሲዮናት'});
+  String get takafullInsurance => _t({'en': 'Takaful & Insurance', 'am': 'ታካፉልና ኢንሹራንስ', 'ti': 'ታካፉልን ኢንሹራንስን', 'om': 'Takaafulii fi Inshuraansii', 'so': 'Takaful & Caymiska', 'gur': 'ታካፉልና ኢንሹራንስ'});
+  String get halalAssets => _t({'en': 'Halal Assets', 'am': 'ሐላል ንብረቶች', 'ti': 'ሐላል ንብረታት', 'om': 'Qabeenyaa Halaal', 'so': 'Hantida Xalaal', 'gur': 'ሐላል ንብረቶች'});
   String get seeAllArrow => _t({'en': 'See all →', 'am': 'ሁሉን ይመልከቱ →', 'ti': 'ኩሉ ርአ →', 'om': 'Hundaa ilaalee →', 'so': 'Arki dhammaan →', 'gur': 'ሁሉ ይመልከቱ →'});
   String get assetsCount => _t({'en': 'assets', 'am': 'ንብረቶች', 'ti': 'ንብረታት', 'om': 'qabeenyaa', 'so': 'hanti', 'gur': 'ንብረቶች'});
   String get createAlert => _t({'en': 'Create Alert', 'am': 'ማንቂያ ፍጠር', 'ti': 'መጠንቀቕታ ፍጠር', 'om': 'Beeksisa uumi', 'so': 'Samee Digniin', 'gur': 'ማስጠንቀቂያ ፍጠር'});
@@ -599,7 +603,7 @@ class AppLocalizations {
   String get authenticateToAddPayment => _t({'en': 'Authenticate to add a payment method', 'am': 'የክፍያ ዘዴ ለማከል ማረጋጋጥ', 'ti': 'ሓቀኛነትካ ምርግጋጽ ንምውሳኽ ኣገባብ ክፍሊት', 'om': 'Mala kaffaltii dabaluu mirkaneessuu', 'so': 'Xaqiijinta si aad u darto hab lacag bixin', 'gur': 'ክፍያ ዘዴ ለማክ ማረጋጋጥ'});
   String get failedToAdd => _t({'en': 'Failed to add', 'am': 'ማከል አልተቻለም', 'ti': 'ምውሳኽ ኣይሰለጠን', 'om': "Ida'uu hin milkoofne", 'so': 'Ku darka ma fashilmay', 'gur': 'ማክ አልቻልም'});
   String get refresh => _t({'en': 'Refresh', 'am': 'አድስ', 'ti': 'ኣሕድስ', 'om': 'Haaromsi', 'so': 'Cusboonaysii', 'gur': 'አድስ'});
-  String get appVersionFooter => _t({'en': 'TradEt v1.0.0 by Amber — Sharia & Ethiopian Trade Compliant', 'am': 'TradEt v1.0.0 by Amber — ሸሪዓ እና የኢትዮጵያ ንግድ ተኳካሪ', 'ti': 'TradEt v1.0.0 by Amber — ሸሪዓ ናይ ኢትዮጵያ ንግዲ', 'om': 'TradEt v1.0.0 by Amber — Shari\'aa fi Daldala Itoophiyaa', 'so': 'TradEt v1.0.0 by Amber — Shariicada iyo Ganacsiga Itoobiya', 'gur': 'TradEt v1.0.0 by Amber — ሸሪዓ እና ኢትዮጵያ ንግድ'});
+  String get appVersionFooter => _t({'en': 'TradEt v1.0.0 by Amber — Sharia & Ethiopian Trade Compliant', 'am': 'ትሬድኢት v1.0.0 by አምበር — ሸሪዓ እና የኢትዮጵያ ንግድ ተኳካሪ', 'ti': 'TradEt v1.0.0 by Amber — ሸሪዓ ናይ ኢትዮጵያ ንግዲ', 'om': 'TradEt v1.0.0 by Amber — Shari\'aa fi Daldala Itoophiyaa', 'so': 'TradEt v1.0.0 by Amber — Shariicada iyo Ganacsiga Itoobiya', 'gur': 'TradEt v1.0.0 by Amber — ሸሪዓ እና ኢትዮጵያ ንግድ'});
   String get appVersionFooterShort => _t({'en': 'TradEt v1.0.0 — Sharia & Ethiopian Trade Compliant', 'am': 'TradEt v1.0.0 — ሸሪዓ እና የኢትዮጵያ ንግድ ተኳካሪ', 'ti': 'TradEt v1.0.0 — ሸሪዓ ናይ ኢትዮጵያ ንግዲ', 'om': "TradEt v1.0.0 — Shari'aa fi Daldala Itoophiyaa", 'so': 'TradEt v1.0.0 — Shariicada iyo Ganacsiga Itoobiya', 'gur': 'TradEt v1.0.0 — ሸሪዓ ኢትዮጵያ ንግድ'});
 
   // ─── Common navigation ────────────────────────────
@@ -607,6 +611,15 @@ class AppLocalizations {
   String get back => _t({'en': 'Back', 'am': 'ተመለስ', 'ti': 'ተመለስ', 'om': "Deebi'i", 'so': 'Ku noqo', 'gur': 'ተመለስ'});
   String get nextArrow => _t({'en': 'Next →', 'am': 'ቀጣይ →', 'ti': 'ቀጺሉ →', 'om': 'Itti aanu →', 'so': 'Xigta →', 'gur': 'ቀጣይ →'});
   String get getStarted => _t({'en': 'Get Started', 'am': 'ጀምር', 'ti': 'ጀምር', 'om': 'Jalqabi', 'so': 'Bilow', 'gur': 'ጀምር'});
+  // ─── Locale-aware brand names ─────────────────────
+  String get appNameLocalized => _t({'en': 'TradEt', 'am': 'ትሬድኢት', 'ti': 'ትሬድኢት', 'om': 'TradEt', 'so': 'TradEt', 'gur': 'ትሬድኢት'});
+  String get bankNameLocalized => _t({'en': 'Amber', 'am': 'አምበር', 'ti': 'አምበር', 'om': 'Amber', 'so': 'Amber', 'gur': 'አምበር'});
+  String get byBankName => _t({'en': 'by Amber', 'am': 'በአምበር', 'ti': 'ብ አምበር', 'om': 'Amber dhaan', 'so': 'asal Amber', 'gur': 'በአምበር'});
+  String get demoModeBanner => _t({'en': 'DEMO MODE — Data is simulated for presentation', 'am': 'ዴሞ ሁነታ — ዳታ ለዴሞ ተሰናብቷል', 'ti': 'ዴሞ ሁነታ — ዳታ ንዴሞ ቀሪቡ', 'om': 'DEEEMOO — Daataan demoaaf qophaahe', 'so': 'MUUQAAL — Xogtu waxay u diyaarsan tahay bandhigga', 'gur': 'ዴሞ ሁነታ — ዳታ ለዴሞ ቀሪቦ'});
+  String get demoModeBannerFull => _t({'en': 'DEMO MODE — All data is simulated for presentation purposes', 'am': 'ዴሞ ሁነታ — ሁሉም ዳታ ለዴሞ ዓላማ ተሰናብቷል', 'ti': 'ዴሞ ሁነታ — ኩሉ ዳታ ንዴሞ ዓላማ ቀሪቡ', 'om': 'DEEEMOO — Daataan hundi kaayyoo demoaaf qophaahe', 'so': 'MUUQAAL — Xogta oo dhan waxay u diyaarsan tahay ujeeddooyinka bandhigga', 'gur': 'ዴሞ ሁነታ — ሁሉ ዳታ ለዴሞ ዓላማ ቀሪቦ'});
+  String get exitDemoMode => _t({'en': 'Exit', 'am': 'ውጣ', 'ti': 'ውጻእ', 'om': 'Baqi', 'so': 'Ka bax', 'gur': 'ውጣ'});
+  String get exitDemoModeArrow => _t({'en': 'Exit Demo →', 'am': 'ዴሞ ውጣ →', 'ti': 'ዴሞ ውጻእ →', 'om': 'Demo baqi →', 'so': 'Ka bax Muuqaalka →', 'gur': 'ዴሞ ውጣ →'});
+  String get failedAttemptsBlock => _t({'en': '5 failed attempts → 15 min block', 'am': '5 ሙከራ ከወደቀ → 15 ደቂቃ ይዘጋል', 'ti': '5 ፈተናታት ምስ ወደቀ → 15 ደቓ ይዕጾ', 'om': 'Yaalii 5 kufee → daqiiqaa 15 cufama', 'so': '5 isku day oo fashilmay → 15 daqiiqo xidid', 'gur': '5 ሙከራ ወደቀ → 15 ደቂቃ ይዝጋ'});
   String byBrand(String brand) => _t({'en': 'by $brand', 'am': 'በ$brand', 'ti': 'ብ$brand', 'om': '$brand dhaan', 'so': 'asal $brand', 'gur': 'በ$brand'});
 
   // ─── Onboarding screen ────────────────────────────
@@ -747,6 +760,253 @@ class AppLocalizations {
   String get noRatesAvailable => _t({'en': 'No rates available', 'am': 'ምንም ዋጋ የለም', 'ti': 'ዋጋ ዘይብሉ', 'om': 'Gatiin hin jiru', 'so': 'Qiyaas la heli maayo', 'gur': 'ምንም ዋጋ የለም'});
   String get currency => _t({'en': 'Currency', 'am': 'ምንዛሬ', 'ti': 'ምንዛሬ', 'om': 'Maallaqaa', 'so': 'Lacagta', 'gur': 'ምንዛሬ'});
   String get ratesSourcedFromNBE => _t({'en': 'Rates sourced from National Bank of Ethiopia', 'am': 'ዋጋዎቹ ከኢትዮጵያ ብሔራዊ ባንክ', 'ti': 'ዋጋታት ካብ ናሽናል ባንክ ኢትዮጵያ', 'om': 'Gatiin Baankii Biyyoolessaa Itoophiyaa irraa', 'so': 'Qiyaasaha ka yimid Baanka Qaran ee Itoobiya', 'gur': 'ዋጋዎቹ ከኢትዮጵያ ብሔራዊ ባንክ'});
+
+  // ─── Charts ──────────────────────────────────────────
+  String get priceChart => _t({'en': 'Price Chart', 'am': 'የዋጋ ቻርት', 'ti': 'ናይ ዋጋ ቻርት', 'om': 'Chaartii Gatii', 'so': 'Jaantuska Qiimaha', 'gur': 'የዋጋ ቻርት'});
+  String get noChartData => _t({'en': 'No chart data', 'am': 'ምንም ቻርት ዳታ የለም', 'ti': 'ዳታ ቻርት ዘሎ', 'om': 'Deetaa chaartii hin jiru', 'so': 'Xog jaantuska ma jirto', 'gur': 'ምንም ቻርት ዳታ የለም'});
+  String get noChartDataAvailable => _t({'en': 'No chart data available', 'am': 'ቻርት ዳታ አይገኝም', 'ti': 'ዳታ ቻርት ዘሎ', 'om': 'Deetaa chaartii hin argamne', 'so': 'Xog jaantuska la heli maayo', 'gur': 'ቻርት ዳታ አይገኝም'});
+
+  // ─── Payment methods / Profile (new unique keys) ─────
+  String get addPaymentMethod => _t({'en': 'Add Payment Method', 'am': 'የክፍያ ዘዴ ጨምር', 'ti': 'ኣገባብ ክፍሊት ወስኽ', 'om': 'Mala kaffaltii dabali', 'so': 'Ku dar hab lacag-bixin', 'gur': 'የክፍያ ዘዴ ጨምር'});
+  String get removeAccount => _t({'en': 'Remove Account', 'am': 'ሒሳብ አስወግድ', 'ti': 'ሒሳብ ኣልዕሎ', 'om': 'Herrega haqi', 'so': 'Ka saar xisaabta', 'gur': 'ሒሳብ አስወግድ'});
+  String get close => _t({'en': 'Close', 'am': 'ዝጋ', 'ti': 'ዕጸዎ', 'om': 'Cufii', 'so': 'Xidh', 'gur': 'ዝጋ'});
+  String get commissionLimits => _t({'en': 'Commission & trading limits', 'am': 'ኮሚሽን እና የንግድ ወሰን', 'ti': 'ኮሚሽን ወ ገደብ ንግዲ', 'om': 'Komiishinii fi daangaa daldala', 'so': 'Guddoomiyaha & Xaddadka ganacsiga', 'gur': 'ኮሚሽን እና የንግድ ወሰን'});
+  String get profileUpdated => _t({'en': 'Profile updated successfully', 'am': 'ፕሮፋይሉ ተሻሽሏል', 'ti': 'ፕሮፋይል ብዓወት ሕዲሱ', 'om': 'Piroofaayiliin milkiinan haaromfame', 'so': 'Boggu si guul leh ayaa loo cusboonaysiiyay', 'gur': 'ፕሮፋይሉ ተሻሽሏል'});
+  String get aboutTradEt => _t({'en': 'About TradEt', 'am': 'ስለ ትሬድኢት', 'ti': 'ብዛዕባ ትሬድኢት', 'om': "Waa'ee TradEt", 'so': 'Ku saabsan TradEt', 'gur': 'ስለ ትሬድኢት'});
+  String get shariaCompliantPlatform => _t({'en': 'Sharia-compliant Ethiopian commodity trading platform.', 'am': 'ሸሪዓ ተገዢ ኢትዮጵያ የሸቀጥ ንግድ መድረክ።', 'ti': 'ሸሪዓ ዝኽተል ናይ ኢትዮጵያ ሸቐጥ ናይ ንግዲ መድረኽ።', 'om': "Shari'aa hordofu gabaa meeshaalee Itoophiyaa.", 'so': 'Goobo ganacsiga alaabta Itoobiya ee ku habboon Shariicada.', 'gur': 'ሸሪዓ ተስማሚ ኢትዮጵያ ሸቀጥ ንግድ መሣርያ።'});
+
+  // ─── Security screen ──────────────────────────────────
+  String get withBiometrics => _t({'en': 'With biometrics', 'am': 'ባዮሜትሪክ', 'ti': 'ብባዮሜትሪክ', 'om': 'Bayoomeetriksiin', 'so': 'Bayometriga', 'gur': 'ባዮሜትሪክ'});
+  String get biometricsUnavailable => _t({'en': 'Biometrics (unavailable)', 'am': 'ባዮሜትሪክ (አይገኝም)', 'ti': 'ባዮሜትሪክ (ዘይርከብ)', 'om': 'Bayoomeetriksii (hin argamne)', 'so': 'Bayometrika (ma heli karo)', 'gur': 'ባዮሜትሪክ (አይገኝም)'});
+  String get withPin => _t({'en': 'With PIN', 'am': 'PIN ጋር', 'ti': 'ብPIN', 'om': 'PINiin', 'so': 'PIN la', 'gur': 'PIN ጋር'});
+  String get authMethod => _t({'en': 'Authentication Method', 'am': 'የማረጋጊጥ ዘዴ', 'ti': 'ኣገባብ ምርግጋጽ', 'om': 'Mala mirkaneessuu', 'so': 'Habka xaqiijinta', 'gur': 'የማረጋጊጥ ዘዴ'});
+  String get howToVerifyIdentity => _t({'en': 'How to verify your identity', 'am': 'ማንነትዎን እንዴት ማረጋጊጥ', 'ti': 'ህልውናኻ ብኸምዚ ኣረጋግጽ', 'om': 'Eenyummaa kee akkam mirkanaa\'uu', 'so': 'Sida aad aqoonsigaaga xaqiijiso', 'gur': 'ማንነቱን እንዴት ማረጋጊጥ'});
+  String get biometrics => _t({'en': 'Biometrics', 'am': 'ባዮሜትሪክ', 'ti': 'ባዮሜትሪክ', 'om': 'Bayoomeetriksii', 'so': 'Bayometrikska', 'gur': 'ባዮሜትሪክ'});
+  String get sessionProtection => _t({'en': 'Session Protection', 'am': 'ሴሽን ጥበቃ', 'ti': 'ሴሽን ሓለዋ', 'om': 'Eegumsa seeshinii', 'so': 'Ilaalinta session-ka', 'gur': 'ሴሽን ጥበቃ'});
+  String get configWithinInsa => _t({'en': 'Configurable within INSA CSMS bounds', 'am': 'በINSA CSMS ድንበር ውስጥ ሊስተካከል ይችላል', 'ti': 'ኣብ ውሽጢ ዶብ INSA CSMS ክቅየር ይካኣል', 'om': 'Daangaa INSA CSMS keessatti qindaa\'uu danda\'ama', 'so': 'Xaddadka INSA CSMS gudaha laga dejin karaa', 'gur': 'INSA CSMS ዶብ ውስጥ ሊስተካከል ይቻላ'});
+  String get accountLockout => _t({'en': 'Account Lockout', 'am': 'የሒሳብ መቆለፊያ', 'ti': 'ዕጸፋ ሒሳብ', 'om': 'Cufaa herregaa', 'so': 'Xidida akoonka', 'gur': 'የሒሳብ መቆለፊያ'});
+  String get insaMandated => _t({'en': 'INSA Mandated', 'am': 'INSA ተደንጋጋ', 'ti': 'INSA ዝእዘዘ', 'om': 'INSA dirqisiise', 'so': 'INSA waajib sameysey', 'gur': 'INSA ተደንጋጋ'});
+  String get biometricEnrollPrompt => _t({'en': 'Go to Settings → Security to enroll your biometrics.', 'am': 'ባዮሜትሪክ ለመመዝገብ ቅንጅቶች → ደህንነት ይሂዱ።', 'ti': 'ናብ ቅጥዒ → ድሕንነት ዕደም ባዮሜትሪካዊ ቑሶ።', 'om': 'Baayoomeetrikii galchuuf Qindaa\'ina → Nageenyaa deemi.', 'so': 'Aad u xidha Dejinta → Amniga si aad ugu diwaan-geliso bayometrigaaga.', 'gur': 'ቅንጅቶቸ → ደህንነት ሂድ ባዮሜትሪክ ለምዝገብ።'});
+  String get biometricSuccess => _t({'en': 'Biometric authentication successful!', 'am': 'ባዮሜትሪክ ማረጋጊጥ ተሳክቷል!', 'ti': 'ምርግጋጽ ባዮሜትሪክ ተዓዊቱ!', 'om': 'Mirkaneessaan bayoomeetriksii milkaawe!', 'so': 'Xaqiijinta bayometrika way guulatay!', 'gur': 'ባዮሜትሪክ ማረጋጊጥ ተሳክቷ!'});
+  String get biometricFailed => _t({'en': 'Biometric authentication failed.', 'am': 'ባዮሜትሪክ ማረጋጊጥ አልተሳካም።', 'ti': 'ምርግጋጽ ባዮሜትሪክ ኣይሰለጠን።', 'om': 'Mirkaneessaan bayoomeetriksii hin milkoofne.', 'so': 'Xaqiijinta bayometrika way fashilantay.', 'gur': 'ባዮሜትሪክ ማረጋጊጥ አልተሳካም።'});
+  String get newPinHint => _t({'en': 'New PIN (4 digits)', 'am': 'አዲስ PIN (4 ቁጥሮች)', 'ti': 'ሓዲሽ PIN (4 ቑጽሪ)', 'om': 'PIN haaraa (lakk. 4)', 'so': 'PIN cusub (4 nambar)', 'gur': 'አዲስ PIN (4 ቁጥሮቸ)'});
+  String get confirmPinHint => _t({'en': 'Confirm PIN', 'am': 'PIN አረጋግጥ', 'ti': 'PIN ኣረጋግጽ', 'om': 'PIN mirkaneessi', 'so': 'PIN xaqiiji', 'gur': 'PIN አረጋግጥ'});
+  String get pinRemoved => _t({'en': 'PIN removed', 'am': 'PIN ተወግዷል', 'ti': 'PIN ተኣሊዩ', 'om': 'PIN haqame', 'so': 'PIN waa la tirtiray', 'gur': 'PIN ተወግዷ'});
+  String get removePinButton => _t({'en': 'Remove PIN', 'am': 'PIN አስወግድ', 'ti': 'PIN ኣልዕሎ', 'om': 'PIN haqi', 'so': 'Ka saar PIN', 'gur': 'PIN አስወግድ'});
+  String get savePin => _t({'en': 'Save PIN', 'am': 'PIN አስቀምጥ', 'ti': 'PIN ዓቅብ', 'om': "PIN olkaa'i", 'so': 'Kaydi PIN', 'gur': 'PIN አኑር'});
+  String get pinInvalid => _t({'en': 'PIN must be exactly 4 digits', 'am': 'PIN ትክክል 4 ቁጥሮች መሆን አለበት', 'ti': 'PIN ልክ 4 ቑጽሪ ክኸውን ኣለዎ', 'om': 'PIN lakkoofsa 4 qofa ta\'uu qaba', 'so': 'PIN waa in uu ahaa 4 nambar oo kaliya', 'gur': 'PIN ትክክለኛ 4 ቁጥሮቸ ሊሆን አለበት'});
+  String get pinSet => _t({'en': 'Security PIN set', 'am': 'የደህንነት PIN ተዘጋጅቷል', 'ti': 'ናይ ድሕንነት PIN ዝቀረበ', 'om': 'PIN nageenyaa qophaahe', 'so': 'PIN amni ayaa la dejiyay', 'gur': 'የደህንነት PIN ተዘጋጅቷ'});
+  String get anyAvailable => _t({'en': 'Any Available', 'am': 'ማናቸውም', 'ti': 'ዝኾነ ዘሎ', 'om': 'Kamiyyuu argamu', 'so': 'Wixii la heli karo', 'gur': 'ማናቸውም'});
+  String get biometricsFirstThenPin => _t({'en': 'Biometrics first, then PIN', 'am': 'ቀድሞ ባዮሜትሪክ፣ ቀጥሎ PIN', 'ti': 'ቅድሚ ባዮሜትሪክ፣ ቀጺሉ PIN', 'om': 'Dursa bayoomeetriksii, booda PIN', 'so': 'Bayometrika marka hore, ka dib PIN', 'gur': 'ቀድሞ ባዮሜትሪክ፣ ቀጥሎ PIN'});
+  String get biometricsOnly => _t({'en': 'Biometrics Only', 'am': 'ባዮሜትሪክ ብቻ', 'ti': 'ባዮሜትሪክ ጥራሕ', 'om': 'Bayoomeetriksii qofa', 'so': 'Bayometrika kaliya', 'gur': 'ባዮሜትሪክ ብቻ'});
+  String get pinOnly => _t({'en': 'PIN Only', 'am': 'PIN ብቻ', 'ti': 'PIN ጥራሕ', 'om': 'PIN qofa', 'so': 'PIN kaliya', 'gur': 'PIN ብቻ'});
+  String get sessionTimeout => _t({'en': 'Session Timeout', 'am': 'ሴሽን ማብቂያ', 'ti': 'ሴሽን ምዕጻው', 'om': 'Yeroo seeshinii', 'so': 'Xilliga session-ka', 'gur': 'ሴሽን ማብቂያ'});
+  String get autoLogoutAfterInactivity => _t({'en': 'Auto-logout after inactivity', 'am': 'ቦዶ ሆኖ ሲቀር ይወጣል', 'ti': 'ምንቅስቃስ ምስ ጠፍአ ይወጽ', 'om': 'Sosochuu dhaabuu booda of-baasuu', 'so': 'Ka bax toos markuu hurdo la\'aano', 'gur': 'ቦዶ ሆኖ ሲቀር ይወጣ'});
+  String get appLockDelay => _t({'en': 'App Lock Delay', 'am': 'ኣፕ የቆልፍ ጊዜ', 'ti': 'ኣፕ ጊዜ ምዕጻው', 'om': 'Tarii cufaa app', 'so': 'Daahitaanka xidida app-ka', 'gur': 'ኣፕ የቆልፍ ጊዜ'});
+  String get lockAfterBackgrounding => _t({'en': 'Lock screen after backgrounding', 'am': 'ወደ ኋላ ሲሄድ ይቆለፋል', 'ti': 'ናብ ድሕሪ ምስ ከደ ይዕጾ', 'om': 'Gara duubaa yeroo deemu cufama', 'so': 'Xidid shaashadda ka dib marka la damiyey', 'gur': 'ወደ ኋላ ሲሄድ ይቆለፋ'});
+  // ─── Profile screen settings subtitles ─────────────
+  String get subtitleTermsRiskPrivacy => _t({'en': 'Terms, Risk Disclosures, Privacy Policy', 'am': 'ውሎዎች፣ አደጋ ምስክሮች፣ የግላዊነት ፖሊሲ', 'ti': 'ውዕሊ፣ ሓደጋ ምስክርነት፣ ፖሊሲ ምስጢርነት', 'om': 'Shartoota, Ibsa Gaaga, Polisii Dhuunfaa', 'so': 'Shuruucda, Muujinta Khatarta, Xeerka Arrimaha Gaarka', 'gur': 'ውሎዎቸ፣ አደጋ ምስክሮቸ፣ ምስጢርነት ፖሊሲ'});
+  String get subtitleEcxLicensing => _t({'en': 'ECX licensing info', 'am': 'ECX ፍቃድ መረጃ', 'ti': 'ሓበሬታ ፍቓድ ECX', 'om': 'Odeeffannoo hayyama ECX', 'so': 'Macluumaadka ruqsadda ECX', 'gur': 'ECX ፍቃድ ሓበሬታ'});
+  String get subtitleShariaAudit => _t({'en': 'Sharia screening audit', 'am': 'የሸሪዓ ምርጫ ምርመራ', 'ti': 'ናይ ሸሪዓ ምምርቓ ምፍታሽ', 'om': "Qormaata saagii Shari'aa", 'so': 'Xisaabinta xayiraadda Shariicada', 'gur': 'የሸሪዓ ምርጫ ምርመራ'});
+  String get subtitleTaxDeclaration => _t({'en': 'Annual P&L for tax declaration', 'am': 'ዓመታዊ ትርፍ/ኪሳራ ለታክስ ጊዜ', 'ti': 'ዓመታዊ ትርፊ/ክሳራ ናይ ታክስ ምልክት', 'om': 'Tarreeffama taaksii waggaaf Bu\'aa/Kasaaraa', 'so': 'Faa\'iidada/Khasaare sanadlaha ah ee bayaanka canshuurta', 'gur': 'ዓመታዊ ትርፍ/ኪሳራ ለታክስ'});
+  String get subtitlePriceMovements => _t({'en': 'Price movements & trends', 'am': 'የዋጋ እንቅስቃሴ እና አዝማሚያዎች', 'ti': 'ምቅስቃስ ዋጋ ዝምባሌ', 'om': 'Sosochuu gatii fi damee', 'so': 'Dhaqdhaqaaqyada qiimaha & tolooyinka', 'gur': 'የዋጋ እንቅስቃሴ እና አዝማሚያዎቸ'});
+  String get subtitleNewsletterAi => _t({'en': 'Newsletter & AI assistance', 'am': 'ዜና ደብዳቤ እና AI እርዳታ', 'ti': 'ሓዲሽ ዜና AI ሓጋዚ', 'om': 'Waraqaa Oduu fi gargaarsa AI', 'so': 'Warqadda wararka & caawinta AI', 'gur': 'ዜና ደብዳቤ AI እርዳታ'});
+  String get subtitleFaqDocs => _t({'en': 'FAQ, docs, community forums', 'am': 'ጥያቄዎች፣ ሰነዶች፣ የማህበረሰብ ፎረሞች', 'ti': 'ሕቶ ሰነዳት ፎረም', 'om': 'Gaaffilee, Waraqaalee, Foorami hawaasaa', 'so': 'Su\'aalaha, dukumiintiyadda, barxadyada bulshada', 'gur': 'ጥያቄዎቸ፣ ሰነዶቸ፣ ፎረሞቸ'});
+  String get subtitleSupportTicket => _t({'en': 'Submit ticket or chat with agents', 'am': 'ቲኬት ያስገቡ ወይም ከወኪሎች ጋር ይወያዩ', 'ti': 'ቲኬት ኣእቱ ወይ ምስ ወኪላት ሕወስ', 'om': 'Tiikeetii galchi ykn hoggantoota waliin haasawuu', 'so': 'Xogta soo gudbi ama la sheekeyso wakiilada', 'gur': 'ቲኬት ያስገቡ ወይ ከወኪሎቸ ጋር ይወያዩ'});
+  String get subtitlePasswordTwoFa => _t({'en': 'Password & 2FA', 'am': 'የይለፍ ቃል እና 2FA', 'ti': 'ፓስወርድ 2FA', 'om': 'Jecha darbii fi 2FA', 'so': 'Furaha sirta & 2FA', 'gur': 'ፓስወርድ 2FA'});
+  String get subtitleDataSharing => _t({'en': 'Data sharing & visibility', 'am': 'ዳታ ማካፈያ እና ታይነት', 'ti': 'ዳታ ምክፋፍ ታይነት', 'om': 'Qooduu deetaa fi mul\'achuu', 'so': 'Wadaagista xogta & muuqaalka', 'gur': 'ዳታ ማካፈያ ታይነት'});
+  String get subtitleWealthProtection => _t({'en': 'Wealth protection & PIN', 'am': 'ሀብት ጥበቃ እና PIN', 'ti': 'ሕልዋ ዕቃ PIN', 'om': 'Eegumsa qabeenya fi PIN', 'so': 'Ilaalinta hantida & PIN', 'gur': 'ሀብት ጥበቃ PIN'});
+  String get subtitlePersonalDetails => _t({'en': 'Update personal details, avatar & contact', 'am': 'የግል መረጃ፣ ምስሉ እና ዕውቂያ ያዘምኑ', 'ti': 'ሓበሬታ ውልቀ፣ ስዕሊ ዕውቂያ ኣዕዝዝ', 'om': 'Odeeffannoo dhuunfaa, suura fi qunnamtii haaromsi', 'so': 'Macluumaadka shakhsiga, sawirka & xiriirka cusboonaysii', 'gur': 'ናይ ውልቀ ሓበሬታ፣ ምስሉ ዕውቂያ ኣዘምን'});
+  String get subtitleBankAccounts => _t({'en': 'Manage linked bank accounts & invoices', 'am': 'የተሳሰሩ ባንክ ሒሳቦችን እና ቢሎዎችን አስተዳድሩ', 'ti': 'ምምሕዳር ናይ ዝተኣሳሰሩ ባንክ ሒሳባት ናብዳዎ', 'om': 'Herrega baankii fi herrega galii bulchi', 'so': 'Maamul xisaabaha bangiga la xidnay & qaansooyinka', 'gur': 'ናይ ዝተሳሰሩ ባንክ ሒሳቦቸ ኣስተዳድሩ'});
+  String get subtitleAccountSecurity => _t({'en': 'Protect your account & manage privacy', 'am': 'ሒሳብዎን ይጠብቁ እና ምስጢርነት ያስተዳድሩ', 'ti': 'ሒሳብካ ሓሉ ምስጢርነት ምምሕዳር', 'om': 'Herrega kee tiksi fi dhuunfaa bulchi', 'so': 'Xisaabta ilaali & maamul arrimaha gaarka ah', 'gur': 'ሒሳብዎን ጠብቁ ምስጢርነት ያስተዳድሩ'});
+  String get subtitleChangePassword => _t({'en': 'Change password & enable Two-Factor Authentication (2FA)', 'am': 'የይለፍ ቃል ይቀይሩ እና 2FA ያስጀምሩ', 'ti': 'ፓስወርድ ቀይር 2FA ጀምር', 'om': 'Jecha darbii jijjiiri fi 2FA jalqabi', 'so': 'Furaha sirta beddel & 2FA hawl-geli', 'gur': 'ፓስወርድ ቀይር 2FA ጀምር'});
+  String get subtitleDataVisibility => _t({'en': 'Manage data sharing & account visibility settings', 'am': 'የዳታ ማካፈያ እና ሒሳብ ታይነት ቅንጅቶች ያስተዳድሩ', 'ti': 'ቅንጅቶ ምክፋፍ ዳታ ሒሳብ ታይነት ምምሕዳር', 'om': 'Qindaa\'ina qooduu deetaa fi argamuu herregaa bulchi', 'so': 'Maamul goobaha wadaagista xogta & muuqaalka xisaabta', 'gur': 'ናይ ዳታ ማካፈያ ሒሳብ ታይነት ቅንጅቶቸ ያስተዳድሩ'});
+  String get subtitleAlertsMessaging => _t({'en': 'Configure alerts & messaging preferences', 'am': 'ማስጠንቀቂያ እና ምልክት ቅምሞዎቹን ያቀናጁ', 'ti': 'ናይ ሓደጋ ምልክቶ ናይ መልእኽቲ ምምሕዳር ቀናብር', 'om': 'Qindaa\'ina beeksisaa fi ergaa', 'so': 'Dejiso doorashooyinka digniin-bixinta & farriimaha', 'gur': 'ማስጠንቀቂያ ምልክት ቅምሞዎቸ ያቀናጁ'});
+  String get subtitleConfigureAlerts => _t({'en': 'Configure push/email alerts for price movements & trends', 'am': 'ለዋጋ እንቅስቃሴ push/email ማስጠንቀቂያ ያቀናጁ', 'ti': 'ናይ ዋጋ ምቅስቃስ push/email ሓደጋ ምልክቶ ቀናብር', 'om': 'Beeksisa push/email sosochuu gatii qindeessi', 'so': 'Dejiso digniin-bixinta push/email dhaqdhaqaaqyada qiimaha', 'gur': 'ዋጋ ምቅስቃስ push/email ማስጠንቀቂያ ያቀናጁ'});
+  String get subtitleNewsletterToggle => _t({'en': 'Toggle newsletter & system-triggered AI assistance', 'am': 'ዜና ደብዳቤ እና AI እርዳታ ያብሩ/ያጥፉ', 'ti': 'ዜና ደብዳቤ AI ሓጋዚ ኣብሩ/ኣጥፍኡ', 'om': 'Waraqaa oduu fi gargaarsa AI banaa/cufaa', 'so': 'Toggle warqadda wararka & gargaarka AI-ka nidaamka u kiciya', 'gur': 'ዜና ደብዳቤ AI እርዳታ ያብሩ/ያጥፉ'});
+  String get subtitleFaqHelp => _t({'en': 'FAQ, documentation & contact', 'am': 'ጥያቄዎች፣ ሰነዶች እና ዕውቂያ', 'ti': 'ሕቶ ሰነዳት ዕውቂያ', 'om': 'Gaaffilee, Waraqaalee fi Qunnamtii', 'so': 'Su\'aalaha, dukumiintiyadda & xiriirka', 'gur': 'ጥያቄዎቸ፣ ሰነዶቸ ዕውቂያ'});
+  String get subtitleAccessFaq => _t({'en': 'Access FAQ, help documentation & community forums', 'am': 'ጥያቄዎቻቸውን፣ እርዳታ ሰነዶቻቸውን እና ፎረሞቻቸውን ይጎብኙ', 'ti': 'ሕቶ ሰነዳት ፎረም ሓጋዚ ጎብዝ', 'om': 'Gaaffilee, Waraqaalee gargarsaa fi Foorami hawaasaa ilaalee', 'so': 'Gal Su\'aalaha, dukumiintiyadda gargaarka & barxadyada bulshada', 'gur': 'ጥያቄዎቸ፣ ሰነዶቸ ፎረሞቸ ጎብኙ'});
+  String get subtitleSupportChat => _t({'en': 'Submit a support ticket or start an in-app chat', 'am': 'ቲኬት ያስገቡ ወይም ኣፕ ውስጥ ውይይት ጀምሩ', 'ti': 'ቲኬት ኣእቱ ወይ ኣፕ ውሽጢ ሕወስ ጀምር', 'om': 'Tiikeetii galchi ykn haasawa app keessaa jalqabi', 'so': 'Xogta geli ama bilow wada-hadal app-ka gudihiisa', 'gur': 'ቲኬት ያስገቡ ወይ ኣፕ ውስጥ ውይይት ጀምሩ'});
+  String get qty => _t({'en': 'Qty', 'am': 'ብዛት', 'ti': 'ብዝሒ', 'om': "Ba'aa", 'so': 'Tirada', 'gur': 'ብዛት'});
+  String get unit => _t({'en': 'Unit', 'am': 'ክፍሊ', 'ti': 'ክፍሊ', 'om': 'Iddoo', 'so': 'Cutubka', 'gur': 'ክፍሊ'});
+  String get avg => _t({'en': 'Avg', 'am': 'አማካይ', 'ti': 'ማእከላይ', 'om': 'Giddugaleessa', 'so': 'Celceliska', 'gur': 'አማካይ'});
+  String get changeLabel => _t({'en': 'Change', 'am': 'ቀይር', 'ti': 'ቀይር', 'om': 'Jijjiiri', 'so': 'Beddel', 'gur': 'ቀይር'});
+  String get setPinButton => _t({'en': 'Set PIN', 'am': 'PIN ዘርጋ', 'ti': 'PIN ቀናብር', 'om': 'PIN qindeessi', 'so': 'Dejiso PIN', 'gur': 'PIN ዘርጋ'});
+  String get securityRequired => _t({'en': 'Security Required', 'am': 'ደህንነት ያስፈልጋል', 'ti': 'ድሕንነት ይሕለፍ', 'om': 'Nageenyaan barbaachisa', 'so': 'Amni waajib ah', 'gur': 'ደህንነት ያስፈጋ'});
+  String get enterPin => _t({'en': 'Enter PIN', 'am': 'PIN ያስገቡ', 'ti': 'PIN ኣእቱ', 'om': 'PIN galchi', 'so': 'Geli PIN', 'gur': 'PIN ያስገቡ'});
+  String get ok => _t({'en': 'OK', 'am': 'እሺ', 'ti': 'ቅቡል', 'om': 'Egaa', 'so': 'Waaye', 'gur': 'እሺ'});
+  String get appVersion => _t({'en': 'Version 1.0', 'am': 'ስሪት 1.0', 'ti': 'ሓርበኛ 1.0', 'om': 'Galmee 1.0', 'so': 'Nooca 1.0', 'gur': 'ስሪት 1.0'});
+  String get tooManyFailedAttempts => _t({'en': 'Too many failed attempts', 'am': 'ብዙ ሙከራዎች ወድቀዋል', 'ti': 'ብዙ ፈተናታት ወዲቀን', 'om': "Yaalii kufe baay'inaan", 'so': 'Isku dayado fashilmay oo badan', 'gur': 'ብዙ ሙከራዎቸ ወድቀዋ'});
+  String get securityPinRequiredMsg => _t({'en': 'A security PIN is required to authorize transactions.\n\nGo to Profile → Security → App Lock to set up your PIN.', 'am': 'ግብይቶችን ለማፅደቅ የደህንነት PIN ያስፈልጋል።\n\nPIN ለማዘጋጀት ፕሮፋይል → ደህንነት → ኣፕ ቆልፍ ይሂዱ።', 'ti': 'PIN ድሕንነት ንምርግጋጽ ምትሕልላፍ ያስፈልጋ።\n\nPIN ንምቕናዕ ፕሮፋይል → ድሕንነት → ሸፋዕ ኣፕ ሂድ።', 'om': 'Hojii mallaqa hayyamuuf PIN nageenyaa barbaachisa.\n\nPIN qopheessuuf Piroofaayilii → Nageenyaa → Cufaa App deemuun.', 'so': 'PIN amni ah ayaa loo baahan yahay si loo oggolaado macaamilaadaha.\n\nSi aad PIN u dejiso u tag Profile → Amniga → App Lock.', 'gur': 'ግብይቶቼን ለፍቀድ የደህንነት PIN ያስፈጋ።\n\nPIN ለዘጋጀ ፕሮፋይል → ደህንነት → ኣፕ ቆልፍ ሂዱ።'});
+
+  // ─── Profile / Account Details ────────────────────────────
+  String get kycVerifiedTier => _t({'en': 'Tier 1 — Verified ✓', 'am': 'ደረጃ 1 — ተረጋግጧል ✓', 'ti': 'ቀዳማይ ደረጃ — ተረጋጊጹ ✓', 'om': 'Sadarkaa 1 — Mirkanaawe ✓', 'so': 'Heer 1 — La xaqiijiyay ✓', 'gur': 'ደረጃ 1 — ተረጋግጧ ✓'});
+  String get kycUploadDocs => _t({'en': 'Upload ID documents & check approval', 'am': 'መታወቂያ ይስቀሉ እና ፍቃድ ያረጋግጡ', 'ti': 'ወثائق ናይ መለለዪ ኣስቀምጥ ምፍቃድ ርአ', 'om': 'Waraqaalee ID kaa\'i hayyama ilaalee', 'so': 'Dhig dukumiintiyada aqoonsiga & hubi oggolaanshaha', 'gur': 'ID ሰነዶቸ ስቀሉ ፍቃድ ያረጋግጡ'});
+  String get flatCommissionLimit => _t({'en': '1.5% flat commission • 100K ETB daily limit', 'am': '1.5% ኮሚሽን • 100ሺ ETB ዕለታዊ ወሰን', 'ti': '1.5% ኮሚሽን • 100ሺ ETB ዕለታዊ ጸዳ', 'om': 'Komishinii 1.5% • Daangaa guyyaa ETB 100K', 'so': 'Komishin 1.5% • 100K ETB xad maalinlah', 'gur': '1.5% ኮሚሽን • 100ሺ ETB ዕለታዊ ወሰን'});
+  String get commissionRateLabel => _t({'en': 'Commission rate', 'am': 'የኮሚሽን መጠን', 'ti': 'ምጣነ ኮሚሽን', 'om': 'Iddoo komishinii', 'so': 'Heerka komishiniga', 'gur': 'የኮሚሽን መጠን'});
+  String get commissionRateValue => _t({'en': '1.5% flat (Riba-free)', 'am': '1.5% ቋሚ (ሪባ-ነጻ)', 'ti': '1.5% ቋሚ (ሪባ-ናጻ)', 'om': '1.5% duraatti (Riba-bilisaa)', 'so': '1.5% xasil (Riba-free)', 'gur': '1.5% ቋሚ (ሪባ-ነጻ)'});
+  String get dailyWithdrawalLimit => _t({'en': 'Daily withdrawal limit', 'am': 'ዕለታዊ ወጪ ወሰን', 'ti': 'ዕለታዊ ጸዳ ምውጻእ', 'om': 'Daangaa baasuun guyyaa', 'so': 'Xadka bixitaanka maalinlaha', 'gur': 'ዕለታዊ ወጪ ወሰን'});
+  String get weeklyTradingLimit => _t({'en': 'Weekly trading limit', 'am': 'ሳምንታዊ የንግድ ወሰን', 'ti': 'ሳምናዊ ጸዳ ንግዲ', 'om': 'Daangaa daldala torbanaa', 'so': 'Xadka ganacsiga toddobaadlaha', 'gur': 'ሳምንታዊ የንግድ ወሰን'});
+  String get planTypeLabel => _t({'en': 'Plan', 'am': 'ዕቅድ', 'ti': 'ዕቅዲ', 'om': 'Karoora', 'so': 'Qorshe', 'gur': 'ዕቅድ'});
+  String get settlementLabel => _t({'en': 'Settlement', 'am': 'ማስተካከያ', 'ti': 'ኣወሳሰና', 'om': 'Qoduumaa', 'so': 'Xal-gelin', 'gur': 'ማስተካከያ'});
+  String get retailTraderStandard => _t({'en': 'Retail Trader — Standard', 'am': 'ትናንሽ ነጋዴ — ደረጃ', 'ti': 'ነጋዴ ንእሽቶ — ደረጃ', 'om': 'Gurgurtaa — Sadarkaa', 'so': 'Ganacsade Yar — Caadi', 'gur': 'ትናንሽ ነጋዴ — ደረጃ'});
+  String get settlementTPlus2 => _t({'en': 'T+2 (ECX standard)', 'am': 'T+2 (ECX ደረጃ)', 'ti': 'T+2 (ECX ደረጃ)', 'om': 'T+2 (Sadarkaa ECX)', 'so': 'T+2 (heerka ECX)', 'gur': 'T+2 (ECX ደረጃ)'});
+  String get shariaFeeNote => _t({'en': 'All fees are Sharia-compliant flat commissions. No hidden interest (Riba) charges.', 'am': 'ሁሉም ክፍያዎች ሸሪዓ ተኳካሪ ቋሚ ኮሚሽኖች ናቸው። ምንም ወለድ (ሪባ) የለም።', 'ti': 'ኩሉ ክፍሊታት ሸሪዓ-ኣሳማሚ ቋሚ ኮሚሽን እዮም። ወለድ (ሪባ) የልቦን።', 'om': 'Kafaltiin hundi komishinii duraatti Shari\'aa-waliin wal-simu. Dhala (Riba) dhokataa hin qabu.', 'so': 'Dhammaan kharashyaddu waa komishinno xasil oo ku habboon Shariicada. Lacag dulsaar (Riba) ah ma jirto.', 'gur': 'ሁሉ ክፍያዎቸ ሸሪዓ ቋሚ ኮሚሽኖቸ ናቸው። ወለድ (ሪባ) የለም።'});
+  String get personalInformationSub => _t({'en': 'Personal information', 'am': 'የግል መረጃ', 'ti': 'ሓበሬታ ውልቀ', 'om': 'Odeeffannoo dhuunfaa', 'so': 'Macluumaadka shakhsiga', 'gur': 'ናይ ውልቀ ሓበሬታ'});
+  String get kycFinancialProfile => _t({'en': 'KYC financial profile', 'am': 'KYC የፋይናንስ ፕሮፋይል', 'ti': 'ናይ KYC ፋይናንስ ፕሮፋይል', 'om': 'Piroofaayilii faayinaansii KYC', 'so': 'Xogta maaliyadeed ee KYC', 'gur': 'KYC ፋይናንስ ፕሮፋይል'});
+  String get aaoifiCompliant => _t({'en': 'AAOIFI Compliant', 'am': 'AAOIFI ተኳካሪ', 'ti': 'AAOIFI ኣሳማሚ', 'om': "AAOIFI Waliin wal-simu", 'so': 'AAOIFI ku habboon', 'gur': 'AAOIFI ተኳካሪ'});
+  String get country => _t({'en': 'Country', 'am': 'ሀገር', 'ti': 'ሃገር', 'om': 'Biyya', 'so': 'Wadanka', 'gur': 'ሀገር'});
+  String get dateOfBirth => _t({'en': 'Date of Birth', 'am': 'የልደት ቀን', 'ti': 'ዕለት ልደት', 'om': 'Guyyaa dhalachuu', 'so': 'Taariikhda dhalashada', 'gur': 'የልደት ቀን'});
+  String get cityLabel => _t({'en': 'City', 'am': 'ከተማ', 'ti': 'ከተማ', 'om': 'Magaalaa', 'so': 'Magaalada', 'gur': 'ከተማ'});
+  String get editProfile => _t({'en': 'Edit Profile', 'am': 'ፕሮፋይል አርትዕ', 'ti': 'ፕሮፋይል ኣርትዕ', 'om': 'Piroofaayilii gulaali', 'so': 'Bogga wax ka beddel', 'gur': 'ፕሮፋይል አርትዕ'});
+  String get saveFailed => _t({'en': 'Failed to save. Please try again.', 'am': 'ማስቀመጥ አልተሳካም። እባክዎ ደግሜ ሞክሩ።', 'ti': 'ምዕቃብ ኣይሰለጠን። በጃኻ ደጊምካ ፈትን።', 'om': 'Olkaa\'uun hin milkoofne. Maaloo irra deebi\'i yaalidhu.', 'so': 'Keydinta way ku guul darreysatay. Fadlan mar kale isku day.', 'gur': 'ማስቀ አልተሳካም። እባክህ ደጊም ሞክሩ።'});
+  String get saving => _t({'en': 'Saving…', 'am': 'እየቀመጠ…', 'ti': 'ይዕቅብ…', 'om': 'Olkaa\'ama…', 'so': 'Kaydinaya…', 'gur': 'ቀምጦ…'});
+  String get ecxLicensing => _t({'en': 'ECX licensing & compliance status', 'am': 'ECX ፍቃድ እና ተኳካሪ ሁኔታ', 'ti': 'ፍቓድ ECX ናይ ምስምምዓ ኩነታ', 'om': 'Hayyama ECX fi Haala wal-simuu', 'so': 'Ruqsadda ECX & xaalada waafaqsanaanta', 'gur': 'ECX ፍቃድ ተኳካሪ ሁኔታ'});
+  String get shariaScreeningReport => _t({'en': 'Sharia screening process & audit reports', 'am': 'የሸሪዓ ምርጫ ሂደት እና ምርመራ ሪፖርቶች', 'ti': 'ናይ ሸሪዓ ምምርቓ ሂደት ናይ ምርመራ ሪፖርት', 'om': 'Dhiyeessii saagii Shari\'aa fi gabaasaalee qormaataa', 'so': 'Nidaamka xayiraadda Shariicada & warbixinnada xisaabinta', 'gur': 'የሸሪዓ ምርጫ ሂደት ምርመራ ሪፖርቶቸ'});
+  String get annualTaxStatements => _t({'en': 'Annual P&L statements for tax declaration', 'am': 'ዓመታዊ ትርፍ/ኪሳራ ሪፖርቶች ለታክስ ጊዜ', 'ti': 'ዓመታዊ ሪፖርት ናይ ትርፊ/ክሳራ ንምልክት ታክስ', 'om': 'Gabaasa waggaaf Bu\'aa/Kasaaraa tarreeffama taaksii', 'so': 'Warbixinnada sanadlaha ah ee Faa\'iido/Khasaare ee bayaanka canshuurta', 'gur': 'ዓመታዊ ትርፍ/ኪሳራ ሪፖርቶቸ ለታክስ'});
+  String get privacyControlsComingSoon => _t({'en': 'Privacy Controls — coming soon', 'am': 'የምስጢርነት ቅንጅቶች — በቅርቡ', 'ti': 'ቅንጅቶ ምስጢርነት — ቀልጢፉ', 'om': 'Qindaa\'ina Dhuunfaa — dhufa', 'so': 'Xaddadka Arrimaha Gaarka — soo socdaa', 'gur': 'ምስጢርነት ቅንጅቶቸ — ቅርቡ'});
+
+  // ─── Account / Profile Information screen ───────────
+  String get closeAccount => _t({'en': 'Close Account', 'am': 'ሒሳብ ዝጋ', 'ti': 'ሒሳብ ዕጸዎ', 'om': 'Herrega cufii', 'so': 'Xidh Xisaabta', 'gur': 'ሒሳብ ዝጋ'});
+  String get closeAccountTitle => _t({'en': 'Close your account?', 'am': 'ሒሳብዎን ይዘጉ?', 'ti': 'ሒሳብካ ዕጸዎ?', 'om': 'Herrega kee cufuu?', 'so': 'Xisaabtagaaga xidhi?', 'gur': 'ሒሳብህን ዝጋ?'});
+  String get closeAccountWarning => _t({'en': 'This will permanently delete your account, portfolio, and all transaction history. This action cannot be undone.', 'am': 'ይህ ሒሳብዎን፣ ፖርትፎሊዮዎን እና ሁሉም ግብይቶን ይሰርዛል። ይህ ሊቀለበስ አይችልም።', 'ti': 'እዚ ሒሳብካ ፖርትፎሊዮካ ኩሉ ምምልላስ ዘይካኣሎ ይሰርዞ።', 'om': 'Kun herrega kee, poortfooliyoo kee, fi tarreeffama hojii hunda ni haqa. Kun deebi\'uu hin danda\'u.', 'so': 'Tani waxay si joogto ah u tirtirtaa xisaabtagaaga, portfolio-gaaga, iyo taariikhda dhammaan macaamilaadaha. Ficilkan lama noqon karo.', 'gur': 'ይህ ሒሳብህን፣ ፖርትፎሊዮህን ሁሉ ይሰርዛ። ሊቀለበስ አይቻልም።'});
+  String get confirmCloseAccount => _t({'en': 'Yes, close my account', 'am': 'አዎ፣ ሒሳቤን ዝጋ', 'ti': 'እወ፣ ሒሳበይ ዕጸዎ', 'om': 'Eeyyee, herrega koo cufii', 'so': 'Haa, xidh xisaabtayda', 'gur': 'አዎ ሒሳቤን ዝጋ'});
+  String get saveChanges => _t({'en': 'Save Changes', 'am': 'ለውጦቹን አስቀምጥ', 'ti': 'ለውጢታት ዓቅብ', 'om': 'Jijjiirama ol-kaanah', 'so': 'Keydi isbedelada', 'gur': 'ለውጦቹን አኑር'});
+  String get cancelEdit => _t({'en': 'Cancel', 'am': 'ሰርዝ', 'ti': 'ሰርዝ', 'om': 'Haqi', 'so': 'Baaji', 'gur': 'ሰርዝ'});
+  String get city => _t({'en': 'City', 'am': 'ከተማ', 'ti': 'ከተማ', 'om': 'Magaalaa', 'so': 'Magaalada', 'gur': 'ከተማ'});
+  String get registrationStep => _t({'en': 'Registration', 'am': 'ምዝገባ', 'ti': 'ምዝገባ', 'om': 'Galmeessa', 'so': 'Diiwaangelinta', 'gur': 'ምዝገባ'});
+  String get documentUpload => _t({'en': 'Document Upload', 'am': 'ሰነድ ስቀል', 'ti': 'ሰነድ ስቀል', 'om': 'Sanaduu fe\'i', 'so': 'Dukumiintiga geli', 'gur': 'ሰነድ ስቀል'});
+  String get tier1Verified => _t({'en': 'Tier 1 — Verified ✓', 'am': 'ደረጃ 1 — ተረጋግጧል ✓', 'ti': 'ደረጃ 1 — ተረጋጊጹ ✓', 'om': 'Sadarkaa 1 — Mirkanaame ✓', 'so': 'Heer 1 — Xaqiijiyay ✓', 'gur': 'ደረጃ 1 — ተረጋግጧ ✓'});
+  String get uploadIdDocuments => _t({'en': 'Upload ID documents & check approval', 'am': 'መታወቂያ ሰነዶች ያስጭኑ እና ፈቃድ ያረጋግጡ', 'ti': 'ሰነዳት መፍለጺ ስቐሎ ፈቓድ ኣረጋግጽ', 'om': 'Waraqaalee eenyummaa fe\'i hayyama ilaali', 'so': 'Dukumiintiyadda aqoonsiga geli ee hubso oggolaanshaha', 'gur': 'ሰነዶቸ ያስጭኑ ፈቃድ ያረጋግጡ'});
+  String get commissionRate => _t({'en': 'Commission rate', 'am': 'የኮሚሽን ተመን', 'ti': 'ምጣነ ኮሚሽን', 'om': 'Gatii komishinii', 'so': 'Heerka komishinku', 'gur': 'ኮሚሽን ተመን'});
+  String get commissionValue => _t({'en': '1.5% flat (Riba-free)', 'am': '1.5% ቋሚ (ወለድ-ነጻ)', 'ti': '1.5% ቋሚ (ወለድ-ናጻ)', 'om': '1.5% duraatti (dhala-bilisaa)', 'so': '1.5% xasil (Riba-free)', 'gur': '1.5% ቋሚ (ወለድ-ነጻ)'});
+  String get planType => _t({'en': 'Plan', 'am': 'እቅድ', 'ti': 'ውጥን', 'om': 'Karoora', 'so': 'Qorshe', 'gur': 'እቅድ'});
+  String get settlementType => _t({'en': 'Settlement', 'am': 'ክፍያ ወቅት', 'ti': 'ምፍታሕ', 'om': 'Fumiinsa', 'so': 'Xalashada', 'gur': 'ክፍያ ወቅት'});
+  String get kycStatusLabel => _t({'en': 'KYC Status', 'am': 'KYC ሁኔታ', 'ti': 'KYC ኩነታ', 'om': 'Haala KYC', 'so': 'Xaalada KYC', 'gur': 'KYC ሁኔታ'});
+  String get devicesLabel => _t({'en': 'Devices', 'am': 'መሳሪያዎች', 'ti': 'መሳርሒታት', 'om': 'Meeshaalee', 'so': 'Qalabka', 'gur': 'መሳሪያዎቸ'});
+  String get hideBalance => _t({'en': 'Hide Balance', 'am': 'ቀሪ ደብቅ', 'ti': 'ቀሪ ሕቡእ', 'om': 'Haftee dhoksi', 'so': 'Qari Haraaga', 'gur': 'ቀሪ ደብቅ'});
+  String get showBirthday => _t({'en': 'Show my birthday', 'am': 'ልደቴን አሳይ', 'ti': 'ልደተይ ኣርኢ', 'om': 'Dhalootakoo agarsiisi', 'so': 'Tus dhalashadayda', 'gur': 'ልደቴን ኣርኢ'});
+  String get showPlan => _t({'en': 'Show my plan', 'am': 'እቅዴን አሳይ', 'ti': 'ውጥነይ ኣርኢ', 'om': 'Karoora koo agarsiisi', 'so': 'Tus qorshahayga', 'gur': 'እቅዴን ኣርኢ'});
+  String get socialMediaAdvertising => _t({'en': 'Social media and advertising', 'am': 'ሶሻል ሚዲያ እና ማስታወቂያ', 'ti': 'ሶሻሊ ሚዲያ ኣዋጅ', 'om': 'Miidiyaa hawaasaa fi beeksisa', 'so': 'Warbaahinta bulshada iyo xayeysiinta', 'gur': 'ሶሻል ሚዲያ ማስታወቂያ'});
+  String get privacyPersonalizedOffers => _t({'en': 'Personalised TradEt offers', 'am': 'ለናንተ የተበጀ ትሬድኢት ቅናሾች', 'ti': 'ናትካ ቅናሾ ትሬድኢት', 'om': 'Dhiyeessii TradEt dhuunfaaf', 'so': 'Qiimo-dhimis TradEt oo kuu gaar ah', 'gur': 'ለናንተ ትሬድኢት ቅናሾቸ'});
+  String get privacyPartnerOffers => _t({'en': 'Personalized partners offers', 'am': 'ለናንተ የተበጀ ሽርካ ቅናሾች', 'ti': 'ናትካ ቅናሾ ዓበይቲ', 'om': 'Dhiyeessii michootaa dhuunfaaf', 'so': 'Qiimo-dhimis gacalayaasha oo kuu gaar ah', 'gur': 'ሽርካ ቅናሾቸ'});
+  String get tradeVolatilityAlert => _t({'en': 'Trade volatility alert', 'am': 'የንግድ መቀዛቀዝ ማስጠንቀቂያ', 'ti': 'ናይ ንግዲ ዝቁጣ ምልክቶ', 'om': 'Beeksisa jijjirama daldala', 'so': 'Digniinta go\'ga ganacsiga', 'gur': 'ንግድ ማስጠንቀቂያ'});
+  String get commodityVolatilityAlert => _t({'en': 'Commodity volatility alert', 'am': 'የምርት ዋጋ ለውጥ ማስጠንቀቂያ', 'ti': 'ናይ ምርቲ ዝቁጣ ምልክቶ', 'om': 'Beeksisa jijjirama meeshaa', 'so': 'Digniinta go\'ga badeecadda', 'gur': 'ምርት ዋጋ ለውጥ ማስጠንቀቂያ'});
+  // ─── Appearance screen ───────────────────────────────
+  String get themeSubtitle => _t({'en': 'Choose your preferred color theme', 'am': 'የሚወዱትን ቀለም ጭብጥ ይምረጡ', 'ti': 'ጭብጥ ቀለም ምረጽ', 'om': 'Tiima halluu barbaaddu filadhu', 'so': 'Dooro mowduuca midabka aad doorbidayso', 'gur': 'የሚወዱትን ቀለም ጭብጥ ምረጡ'});
+  String get interfaceLayout => _t({'en': 'Interface', 'am': 'ממשק', 'ti': 'ኢንተርፌስ', 'om': 'Karooraafi', 'so': 'Xarunta', 'gur': 'ኢንተርፌስ'});
+  String get interfaceSubtitle => _t({'en': 'Customize the app layout and density', 'am': 'የኣፕ አቀማመጥ ያበጁ', 'ti': 'ኣፕ ቅርጺ ቀናብር', 'om': 'Caasima app qindeessi', 'so': 'Nidaamka app-ka habayn', 'gur': 'ኣፕ አቀማምጥ ያበጁ'});
+  String get textSize => _t({'en': 'Text Size', 'am': 'የጽሑፍ መጠን', 'ti': 'ዓቐን ጽሑፍ', 'om': 'Madaallii barruu', 'so': 'Cabbirka qoraalka', 'gur': 'የጽሑፍ ዓቐን'});
+  String get textSizeSubtitle => _t({'en': 'Adjust the text size for readability', 'am': 'ለቀላዕ ንባብ ጽሑፍ ዓቐን ኣስተካክል', 'ti': 'ዓቐን ጽሑፍ ንምንባብ ቀናብር', 'om': 'Madaallii barruu dubbisuuf qindeessi', 'so': 'Cabbirka qoraalka u habayn si loo akhriyi karo', 'gur': 'ለቀላዕ ንባብ ጽሑፍ ዓቐን ቀናብር'});
+  String get languageSubtitle => _t({'en': 'Select your preferred language', 'am': 'የሚወዱትን ቋንቋ ይምረጡ', 'ti': 'ቋንቋ ምረጽ', 'om': 'Afaan barbaaddu filadhu', 'so': 'Dooro luqadda aad doorbidayso', 'gur': 'ቋንቋ ምረጡ'});
+  // ─── About Us screen ─────────────────────────────────
+  String get rateUs => _t({'en': 'Rate us on the App Store', 'am': 'ኣፕ ስቶር ላይ ይደምድሙን', 'ti': 'ኣፕ ስቶር ደምዱሙና', 'om': 'App Stoore irratti nu madaalli', 'so': 'Nagu qiimeey App Store-ka', 'gur': 'ኣፕ ስቶር ይደምድሙን'});
+  String get ourBlog => _t({'en': 'Our Blog', 'am': 'ብሎጋችን', 'ti': 'ብሎጋና', 'om': 'Bloogii keenya', 'so': 'Bloggeena', 'gur': 'ብሎጋቸን'});
+  String get followOnX => _t({'en': 'Follow us on X', 'am': 'ኤክስ ላይ ይከተሉን', 'ti': 'ኤክስ ይከታተሉና', 'om': 'X irratti nu hordofi', 'so': 'Nagu raac X', 'gur': 'ኤክስ ላይ ከተሉን'});
+  String get likeOnFacebook => _t({'en': 'Like us on Facebook', 'am': 'ፌስቡክ ላይ ይወዱን', 'ti': 'ፌስቡክ ኣፍቅሩና', 'om': 'Facebook irratti nu jaalladdhu', 'so': 'Nagu jecel Facebook', 'gur': 'ፌስቡክ ላይ ወዱን'});
+  String get openSourceLicenses => _t({'en': 'Open Source Licenses', 'am': 'ክፍት ምንጭ ፈቃዶች', 'ti': 'ክፍት ምንጪ ፈቓዳት', 'om': 'Hayyamoota madda banaa', 'so': 'Ruqsadaha isha furan', 'gur': 'ክፍት ምንጭ ፈቃዶቸ'});
+  String get appVersionLabel => _t({'en': 'Version', 'am': 'ስሪት', 'ti': 'ሓርበኛ', 'om': 'Galmee', 'so': 'Nooca', 'gur': 'ስሪት'});
+  // ─── Help sub-topics ─────────────────────────────────
+  String get gettingStarted => _t({'en': 'Getting Started', 'am': 'ጅምሮ', 'ti': 'ምጅማር', 'om': 'Jalqabuu', 'so': 'Bilaabista', 'gur': 'ጅምሮ'});
+  String get tradingHelp => _t({'en': 'Trading', 'am': 'ንግድ', 'ti': 'ንግዲ', 'om': 'Daldala', 'so': 'Ganacsiga', 'gur': 'ንግድ'});
+  String get depositWithdrawalHelp => _t({'en': 'Deposit and Withdrawal', 'am': 'ማስገባ እና ማውጣት', 'ti': 'ኣታዊ ወጻኢ', 'om': 'Galchuu fi baasuu', 'so': 'Dhigida iyo saarista', 'gur': 'ማስገባ ማውጣት'});
+  String get profileKycHelp => _t({'en': 'Profile & KYC', 'am': 'ፕሮፋይል እና KYC', 'ti': 'ፕሮፋይል KYC', 'om': 'Piroofaayilii fi KYC', 'so': 'Profile iyo KYC', 'gur': 'ፕሮፋይል KYC'});
+  String get securityFraudHelp => _t({'en': 'Security & Fraud', 'am': 'ደህንነት እና ማጭበርበር', 'ti': 'ድሕንነት ምትላል', 'om': 'Nageenyaa fi Doorsisuu', 'so': 'Amni & Khiyaanadda', 'gur': 'ደህንነት ማጭበርበር'});
+  // ─── Occupation / dropdown options ──────────────────
+  String get occupationPublicSector => _t({'en': 'Public Sector Employee (Government)', 'am': 'የሕዝብ ዘርፍ ሰራተኛ (መንግስት)', 'ti': 'ሰራሕተኛ ህዝቢ ዘርፊ (መንግስቲ)', 'om': 'Hojjetaa seektara mootummaa', 'so': 'Shaqaalaha Qaybta Dadweynaha (Dowladda)', 'gur': 'ሕዝብ ዘርፍ ሠራተኛ'});
+  String get occupationPrivateSector => _t({'en': 'Private Sector Employee', 'am': 'የግል ዘርፍ ሰራተኛ', 'ti': 'ሰራሕተኛ ብሕቲ ዘርፊ', 'om': 'Hojjetaa seektara dhuunfaa', 'so': 'Shaqaalaha Qaybta Gaarka ah', 'gur': 'ግል ዘርፍ ሠራተኛ'});
+  String get occupationSelfEmployed => _t({'en': 'Self-Employed / Entrepreneur', 'am': 'ራሱን ቀጥሮ / ኢንትሪፕሬነር', 'ti': 'ናጻ ሰራሕ / ኢንትሪፕሬነር', 'om': 'Of-ta\'umsa / Bizii dhuunfaa', 'so': 'Shaqada naftiisa / Ganacsade', 'gur': 'ራሱን ቀጥሮ / ኢንትሪፕሬነር'});
+  String get occupationFreelancer => _t({'en': 'Freelancer / Digital Professional', 'am': 'ፍሪላንሰር / ዲጂታል ባለሙያ', 'ti': 'ፍሪላንሰር / ዲጂታል ሙያ', 'om': 'Firilaansara / Ogummaa dijiitaalaa', 'so': 'Freelancer / Xirfadlaha dhijitaalka', 'gur': 'ፍሪላንሰር / ዲጂታል ባለሙያ'});
+  String get occupationStudent => _t({'en': 'Student', 'am': 'ተማሪ', 'ti': 'ተማሃራይ', 'om': 'Barataa', 'so': 'Arday', 'gur': 'ተማሪ'});
+  String get occupationUnemployed => _t({'en': 'Unemployed', 'am': 'ሥራ-አጥ', 'ti': 'ስራ-ኣልቦ', 'om': 'Hojii-dhabu', 'so': 'Shaqo-la\'aan', 'gur': 'ሥራ-አጥ'});
+  String get occupationRetired => _t({'en': 'Retired / Pensioner', 'am': 'ጡረተኛ', 'ti': 'ጡረተኛ', 'om': 'Jiraataa / Hawaasaa', 'so': 'Nasasho / Macaash-qaade', 'gur': 'ጡረተኛ'});
+  String get occupationHomemaker => _t({'en': 'Homemaker', 'am': 'የቤት አስተዳዳሪ', 'ti': 'ምምሕዳር ገዛ', 'om': 'Bulchiinsa manaa', 'so': 'Maareeyaha guriga', 'gur': 'ቤት አስተዳዳሪ'});
+  String get occupationNgo => _t({'en': 'NGO / International Organization Employee', 'am': 'NGO / ዓለምአቀፍ ድርጅት ሰራተኛ', 'ti': 'NGO / ዓለምለኻዊ ድርጅት', 'om': 'NGO / Hojjetaa dhaabbata addunyaa', 'so': 'NGO / Shaqaalaha Hay\'adda Caalamiga ah', 'gur': 'NGO / ዓለምአቀፍ ሠራተኛ'});
+  String get wealthPersonalSavings => _t({'en': 'Personal Savings', 'am': 'ግል ቁጠባ', 'ti': 'ናጻ ቁጠባ', 'om': 'Qusannaa dhuunfaa', 'so': 'Kaydinta shakhsiga', 'gur': 'ግል ቁጠባ'});
+  String get wealthInheritance => _t({'en': 'Inheritance', 'am': 'ውርስ', 'ti': 'ውርሲ', 'om': 'Dhaalaa', 'so': 'Dhaxal', 'gur': 'ውርስ'});
+  String get wealthBusinessProfits => _t({'en': 'Business Profits', 'am': 'የንግድ ትርፍ', 'ti': 'ትርፊ ቢዝነስ', 'om': "Bu'aa bizinaasii", 'so': 'Faa\'iidada ganacsiga', 'gur': 'ንግድ ትርፍ'});
+  String get wealthInvestmentReturns => _t({'en': 'Investment Returns / Dividends', 'am': 'ኢንቨስትመንት ትርፍ / ዲቪደንድ', 'ti': 'ትርፊ ኢንቨስትመንት / ዲቪደንድ', 'om': "Bu'aa invastimantii / Diiviidandii", 'so': 'Dakhliga maalgelinta / Labooyinka', 'gur': 'ኢንቨስትመንት ትርፍ'});
+  String get wealthRealEstate => _t({'en': 'Real Estate / Property Sale', 'am': 'ሪል ኤስቴት / ንብረት ሽያጭ', 'ti': 'ሪል ኤስቴት / ሽያጥ ንብረት', 'om': 'Mana lafa / Gurgurtaa qabeenyaa', 'so': 'Dhul-guryaha / Iibka hantida', 'gur': 'ሪል ኤስቴት / ሽያጭ'});
+  String get wealthGratuity => _t({'en': 'Gratuity / Severance Pay', 'am': 'ሸቦ / ካሳ ክፍያ', 'ti': 'ፍሉይ ክፍሊት / ካሳ', 'om': 'Kafaltii addaa / Kaasaa', 'so': 'Abaal-marin / Mushaharka dillaacidda', 'gur': 'ሸቦ / ካሳ'});
+  String get wealthGiftFamily => _t({'en': 'Gift / Family Support', 'am': 'ስጦታ / ቤተሰብ ድጋፍ', 'ti': 'ህያብ / ድጋፍ ስድራቤት', 'om': 'Kennaa / Gargaarsa maatii', 'so': 'Hadiyad / Taageero qoyska', 'gur': 'ስጦታ / ቤተሰብ ድጋፍ'});
+  String get fundsEmploymentIncome => _t({'en': 'Employment Income (Salary)', 'am': 'ሥራ ገቢ (ደሞዝ)', 'ti': 'ኣታዊ ስራሕ (ደሞዝ)', 'om': 'Galii hojii (Mindaa)', 'so': 'Dakhliga shaqada (Mushaharka)', 'gur': 'ሥራ ገቢ (ደሞዝ)'});
+  String get fundsBusinessRevenue => _t({'en': 'Business Revenue', 'am': 'የንግድ ገቢ', 'ti': 'ኣታዊ ቢዝነስ', 'om': 'Galii bizinaasii', 'so': 'Dakhliga ganacsiga', 'gur': 'ንግድ ገቢ'});
+  String get fundsSaleOfAssets => _t({'en': 'Sale of Assets', 'am': 'ንብረት ሽያጭ', 'ti': 'ሽያጥ ንብረታት', 'om': 'Gurgurtaa qabeenyaa', 'so': 'Iibka hantida', 'gur': 'ንብረት ሽያጭ'});
+  String get fundsRemittances => _t({'en': 'Remittances (Diaspora Support)', 'am': 'ቅሬ ዲያስፖራ ድጋፍ', 'ti': 'ምስዳድ ፈሰስ (ዲያስፖራ ድጋፍ)', 'om': 'Ergaa maallaqaa (Gargaarsa Diasporaa)', 'so': 'Xawaaladaha (Taageerida Diaspora)', 'gur': 'ቅሬ ዲያስፖራ'});
+  String get fundsGovernmentAllowance => _t({'en': 'Government Allowance / Pension', 'am': 'የመንግስት አበል / ጡረታ', 'ti': 'ወጻኢ መንግስቲ / ጡረታ', 'om': 'Murtee mootummaa / Jireenyaa', 'so': 'Tabarucaadka dowladda / Madaxbannaanida', 'gur': 'መንግስት አበል / ጡረታ'});
+  String get fundsSavingsWithdrawal => _t({'en': 'Savings Withdrawal', 'am': 'ቁጠባ ወጪ', 'ti': 'ምስሓብ ቁጠባ', 'om': 'Baasuu qusannaa', 'so': 'Saarista kaydinta', 'gur': 'ቁጠባ ወጪ'});
+  String get tradingPurposeLearning => _t({'en': 'Investing for Learning Purposes', 'am': 'ለትምህርት ዓላማ ኢንቨስት ማድረግ', 'ti': 'ኢንቨስትመንት ንዓላማ ትምህርቲ', 'om': 'Invastimantii kaayyoo baruuf', 'so': 'Maalgelinta ujeedada barashada', 'gur': 'ለትምህርት ዓላማ ኢንቨስት'});
+  String get tradingPurposeLongTerm => _t({'en': 'Long-term Wealth Building', 'am': 'ረጅም ጊዜ ሀብት ግንባታ', 'ti': 'ርዝሓቱ ሃብቲ ህንፀት', 'om': 'Ijaarsa qabeenya yeroo dheeraa', 'so': 'Dhismaha hantida dheer ee waqtiga dheer', 'gur': 'ረጅም ጊዜ ሀብት ምስራት'});
+  String get tradingPurposeInfrequent => _t({'en': 'Infrequent trading, when I see an opportunity', 'am': 'አልፎ አልፎ ንግድ፣ ዕድል ሲያዩ', 'ti': 'ዝሑሉ ምዝዛት ምርጫ ምስ ረኸቡ', 'om': 'Daldala yeroon yoo carraan argeetti', 'so': 'Ganacsi aan badnayn, markaan fursad arko', 'gur': 'አልፎ ንግድ ዕድል ሲያዩ'});
+  String get tradingPurposeFrequent => _t({'en': 'Frequent trading focused on generating ongoing income', 'am': 'ቀጣይ ገቢ ለማዘጋጀት ተደጋጋሚ ንግድ', 'ti': 'ቀጻሊ ሃብቲ ንምርካብ ተደጋጋሚ ንግዲ', 'om': 'Daldala baayyee galii itti fufaaf', 'so': 'Ganacsi joogto ah oo diiwaanka dakhliga socda leh', 'gur': 'ቀጣይ ገቢ ለማዘጋጀት ተደጋጋሚ ንግድ'});
+  String get tradingPurposePreserveCapital => _t({'en': 'Preserve capital', 'am': 'ካፒታል ጠብቅ', 'ti': 'ካፒታል ሓሉ', 'om': 'Kaappitaala tiksi', 'so': 'Ilaalin raasumaalka', 'gur': 'ካፒታል ጠብቅ'});
+  String get tradingPurposeExploratory => _t({'en': 'Exploratory investing', 'am': 'አሳሽ ኢንቨስትመንት', 'ti': 'ናይ ምፍታሽ ኢንቨስትመንት', 'om': 'Invastimantii qormaataa', 'so': 'Maalgelin baadh-raac', 'gur': 'አሳሽ ኢንቨስትመንት'});
+
+  // ─── Profile screen missing keys ─────────────────────────
+  String get personalInformation => _t({'en': 'Personal Information', 'am': 'የግል መረጃ', 'ti': 'ናይ ውልቀ ሓበሬታ', 'om': 'Odeeffannoo dhuunfaa', 'so': 'Macluumaadka Shakhsiga', 'gur': 'ናይ ግለ ሓበሬታ'});
+  String get subtitleStandardsCert => _t({'en': 'Standards & certification', 'am': 'ደረጃዎች እና ምስክርነት', 'ti': 'ደረጃታት ምስክርነት', 'om': 'Mallattoowwan fi ragaa', 'so': 'Heerarka & xaqiijinta', 'gur': 'ደረጃዎቸ ምስክርነት'});
+  String get nationalBankLabel => _t({'en': 'National Bank', 'am': 'ብሔራዊ ባንክ', 'ti': 'ሃገራዊ ባንኪ', 'om': 'Baankii Biyyaalessaa', 'so': 'Bangiga Qaranka', 'gur': 'ሃገራዊ ባንኪ'});
+  String get faqAndSupport => _t({'en': 'FAQ & Support', 'am': 'ጥ.ይ.ጠ. እና ድጋፍ', 'ti': 'ሕቶ ሓጋዚ', 'om': 'Gaaffilee fi deggersa', 'so': 'Su\'aalaha & Taageerada', 'gur': 'ጥ.ይ.ጠ. ድጋፍ'});
+  String get tier1VerifiedStep => _t({'en': 'Tier 1 Verified', 'am': 'ደረጃ 1 ተረጋግጧል', 'ti': 'ደረጃ 1 ተረጋጊጹ', 'om': 'Sadarkaa 1 Mirkanaawe', 'so': 'Heer 1 La Xaqiijiyay', 'gur': 'ደረጃ 1 ተረጋግጧ'});
+  String get kycInProgress => _t({'en': 'KYC Tier 1 — In Progress', 'am': 'KYC ደረጃ 1 — በሂደት', 'ti': 'KYC ደረጃ 1 — ኣብ ምክያድ', 'om': 'KYC Sadarkaa 1 — Adeemaa', 'so': 'KYC Heer 1 — Socda', 'gur': 'KYC ደረጃ 1 — ሂደት'});
+  String get shariaAaoifi => _t({'en': 'Sharia (AAOIFI)', 'am': 'ሸሪዓ (AAOIFI)', 'ti': 'ሸሪዓ (AAOIFI)', 'om': "Shari'aa (AAOIFI)", 'so': 'Shariicada (AAOIFI)', 'gur': 'ሸሪዓ (AAOIFI)'});
+  String get ribaFree => _t({'en': 'Riba-Free', 'am': 'ሪባ-ነጻ', 'ti': 'ሪባ-ናጻ', 'om': 'Riba-Bilisaa', 'so': 'Riba-Lacag la\'aanta', 'gur': 'ሪባ-ነጻ'});
+  String get noShortSell => _t({'en': 'No Short Sell', 'am': 'አጭር ሽያጭ የለም', 'ti': 'ሓጺር ሽያጥ የልቦ', 'om': 'Gurgurtaa gabaabduu hin jiru', 'so': 'Ganacsiga Gaaban ma jiro', 'gur': 'አጭር ሽያጭ የለም'});
+
+  // ─── Orders extras ────────────────────────────────────────
+  String get pendingOrders => _t({'en': 'Pending orders awaiting fill', 'am': 'መሙላት የሚጠብቁ ትዕዛዞች', 'ti': 'መሙላእ ዝጽበዩ ትእዛዛት', 'om': 'Ajajamoo guuttamuu eegan', 'so': 'Dalabaadka sugaya buuxinta', 'gur': 'መሙላት የሚጠባ ትዕዛዞች'});
+  String get noOpenOrders => _t({'en': 'No open orders', 'am': 'ክፍት ትዕዛዝ የለም', 'ti': 'ክፉት ትእዛዝ የልቦን', 'om': 'Ajaja banaa hin jiru', 'so': 'Ma jiraan dalabaad furan', 'gur': 'ክፉት ትዕዛዝ የለም'});
+  String get noOpenOrdersDesc => _t({'en': "All your orders have been filled or cancelled. Tap any asset to place a new order.", 'am': 'ሁሉም ትዕዛዞችዎ ተሞልተዋል ወይም ተሰርዘዋል። አዲስ ትዕዛዝ ለመስጠት ማንኛውንም ንብረት ይጫኑ።', 'ti': 'ኩሉ ትእዛዛትኩም ተሞሊኦም ወይ ተሳርዞም ኣለዉ።', 'om': "Ajajawwan kee hundi guutamaniiru ykn haqamaniiru.", 'so': "Dhammaan dalabkaagu waa la buuxiyay ama la baajiyay.", 'gur': 'ሁሉ ትዕዛዞቸ ተሞልተዋ ወይ ተሰርዘዋ።'});
+
+  // ─── Profile menu / Upgrade ────────────────────────────────
+  String get upgrade => _t({'en': 'Upgrade', 'am': 'ማሻሻል', 'ti': 'ምሕዳስ', 'om': "Fooyya'iinsa", 'so': 'Kor u qaad', 'gur': 'ማሻሻ'});
+
+  // ─── Invite Friends ────────────────────────────────────────
+  String get endsInDays => _t({'en': 'Ends in 15 days', 'am': 'በ15 ቀናት ያበቃል', 'ti': 'ኣብ 15 መዓልታት ይውዳእ', 'om': 'Guyyaa 15 keessatti dhaabata', 'so': '15 maalmood ka dib waa dhamaan', 'gur': 'በ15 ቀናት ያበቃ'});
+  String get earn500PerFriend => _t({'en': 'Earn 500 per friend', 'am': 'በጓደኛ 500 ያስገኛሉ', 'ti': 'ብዓርኪ 500 ኣታዊ ይኹን', 'om': 'Hiriyaa tokkoof 500 argadhu', 'so': 'Saaxiib walba 500 ka hel', 'gur': 'በጓደኛ 500 ያስገኛ'});
+  String get yourFriendsHaveToDo => _t({'en': 'Your friends have to do', 'am': 'ጓደኞችዎ ሊያደርጉ ያለባቸው', 'ti': 'ኣዕሩኽትኹም ክገብሩ ዘለዎም', 'om': 'Hiriyoonni kee hojjechuu qabu', 'so': 'Waa in saaxiibadaadu sameeyaan', 'gur': 'ጓደኞቸ ሊያደርጉ ያለባቸው'});
+  String get signUpWithLink => _t({'en': 'Sign up with your link', 'am': 'በሊንክዎ ይመዝገቡ', 'ti': 'ብሊንክኹም ተመዝገቡ', 'om': 'Liinkii keetiin galmaa\'i', 'so': 'Ku diiwaangaliso linkigaaga', 'gur': 'በሊንክዎ ይመዝገቡ'});
+  String get verifyIdentity => _t({'en': 'And verify their identity', 'am': 'እና ማንነታቸውን ያረጋግጡ', 'ti': 'ከምኡውን መንነቶም የረጋግጹ', 'om': 'Eenyummaa isaanii mirkaneessuu', 'so': 'Oo aqoonsigooda xaqiijiya', 'gur': 'ማንነታቸውን ያረጋግጡ'});
+  String get addMoneyToAccount => _t({'en': 'Add money to their account', 'am': 'ወደ ሂሳባቸው ገንዘብ ያክሉ', 'ti': 'ኣብ ሕሳቦም ገንዘብ ይውስኹ', 'om': 'Herrega isaaniitti maallaqa dabali', 'so': 'Lacag ku dar akoonkooda', 'gur': 'ወደ ሂሳባቸው ገንዘብ ያክሉ'});
+  String get viaDebitOrBank => _t({'en': 'Via debit card or bank transfer', 'am': 'በዴቢት ካርድ ወይም በባንክ ዝውውር', 'ti': 'ብዴቢት ካርድ ወይ ብባንክ ምትሕልላፍ', 'om': 'Kaardii Debit ykn dabarsa baankii', 'so': 'Kaadhka Debit ama wareejinta bangiga', 'gur': 'በዴቢት ካርድ ወይ ባንክ ዝውውር'});
+  String get make3TradeOrders => _t({'en': 'Make 3 trade orders of 1000 minimum each', 'am': '3 የንግድ ትዕዛዞችን እያንዳንዱ ከ1000 ጀምሮ ያድርጉ', 'ti': '3 ናይ ንግዲ ትእዛዛት ነፍሲወከፍ ካብ 1000 ጀሚሩ ግበሩ', 'om': 'Ajaja daldalaa 3 tokko tokko 1000 ol godhi', 'so': '3 dalab ganacsi oo mid walba ugu yaraan 1000 ah samee', 'gur': '3 የንግድ ትዕዛዞች እያንዳንዱ ከ1000 ጀምሮ ያድርጉ'});
+  String get cashTxNotCount => _t({'en': "Some cash transactions, like to self and others bank account don't count", 'am': 'አንዳንድ የጥሬ ገንዘብ ግብይቶች፣ ለራስ እና ለሌላ ባንክ ሂሳብ አይቆጠሩም', 'ti': 'ገሊኦም ናይ ጥረ ገንዘብ ንግድታት፣ ንርእስኹምን ንኻልኦት ባንኪ ሕሳብን ኣይቑጸሩን', 'om': 'Daldalli maallaqa qarshii muraasni, ofiifi herrega baankii nama biraa hin lakkaa\'amu', 'so': 'Macaamil lacag-caddaan ah qaarkood, sida nafta iyo akoonnada bangi ee kale ma tirsanaan doonaan', 'gur': 'አንዳንድ የጥሬ ገንዘብ ግብይቶቸ ለራስ ለሌላ ባንክ ሂሳብ አይቆጠሩም'});
+  String get pastInvites => _t({'en': 'Past invites', 'am': 'ያለፉ ግብዣዎች', 'ti': 'ዝሓለፉ ዕድመታት', 'om': 'Afeerraa darbe', 'so': 'Casuumaadyada hore', 'gur': 'ያለፉ ግብዣዎቸ'});
+  String get getHelp => _t({'en': 'Get help', 'am': 'እርዳታ ያግኙ', 'ti': 'ሓገዝ ርኸቡ', 'om': 'Gargaarsa argadhu', 'so': 'Hel caawimaad', 'gur': 'እርዳታ ያግኙ'});
+  String get inviteOfferTerms => _t({'en': 'offer end at each end of the month. Max 5 invites per month. T&C apply', 'am': 'ቅናሹ በወሩ መጨረሻ ያበቃል። በወር ቢበዛ 5 ግብዣዎች። ውሎች ይመለከታሉ', 'ti': 'ቅናሽ ኣብ መወዳእታ ወርሒ ይውዳእ። ኣብ ወርሒ ካብ 5 ዕድመታት ኣይበዝሕን። ውዕላት ይትግበሩ', 'om': 'Tajaajilli dhuma ji\'aa irratti dhaabata. Ji\'atti afeerraa 5 ol miti. Haalonni ni hojjetu', 'so': 'Dalacadda waxay dhamaaneysaa dhammaadka bisha. Ugu badnaan 5 casuumaad bishii. Shuruudo waa la dabaqayaa', 'gur': 'ቅናሹ በወሩ መጨረሻ ያበቃ። በወር ቢበዛ 5 ግብዣዎቸ።'});
+  String get inviteFriendsButton => _t({'en': 'Invite friends', 'am': 'ጓደኞችን ይጋብዙ', 'ti': 'ኣዕሩኽ ዓድሙ', 'om': 'Hiriyoota afeeri', 'so': 'Casuun saaxiibada', 'gur': 'ጓደኞቸ ይጋብዙ'});
+  String get inviteLinkCopied => _t({'en': 'Invite link copied — share with your friends!', 'am': 'የግብዣ ሊንክ ተቀድቷል — ለጓደኞችዎ ያጋሩ!', 'ti': 'ሊንክ ዕድመ ተቐዲሑ — ንኣዕሩኽትኹም ኣካፍሉ!', 'om': "Liinkii afeerraa garagalfameera — hiriyoota keetiif qoodi!", 'so': 'Linkiga casuumaadda waa la koobiyey — saaxiibadaada la wadaag!', 'gur': 'የግብዣ ሊንክ ተቀድቷ — ለጓደኞችዎ ያጋሩ!'});
+
+  // ─── Learn screen ────────────────────────────────────────
+  String get learnTradingBasics => _t({'en': 'Trading Basics', 'am': 'የንግድ መሰረታዊ ነገሮች', 'ti': 'መሰረታት ናይ ንግዲ', 'om': 'Bu\'uura Daldalaa', 'so': 'Aasaaska Ganacsiga', 'gur': 'የንግድ መሰረታዊ ነገሮቸ'});
+  String get learnTradingBasicsDesc => _t({'en': 'Understand the fundamentals of commodity trading.', 'am': 'የእቃ ንግድ መሰረታዊ ነገሮችን ይረዱ።', 'ti': 'መሰረታት ናይ ንግዲ ኣቑሑ ተረድኡ።', 'om': 'Bu\'uura daldala oomishaa hubadhu.', 'so': 'Fahan aasaaska ganacsiga alaabta.', 'gur': 'የዕቃ ንግድ መሰረታዊ ነገሮቸ ይረዱ።'});
+  String get learnShariaFinance => _t({'en': 'Sharia & Islamic Finance', 'am': 'ሸሪዓ እና እስላማዊ ፋይናንስ', 'ti': 'ሸሪዓ ከምኡውን እስላማዊ ፋይናንስ', 'om': "Shari'aa fi Faayinaansii Islaamaa", 'so': 'Shareecada & Maaliyadda Islaamiga', 'gur': 'ሸሪዓ እስላማዊ ፋይናንስ'});
+  String get learnShariaFinanceDesc => _t({'en': 'Learn how AAOIFI screens halal investments.', 'am': 'AAOIFI እንዴት ሐላል ኢንቨስትመንቶችን እንደሚለይ ይማሩ።', 'ti': 'AAOIFI ብኸመይ ሓላል ኢንቨስትመንታት ከምዝፍትሽ ተምሃሩ።', 'om': 'AAOIFI akkaataa investimantii halaal itti adda baasu baradhu.', 'so': 'Baro sida AAOIFI uu u baaro maalgashiga halaal.', 'gur': 'AAOIFI እንዴት ሐላል ኢንቨስትመንቶቸ እንደሚለይ ይማሩ።'});
+  String get learnCharts => _t({'en': 'Reading Charts', 'am': 'ቻርቶችን ማንበብ', 'ti': 'ቻርትታት ምንባብ', 'om': 'Caarttota Dubbisuu', 'so': 'Akhrinta Jaantusyada', 'gur': 'ቻርቶቸ ማንበብ'});
+  String get learnChartsDesc => _t({'en': 'Master candlestick patterns and indicators.', 'am': 'የሻማ መልክ እና ጠቋሚዎችን ይምሩ።', 'ti': 'ኣቕሑ ሻምዕን ኣመልከቲታትን ኣጽንዑ።', 'om': "Hoodee kanaadiilii fi mallattoolee barii.", 'so': 'Sare u qaad qaababka kandalka iyo tilmaamayaasha.', 'gur': 'የሻማ መልክ ጠቋሚዎቸ ይምሩ።'});
+  String get learnRiskMgmt => _t({'en': 'Risk Management', 'am': 'የአደጋ አስተዳደር', 'ti': 'ምሕደራ ሓደጋ', 'om': 'Bulchiinsa Balaa', 'so': 'Maaraynta Khatarta', 'gur': 'የአደጋ አስተዳደር'});
+  String get learnRiskMgmtDesc => _t({'en': 'Protect your capital — diversification & position sizing.', 'am': 'ካፒታልዎን ይጠብቁ — ብዝሃነት እና የቦታ መጠን።', 'ti': 'ካፒታልኩም ሓልዉ — ብዙሕነትን መጠን ቦታን።', 'om': 'Kaappitaala kee tiksi — gargar baasuu fi guddina iddoo.', 'so': 'Ilaali raasumaalkaaga — kala duwanaansho & cabbirka jagada.', 'gur': 'ካፒታልዎ ይጠብቁ — ብዝሃነት የቦታ መጠን።'});
+  String get learnEthiopianMarkets => _t({'en': 'Ethiopian Markets', 'am': 'የኢትዮጵያ ገበያዎች', 'ti': 'ናይ ኢትዮጵያ ዕዳጋታት', 'om': 'Gabaa Itoophiyaa', 'so': 'Suuqyada Itoobiya', 'gur': 'የኢትዮጵያ ገበያዎቸ'});
+  String get learnEthiopianMarketsDesc => _t({'en': 'ECX, ESX, NBE — how local markets work.', 'am': 'ECX፣ ESX፣ NBE — የአገር ውስጥ ገበያዎች እንዴት እንደሚሰሩ።', 'ti': 'ECX፣ ESX፣ NBE — ናይ ሃገር ውሽጢ ዕዳጋታት ብኸመይ ከምዝሰርሑ።', 'om': 'ECX, ESX, NBE — gabaan biyya keessaa akkamiin akka hojjetu.', 'so': 'ECX, ESX, NBE — sida suuqyada gudaha u shaqeeyaan.', 'gur': 'ECX፣ ESX፣ NBE — የአገር ውስጥ ገበያዎቸ እንዴት እንደሚሰሩ።'});
+
+  // ─── Inbox screen ────────────────────────────────────────
+  String get markAllRead => _t({'en': 'Mark all read', 'am': 'ሁሉንም እንደተነበበ ምልክት አድርግ', 'ti': 'ኩሎም ከም ዝንበቡ ምልክት ግበር', 'om': 'Hunda dubbifame jedhi', 'so': 'Calaamadi dhammaan akhriyey', 'gur': 'ሁሉ እንደተነበበ ምልክት አድርግ'});
+  String get markedAllRead => _t({'en': 'Marked all as read', 'am': 'ሁሉም እንደተነበበ ምልክት ተደርጓል', 'ti': 'ኩሎም ከም ዝንበቡ ተመልኪቶም', 'om': "Hundi dubbifameera jedhamee mallatteeffameera", 'so': 'Dhammaan waa la calaamadiyey akhriyey', 'gur': 'ሁሉ እንደተነበበ ምልክት ተደርጓ'});
+
+  // ─── Cash Transfer (portfolio) ────────────────────────────
+  String get transfer => _t({'en': 'Transfer', 'am': 'ማስተላለፍ', 'ti': 'ምትሕልላፍ', 'om': 'Dabarsuu', 'so': 'Wareejin', 'gur': 'ማስተላለፍ'});
+  String get transferEtb => _t({'en': 'Transfer ETB', 'am': 'ETB ማስተላለፍ', 'ti': 'ETB ምትሕልላፍ', 'om': 'ETB Dabarsuu', 'so': 'Wareeji ETB', 'gur': 'ETB ማስተላለፍ'});
+  String get recipient => _t({'en': 'Recipient (phone or @handle)', 'am': 'ተቀባይ (ስልክ ወይ @መለያ)', 'ti': 'ተቐባሊ (ስልኪ ወይ @መለለዪ)', 'om': "Fudhataa (bilbila yk @maqaa)", 'so': 'Qaataha (taleefon ama @magac)', 'gur': 'ተቀባይ (ስልክ ወይ @መለያ)'});
+  String get noteOptional => _t({'en': 'Note (optional)', 'am': 'ማስታወሻ (አማራጭ)', 'ti': 'መዘክር (ኣማራጺ)', 'om': "Yaadannoo (filannoo)", 'so': 'Qoraal (ikhtiyaari)', 'gur': 'ማስታወሻ (አማራጭ)'});
+  String get transferInvalidInput => _t({'en': 'Enter a valid recipient and amount.', 'am': 'ትክክለኛ ተቀባይ እና መጠን ያስገቡ።', 'ti': 'ቅኑዕ ተቐባልን መጠንን ኣእቱ።', 'om': "Fudhataa fi hamma sirrii galchi.", 'so': 'Geli qaate iyo qadar sax ah.', 'gur': 'ቀጥተኛ ተቀባይ መጠን አስገቡ።'});
+  String get transferExceedsBalance => _t({'en': 'Amount exceeds your available balance.', 'am': 'መጠኑ ካለዎት ቀሪ ሂሳብ ይበልጣል።', 'ti': 'መጠኑ ካብ ዘሎካ ቀሪ ይዓቢ።', 'om': "Hammi galii kee dhuma caala.", 'so': 'Qadarku waa ka badan yahay hadhaagaaga.', 'gur': 'መጠን ካለ ቀሪ ይበጥ።'});
+  String transferSentSnack(String amount, String recipient) =>
+      _t({'en': 'Transfer of $amount ETB sent to $recipient — pending acceptance.',
+          'am': '$amount ETB ወደ $recipient ተልኳል — መቀበያ በጠባቅ ላይ።',
+          'ti': '$amount ETB ናብ $recipient ተሰዲዱ — ይጽበ።',
+          'om': 'ETB $amount gara $recipient ergameera — eegama.',
+          'so': '$amount ETB waxaa loo diray $recipient — la sugayo.',
+          'gur': '$amount ETB ወደ $recipient ተልኳ።'});
 
   /// Multi-language translation helper.
   String _t(Map<String, String> translations) {

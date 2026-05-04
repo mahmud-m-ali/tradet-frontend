@@ -61,11 +61,29 @@ class _ZakatScreenState extends State<ZakatScreen> {
           padding: EdgeInsets.fromLTRB(
               wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 20),
           children: [
-            Text(l.zakatCalculatorTitle,
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800,
-                    color: Colors.white, letterSpacing: -0.5)),
-            Text(l.zakatSubtitle,
-                style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+            Row(
+              children: [
+                if (!wide && Navigator.of(context).canPop())
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white, size: 20),
+                    onPressed: () => Navigator.of(context).pop(),
+                    tooltip: l.back,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  ),
+                Expanded(
+                  child: Text(l.zakatCalculatorTitle,
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800,
+                          color: Colors.white, letterSpacing: -0.5)),
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: !wide && Navigator.of(context).canPop() ? 36 : 0),
+              child: Text(l.zakatSubtitle,
+                  style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+            ),
             const SizedBox(height: 24),
 
             // Info card

@@ -14,8 +14,16 @@ tradet-frontend/ios/.symlinks/
 tradet-frontend/ios/Flutter/flutter_export_environment.sh
 tradet-frontend/ios/Flutter/Generated.xcconfig
 
-# Nested repos (managed independently)
-tradet-backend/
+# Backend — track source, ignore runtime artifacts
+tradet-backend/.venv/
+tradet-backend/venv/
+tradet-backend/__pycache__/
+tradet-backend/**/__pycache__/
+tradet-backend/*.pyc
+tradet-backend/**/*.pyc
+tradet-backend/tradet.db
+tradet-backend/*.log
+tradet-backend/tmp/
 
 # IDE
 .idea/

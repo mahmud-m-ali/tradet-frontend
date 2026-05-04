@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
-import '../white_label.dart';
 import '../widgets/responsive_layout.dart';
 import '../widgets/language_selector.dart';
 import 'register_screen.dart';
@@ -168,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              l.byBrand(WhiteLabel.bankName),
+                              l.byBankName,
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontSize: 11,

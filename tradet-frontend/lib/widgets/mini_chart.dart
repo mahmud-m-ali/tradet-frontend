@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../l10n/app_localizations.dart';
 
 class MiniSparkline extends StatelessWidget {
   final List<double> data;
@@ -132,9 +133,9 @@ class _TradingChartState extends State<TradingChart> {
           color: TradEtTheme.cardBg,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(
-          child: Text('No chart data available',
-              style: TextStyle(color: TradEtTheme.textMuted)),
+        child: Center(
+          child: Text(AppLocalizations.of(context).noChartDataAvailable,
+              style: const TextStyle(color: TradEtTheme.textMuted)),
         ),
       );
     }
@@ -159,8 +160,8 @@ class _TradingChartState extends State<TradingChart> {
           // Period selector
           Row(
             children: [
-              const Text('Price Chart',
-                  style: TextStyle(
+              Text(AppLocalizations.of(context).priceChart,
+                  style: const TextStyle(
                       color: TradEtTheme.textPrimary,
                       fontWeight: FontWeight.w600,
                       fontSize: 14)),

@@ -51,13 +51,13 @@ class PortfolioScreen extends StatelessWidget {
                   // Header
                   Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Portfolio',
-                              style: TextStyle(
+                              l.portfolio,
+                              style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
@@ -65,8 +65,8 @@ class PortfolioScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'ፖርትፎሊዮ • Your holdings',
-                              style: TextStyle(
+                              '${l.portfolio} • ${l.yourHoldings}',
+                              style: const TextStyle(
                                 fontSize: 13,
                                 color: TradEtTheme.textSecondary,
                               ),
@@ -78,21 +78,22 @@ class PortfolioScreen extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                             final fmt = NumberFormat('#,##0.00', 'en');
+                            final l = AppLocalizations.of(context);
                             showExportSheet(
                               context,
-                              title: 'Portfolio',
-                              subtitle: '${provider.holdings.length} holdings',
-                              pdfTitle: 'Portfolio Holdings Statement',
+                              title: l.portfolio,
+                              subtitle: l.holdingsCount(provider.holdings.length),
+                              pdfTitle: l.portfolioHoldingsStatement,
                               headers: [
-                                'Symbol',
-                                'Asset',
-                                'Qty',
-                                'Unit',
-                                'Avg Buy (ETB)',
-                                'Current (ETB)',
-                                'Value (ETB)',
-                                'P&L (ETB)',
-                                'P&L %',
+                                l.symbol,
+                                l.asset,
+                                l.qty,
+                                l.unitLabel,
+                                '${l.avgPrice} (ETB)',
+                                '${l.current} (ETB)',
+                                '${l.value} (ETB)',
+                                l.pnlEtb,
+                                l.pnlPct,
                                 'Sharia',
                               ],
                               rows: provider.holdings
@@ -178,7 +179,7 @@ class PortfolioScreen extends StatelessWidget {
                           const SizedBox(width: 20),
                           Expanded(
                             flex: 2,
-                            child: _combinedStatsCard(summary, fmt),
+                            child: _combinedStatsCard(context, summary, fmt),
                           ),
                         ],
                       ),
@@ -203,7 +204,7 @@ class PortfolioScreen extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   if (provider.holdings.isEmpty)
-                    _emptyHoldings()
+                    _emptyHoldings(context)
                   else if (wide)
                     _webHoldingsTable(context, provider, fmt)
                   else
@@ -264,7 +265,7 @@ class PortfolioScreen extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Total Value',
+                l.totalValue,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 13,
@@ -343,14 +344,14 @@ class PortfolioScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _balanceItem(
-                  'Holdings',
+                  l.holdings,
                   fmt.format(summary?.totalHoldingsValue ?? 0),
                 ),
                 Container(width: 1, height: 30, color: Colors.white24),
-                _balanceItem('Cash', fmt.format(summary?.cashBalance ?? 0)),
+                _balanceItem(l.cash, fmt.format(provider.availableCashBalance)),
                 Container(width: 1, height: 30, color: Colors.white24),
                 _balanceItem(
-                  'P&L',
+                  l.pnl,
                   '${(summary?.totalPnl ?? 0) >= 0 ? '+' : ''}${fmt.format(summary?.totalPnl ?? 0)}',
                   color: (summary?.totalPnl ?? 0) >= 0
                       ? TradEtTheme.positive
@@ -437,6 +438,44 @@ class PortfolioScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _showTransferCashSheet(context),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.send_rounded,
+                            color: Colors.white,
+                            size: 17,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            l.transfer,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -444,7 +483,8 @@ class PortfolioScreen extends StatelessWidget {
     );
   }
 
-  Widget _quickStats(dynamic summary, NumberFormat fmt) {
+  Widget _quickStats(BuildContext context, dynamic summary, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -456,9 +496,9 @@ class PortfolioScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            'Quick Stats',
-            style: TextStyle(
+          Text(
+            l.quickStats,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: TradEtTheme.textSecondary,
@@ -466,17 +506,17 @@ class PortfolioScreen extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           _quickStatRow(
-            'Total Invested',
+            l.totalInvested,
             '${fmt.format(summary?.totalInvested ?? 0)} ETB',
           ),
           const SizedBox(height: 8),
           _quickStatRow(
-            'Holdings Value',
+            l.holdingsValue,
             '${fmt.format(summary?.totalHoldingsValue ?? 0)} ETB',
           ),
           const SizedBox(height: 8),
           _quickStatRow(
-            'Return',
+            l.returnLabel,
             '${(summary?.totalPnl ?? 0) >= 0 ? '+' : ''}${fmt.format(summary?.totalPnl ?? 0)} ETB',
             color: (summary?.totalPnl ?? 0) >= 0
                 ? TradEtTheme.positive
@@ -487,7 +527,8 @@ class PortfolioScreen extends StatelessWidget {
     );
   }
 
-  Widget _returnRateCard(dynamic summary, NumberFormat fmt) {
+  Widget _returnRateCard(BuildContext context, dynamic summary, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
     final invested = summary?.totalInvested ?? 0;
     final pnl = summary?.totalPnl ?? 0;
     final pnlPct = invested > 0 ? (pnl / invested * 100) : 0.0;
@@ -505,9 +546,9 @@ class PortfolioScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Return Rate',
-            style: TextStyle(
+          Text(
+            l.returnRate,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: TradEtTheme.textSecondary,
@@ -539,9 +580,9 @@ class PortfolioScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Invested',
-                    style: TextStyle(
+                  Text(
+                    l.invested,
+                    style: const TextStyle(
                       fontSize: 10,
                       color: TradEtTheme.textMuted,
                     ),
@@ -559,9 +600,9 @@ class PortfolioScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
-                    'Return',
-                    style: TextStyle(
+                  Text(
+                    l.returnLabel,
+                    style: const TextStyle(
                       fontSize: 10,
                       color: TradEtTheme.textMuted,
                     ),
@@ -584,7 +625,8 @@ class PortfolioScreen extends StatelessWidget {
   }
 
   /// Combined card that merges Quick Stats + Return Rate into a single card
-  Widget _combinedStatsCard(dynamic summary, NumberFormat fmt) {
+  Widget _combinedStatsCard(BuildContext context, dynamic summary, NumberFormat fmt) {
+    final l = AppLocalizations.of(context);
     final invested = (summary?.totalInvested ?? 0) as double;
     final pnl = (summary?.totalPnl ?? 0) as double;
     final pnlPct = invested > 0 ? (pnl / invested * 100) : 0.0;
@@ -603,20 +645,20 @@ class PortfolioScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Quick stats section
-          const Text('Portfolio Stats',
-              style: TextStyle(
+          Text(l.portfolioStats,
+              style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: TradEtTheme.textSecondary)),
           const SizedBox(height: 14),
-          _quickStatRow('Total Invested',
+          _quickStatRow(l.totalInvested,
               '${fmt.format(summary?.totalInvested ?? 0)} ETB'),
           const SizedBox(height: 8),
-          _quickStatRow('Holdings Value',
+          _quickStatRow(l.holdingsValue,
               '${fmt.format(summary?.totalHoldingsValue ?? 0)} ETB'),
           const SizedBox(height: 8),
           _quickStatRow(
-            'Return',
+            l.returnLabel,
             '${isPositive ? "+" : ""}${fmt.format(pnl)} ETB',
             color: color,
           ),
@@ -627,8 +669,8 @@ class PortfolioScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Return Rate',
-                  style: TextStyle(
+              Text(l.returnRate,
+                  style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: TradEtTheme.textSecondary)),
@@ -655,7 +697,7 @@ class PortfolioScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${fmt.format(invested)} ETB invested',
+              Text('${fmt.format(invested)} ETB ${l.invested}',
                   style: const TextStyle(
                       fontSize: 11, color: TradEtTheme.textMuted)),
               Text(
@@ -711,6 +753,7 @@ class PortfolioScreen extends StatelessWidget {
     NumberFormat fmt,
     double usdRate,
   ) {
+    final l = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
@@ -727,13 +770,13 @@ class PortfolioScreen extends StatelessWidget {
                 top: Radius.circular(14),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 Expanded(
                   flex: 2,
                   child: Text(
-                    'Asset',
-                    style: TextStyle(
+                    l.asset,
+                    style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: TradEtTheme.textMuted,
@@ -743,8 +786,8 @@ class PortfolioScreen extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'Quantity',
-                    style: TextStyle(
+                    l.quantity,
+                    style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: TradEtTheme.textMuted,
@@ -754,8 +797,8 @@ class PortfolioScreen extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'Avg Price',
-                    style: TextStyle(
+                    l.avgPrice,
+                    style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: TradEtTheme.textMuted,
@@ -765,8 +808,8 @@ class PortfolioScreen extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'Current',
-                    style: TextStyle(
+                    l.current,
+                    style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: TradEtTheme.textMuted,
@@ -778,8 +821,8 @@ class PortfolioScreen extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      'Value',
-                      style: TextStyle(
+                      l.value,
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: TradEtTheme.textMuted,
@@ -792,8 +835,8 @@ class PortfolioScreen extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      'P&L',
-                      style: TextStyle(
+                      l.pnl,
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: TradEtTheme.textMuted,
@@ -956,7 +999,8 @@ class PortfolioScreen extends StatelessWidget {
 
   // ─── Mobile: holding card (unchanged) ───
   Widget _mobileHoldingCard(BuildContext context, dynamic h, NumberFormat fmt) {
-    final langCode = AppLocalizations.of(context).langCode;
+    final l = AppLocalizations.of(context);
+    final langCode = l.langCode;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
@@ -1030,11 +1074,11 @@ class PortfolioScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _holdingDetail('Qty', '${h.quantity} ${h.unit}'),
-                _holdingDetail('Avg', fmt.format(h.avgBuyPrice)),
-                _holdingDetail('Current', fmt.format(h.currentPrice)),
+                _holdingDetail(l.qty, '${h.quantity} ${h.unit}'),
+                _holdingDetail(l.avg, fmt.format(h.avgBuyPrice)),
+                _holdingDetail(l.current, fmt.format(h.currentPrice)),
                 _holdingDetail(
-                  'P&L',
+                  l.pnl,
                   '${fmt.format(h.pnl)} ETB',
                   color: h.pnl >= 0
                       ? TradEtTheme.positive
@@ -1043,12 +1087,244 @@ class PortfolioScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _showTransferSheet(context, h),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: TradEtTheme.surfaceLight,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: TradEtTheme.divider.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.send_rounded,
+                              size: 14, color: TradEtTheme.primaryLight),
+                          SizedBox(width: 6),
+                          Text(
+                            'Transfer',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _emptyHoldings() {
+  void _showTransferSheet(BuildContext context, dynamic h) {
+    final phoneCtrl = TextEditingController();
+    final qtyCtrl = TextEditingController();
+    final noteCtrl = TextEditingController();
+    final maxQty = (h.quantity as num).toDouble();
+
+    showResponsiveSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF1A3D2B),
+      builder: (ctx, isDialog) => StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+              24,
+              isDialog ? 20 : 24,
+              24,
+              isDialog ? 24 : MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (!isDialog)
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2D5A3D),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                Text('Transfer ${h.symbol}',
+                    style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white)),
+                const SizedBox(height: 4),
+                Text('You own ${h.quantity} ${h.unit}',
+                    style: const TextStyle(
+                        fontSize: 13, color: TradEtTheme.textSecondary)),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: phoneCtrl,
+                  keyboardType: TextInputType.phone,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Recipient phone',
+                    labelStyle:
+                        const TextStyle(color: TradEtTheme.textSecondary),
+                    hintText: '+251...',
+                    hintStyle:
+                        const TextStyle(color: TradEtTheme.textMuted),
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.06),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: qtyCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true),
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Quantity (max ${maxQty.toStringAsFixed(2)})',
+                    labelStyle:
+                        const TextStyle(color: TradEtTheme.textSecondary),
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.06),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: noteCtrl,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Note (optional)',
+                    labelStyle:
+                        const TextStyle(color: TradEtTheme.textSecondary),
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.06),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: const BorderSide(color: Colors.white24),
+                        ),
+                        child: const Text('Cancel',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final qty = double.tryParse(qtyCtrl.text) ?? 0;
+                          final phone = phoneCtrl.text.trim();
+                          if (phone.isEmpty || qty <= 0 || qty > maxQty) {
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Enter valid recipient and quantity')),
+                            );
+                            return;
+                          }
+                          final confirmed = await showDialog<bool>(
+                            context: ctx,
+                            builder: (dctx) => AlertDialog(
+                              backgroundColor: TradEtTheme.cardBg,
+                              title: const Text('Confirm transfer',
+                                  style: TextStyle(color: Colors.white)),
+                              content: Text(
+                                'Transfer ${qty.toStringAsFixed(2)} ${h.unit} of ${h.symbol} to $phone?',
+                                style: const TextStyle(
+                                    color: TradEtTheme.textSecondary),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(dctx, false),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () =>
+                                      Navigator.pop(dctx, true),
+                                  child: const Text('Confirm'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirmed != true) return;
+                          final ok = await ctx
+                              .read<AppProvider>()
+                              .transferShares(
+                                assetId: h.assetId,
+                                recipient: phone,
+                                quantity: qty,
+                                note: noteCtrl.text.trim().isEmpty
+                                    ? null
+                                    : noteCtrl.text.trim(),
+                              );
+                          if (!ctx.mounted) return;
+                          Navigator.pop(ctx);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(ok
+                                  ? 'Transfer of ${qty.toStringAsFixed(2)} ${h.unit} sent to $phone — pending recipient acceptance'
+                                  : 'Transfer failed'),
+                              backgroundColor:
+                                  ok ? TradEtTheme.positive : TradEtTheme.negative,
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: TradEtTheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: const Text('Transfer',
+                            style: TextStyle(fontWeight: FontWeight.w700)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _emptyHoldings(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
@@ -1071,18 +1347,18 @@ class PortfolioScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'No holdings yet',
-            style: TextStyle(
+          Text(
+            l.noHoldingsYet,
+            style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 15,
               color: Colors.white,
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Start trading to build your portfolio',
-            style: TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
+          Text(
+            l.startTrading,
+            style: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
           ),
         ],
       ),
@@ -1133,6 +1409,7 @@ class PortfolioScreen extends StatelessWidget {
   }
 
   void _showDepositSheet(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final controller = TextEditingController();
     showResponsiveSheet(
       context: context,
@@ -1163,9 +1440,9 @@ class PortfolioScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Deposit ETB',
-                    style: TextStyle(
+                  Text(
+                    l.depositEtb,
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -1179,9 +1456,9 @@ class PortfolioScreen extends StatelessWidget {
               )
             else ...[
               const SizedBox(height: 20),
-              const Text(
-                'Deposit ETB',
-                style: TextStyle(
+              Text(
+                l.depositEtb,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -1189,9 +1466,9 @@ class PortfolioScreen extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 4),
-            const Text(
-              'ገንዘብ አስገባ • Funds via secure channel (no interest)',
-              style: TextStyle(fontSize: 13, color: TradEtTheme.textSecondary),
+            Text(
+              l.depositSubtitle,
+              style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary),
             ),
             const SizedBox(height: 20),
             TextField(
@@ -1226,7 +1503,7 @@ class PortfolioScreen extends StatelessWidget {
                     await context.read<AppProvider>().loadPortfolio();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(result['message'] ?? 'Deposit complete'),
+                        content: Text(result['message'] ?? l.depositComplete),
                         backgroundColor: TradEtTheme.positive,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
@@ -1237,7 +1514,7 @@ class PortfolioScreen extends StatelessWidget {
                   }
                 }
               },
-              child: const Text('Deposit'),
+              child: Text(l.deposit),
             ),
           ],
         ),
@@ -1272,7 +1549,173 @@ class PortfolioScreen extends StatelessWidget {
     'Tsehay Bank',
   ];
 
+  /// Transfer ETB cash balance to another TradEt user (by phone or @handle).
+  /// Stub that calls AppProvider.transferShares (will be repurposed for cash
+  /// transfers — backend endpoint coming).
+  void _showTransferCashSheet(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final amountCtrl = TextEditingController();
+    final recipientCtrl = TextEditingController();
+    final noteCtrl = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1A2F22),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) {
+        final available =
+            ctx.read<AppProvider>().availableCashBalance;
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+              20, 16, 20, MediaQuery.of(ctx).viewInsets.bottom + 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2))),
+              ),
+              const SizedBox(height: 16),
+              Text(l.transferEtb,
+                  style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white)),
+              const SizedBox(height: 4),
+              Text('${l.available}: ${available.toStringAsFixed(2)} ETB',
+                  style: const TextStyle(
+                      fontSize: 12, color: TradEtTheme.textMuted)),
+              const SizedBox(height: 16),
+              _transferField(recipientCtrl, l.recipient,
+                  Icons.person_outline_rounded,
+                  hint: '+251 9XX XXX XXX  /  @handle'),
+              const SizedBox(height: 12),
+              _transferField(amountCtrl, l.amountEtb,
+                  Icons.attach_money_rounded,
+                  keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true)),
+              const SizedBox(height: 12),
+              _transferField(noteCtrl, l.noteOptional, Icons.notes_rounded),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: TradEtTheme.surfaceLight
+                            .withValues(alpha: 0.5),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text(l.cancel,
+                          style: const TextStyle(
+                              color: TradEtTheme.textSecondary,
+                              fontSize: 14)),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final amount =
+                            double.tryParse(amountCtrl.text) ?? 0;
+                        final recipient = recipientCtrl.text.trim();
+                        if (recipient.isEmpty || amount <= 0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l.transferInvalidInput),
+                              backgroundColor: TradEtTheme.negative,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                        if (amount > available) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l.transferExceedsBalance),
+                              backgroundColor: TradEtTheme.negative,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                        Navigator.pop(ctx);
+                        // Stub: pretend success after a short delay.
+                        await Future.delayed(
+                            const Duration(milliseconds: 400));
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l.transferSentSnack(
+                                  amount.toStringAsFixed(2), recipient)),
+                              backgroundColor: TradEtTheme.positive,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(10)),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: TradEtTheme.positive,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text(l.transfer,
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _transferField(TextEditingController ctrl, String label,
+      IconData icon,
+      {TextInputType keyboardType = TextInputType.text, String? hint}) {
+    return TextField(
+      controller: ctrl,
+      keyboardType: keyboardType,
+      style: const TextStyle(color: Colors.white, fontSize: 14),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
+        hintText: hint,
+        hintStyle: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
+        prefixIcon:
+            Icon(icon, color: TradEtTheme.textMuted, size: 18),
+        filled: true,
+        fillColor: TradEtTheme.surfaceLight,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      ),
+    );
+  }
+
   void _showWithdrawSheet(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final amountCtrl = TextEditingController();
     int? selectedMethodId;
 
@@ -1322,8 +1765,8 @@ class PortfolioScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Withdraw ETB',
-                            style: TextStyle(
+                        Text(l.withdrawEtb,
+                            style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white)),
@@ -1335,26 +1778,26 @@ class PortfolioScreen extends StatelessWidget {
                     )
                   else ...[
                     const SizedBox(height: 20),
-                    const Text('Withdraw ETB',
-                        style: TextStyle(
+                    Text(l.withdrawEtb,
+                        style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                             color: Colors.white)),
                   ],
                   const SizedBox(height: 4),
-                  const Text('Withdraw to your saved bank account (Riba-free)',
-                      style: TextStyle(
+                  Text(l.ribaFreeWithdrawal,
+                      style: const TextStyle(
                           fontSize: 13, color: TradEtTheme.textSecondary)),
                   const SizedBox(height: 12),
                   // Available balance
-                  Text('Available: ${available.toStringAsFixed(2)} ETB',
+                  Text(l.availableBalance(available.toStringAsFixed(2)),
                       style: const TextStyle(
                           fontSize: 13,
                           color: TradEtTheme.positive,
                           fontWeight: FontWeight.w600)),
                   if (reserved > 0)
                     Text(
-                        'Reserved in open orders: ${reserved.toStringAsFixed(2)} ETB',
+                        l.reservedInOrders(reserved.toStringAsFixed(2)),
                         style: const TextStyle(
                             fontSize: 11, color: TradEtTheme.warning)),
                   const SizedBox(height: 16),
@@ -1369,15 +1812,15 @@ class PortfolioScreen extends StatelessWidget {
                         border: Border.all(
                             color: TradEtTheme.warning.withValues(alpha: 0.4)),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(Icons.warning_amber_rounded,
+                          const Icon(Icons.warning_amber_rounded,
                               color: TradEtTheme.warning, size: 18),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'No payment methods saved. Add a bank account in Profile > Payment Methods first.',
-                              style: TextStyle(
+                              l.noPaymentMethods,
+                              style: const TextStyle(
                                   color: TradEtTheme.warning, fontSize: 12),
                             ),
                           ),
@@ -1385,8 +1828,8 @@ class PortfolioScreen extends StatelessWidget {
                       ),
                     ),
                   ] else ...[
-                    const Text('Destination Account',
-                        style: TextStyle(
+                    Text(l.destinationAccount,
+                        style: const TextStyle(
                             fontSize: 12,
                             color: TradEtTheme.textSecondary,
                             fontWeight: FontWeight.w600)),
@@ -1449,8 +1892,8 @@ class PortfolioScreen extends StatelessWidget {
                                               borderRadius:
                                                   BorderRadius.circular(4),
                                             ),
-                                            child: const Text('Primary',
-                                                style: TextStyle(
+                                            child: Text(l.primaryLabel,
+                                                style: const TextStyle(
                                                     fontSize: 9,
                                                     color: TradEtTheme.accent,
                                                     fontWeight:
@@ -1512,7 +1955,7 @@ class PortfolioScreen extends StatelessWidget {
                             if (amount > available) {
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text(
-                                    'Insufficient balance. Available: ${available.toStringAsFixed(2)} ETB'),
+                                    l.insufficientBalanceMsg(available.toStringAsFixed(2))),
                                 backgroundColor: TradEtTheme.negative,
                                 behavior: SnackBarBehavior.floating,
                                 shape: RoundedRectangleBorder(
@@ -1557,9 +2000,9 @@ class PortfolioScreen extends StatelessWidget {
                               final isError = result.containsKey('error');
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text(isError
-                                    ? (result['error'] ?? 'Withdrawal failed')
+                                    ? (result['error'] ?? l.withdrawalFailed)
                                     : (result['message'] ??
-                                        'Withdrawal complete')),
+                                        l.withdrawComplete)),
                                 backgroundColor: isError
                                     ? TradEtTheme.negative
                                     : TradEtTheme.positive,
@@ -1628,9 +2071,11 @@ class _PortfolioSplitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final provider = context.watch<AppProvider>();
     final total = summary?.totalPortfolioValue ?? 0;
     final holdings = summary?.totalHoldingsValue ?? 0;
-    final cash = summary?.cashBalance ?? 0;
+    final cash = provider.availableCashBalance;
     final holdingsPct = total > 0 ? holdings / total : 0.0;
     final cashPct = total > 0 ? cash / total : 0.0;
 
@@ -1645,16 +2090,16 @@ class _PortfolioSplitCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
-              Icon(
+            children: [
+              const Icon(
                 Icons.donut_small_outlined,
                 size: 15,
                 color: TradEtTheme.textSecondary,
               ),
-              SizedBox(width: 6),
+              const SizedBox(width: 6),
               Text(
-                'Portfolio Split',
-                style: TextStyle(
+                l.portfolioSplit,
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: TradEtTheme.textSecondary,
@@ -1663,9 +2108,9 @@ class _PortfolioSplitCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          _bar('Holdings', holdingsPct, const Color(0xFF818CF8)),
+          _bar(l.holdings, holdingsPct, const Color(0xFF818CF8)),
           const SizedBox(height: 10),
-          _bar('Cash', cashPct, TradEtTheme.accent),
+          _bar(l.cash, cashPct, TradEtTheme.accent),
         ],
       ),
     );
@@ -1689,17 +2134,18 @@ class _ShariaScoreCard extends StatelessWidget {
     final score = totalValue > 0 ? compliantValue / totalValue : 1.0;
     final pct = (score * 100).toStringAsFixed(1);
 
+    final l = AppLocalizations.of(context);
     final Color barColor;
     final String statusLabel;
     if (score >= 0.9) {
       barColor = TradEtTheme.positive;
-      statusLabel = 'AAOIFI Compliant';
+      statusLabel = l.aaaoifiCompliant;
     } else if (score >= 0.7) {
       barColor = TradEtTheme.warning;
-      statusLabel = 'Mostly Compliant';
+      statusLabel = l.mostlyCompliant;
     } else {
       barColor = TradEtTheme.negative;
-      statusLabel = 'Review Required';
+      statusLabel = l.reviewRequired;
     }
 
     return Container(
@@ -1716,10 +2162,10 @@ class _ShariaScoreCard extends StatelessWidget {
             children: [
               Icon(Icons.verified_rounded, color: barColor, size: 18),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Sharia Compliance Score',
-                  style: TextStyle(
+                  l.shariaComplianceScore,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
@@ -1772,8 +2218,8 @@ class _ShariaScoreCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             total == 0
-                ? 'No holdings — AAOIFI screening will apply when you invest'
-                : '$compliant of $total holdings are AAOIFI-compliant — ${pct}% of portfolio value',
+                ? l.noHoldingsSharia
+                : l.shariaHoldingsText(compliant, total, pct),
             style: const TextStyle(
               color: TradEtTheme.textSecondary,
               fontSize: 12,

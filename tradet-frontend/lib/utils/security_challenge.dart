@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/app_lock_service.dart';
 import '../theme.dart';
+import '../l10n/app_localizations.dart';
 
 /// Withdrawals at or above this amount require authentication.
 const double kWealthProtectionWithdrawalThreshold = 5000.0;
@@ -75,20 +76,19 @@ void _showNoAuthMethodDialog(BuildContext context) {
                 color: TradEtTheme.warning, size: 18),
           ),
           const SizedBox(width: 12),
-          const Text('Security Required',
-              style: TextStyle(color: Colors.white, fontSize: 16)),
+          Text(AppLocalizations.of(context).securityRequired,
+              style: const TextStyle(color: Colors.white, fontSize: 16)),
         ],
       ),
-      content: const Text(
-        'A security PIN is required to authorize transactions.\n\n'
-        'Go to Profile → Security → App Lock to set up your PIN.',
-        style: TextStyle(color: TradEtTheme.textSecondary, fontSize: 13, height: 1.5),
+      content: Text(
+        AppLocalizations.of(context).securityPinRequiredMsg,
+        style: const TextStyle(color: TradEtTheme.textSecondary, fontSize: 13, height: 1.5),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx),
-          child: const Text('OK',
-              style: TextStyle(color: TradEtTheme.accent)),
+          child: Text(AppLocalizations.of(context).ok,
+              style: const TextStyle(color: TradEtTheme.accent)),
         ),
       ],
     ),
@@ -136,8 +136,8 @@ Future<bool> _showPinChallengeDialog(BuildContext context,
                     color: TradEtTheme.positive, size: 18),
               ),
               const SizedBox(width: 12),
-              const Text('Enter PIN',
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
+              Text(AppLocalizations.of(ctx).enterPin,
+                  style: const TextStyle(color: Colors.white, fontSize: 16)),
             ],
           ),
           content: Column(
@@ -173,16 +173,16 @@ Future<bool> _showPinChallengeDialog(BuildContext context,
               if (attempts > 0 && attempts < 3) ...[
                 const SizedBox(height: 10),
                 Text(
-                  '${3 - attempts} attempt(s) remaining',
+                  AppLocalizations.of(ctx).attemptsRemaining(3 - attempts),
                   style: const TextStyle(
                       color: TradEtTheme.negative, fontSize: 11),
                 ),
               ],
               if (attempts >= 3) ...[
                 const SizedBox(height: 10),
-                const Text(
-                  'Too many failed attempts',
-                  style: TextStyle(color: TradEtTheme.negative, fontSize: 11),
+                Text(
+                  AppLocalizations.of(ctx).tooManyFailedAttempts,
+                  style: const TextStyle(color: TradEtTheme.negative, fontSize: 11),
                 ),
               ],
             ],
@@ -190,8 +190,8 @@ Future<bool> _showPinChallengeDialog(BuildContext context,
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel',
-                  style: TextStyle(color: TradEtTheme.textSecondary)),
+              child: Text(AppLocalizations.of(ctx).cancel,
+                  style: const TextStyle(color: TradEtTheme.textSecondary)),
             ),
           ],
         );

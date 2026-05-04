@@ -224,21 +224,35 @@ class _AlertsScreenState extends State<AlertsScreen> {
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(wide ? 32 : 20, wide ? 24 : 16, wide ? 32 : 20, 0),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Text(l.priceAlertsTitle, style: const TextStyle(fontSize: 28,
-                          fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
-                      Text(l.getNotifiedOnPriceChanges,
-                          style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
+                      if (!wide && Navigator.of(context).canPop())
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white, size: 20),
+                          onPressed: () => Navigator.of(context).pop(),
+                          tooltip: l.back,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                        ),
+                      Expanded(
+                        child: Text(l.priceAlertsTitle, style: const TextStyle(fontSize: 22,
+                            fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
+                      ),
+                      FloatingActionButton.small(
+                        onPressed: _showCreateDialog,
+                        backgroundColor: TradEtTheme.positive,
+                        child: const Icon(Icons.add, color: Colors.white),
+                      ),
                     ],
-                  )),
-                  FloatingActionButton.small(
-                    onPressed: _showCreateDialog,
-                    backgroundColor: TradEtTheme.positive,
-                    child: const Icon(Icons.add, color: Colors.white),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: !wide && Navigator.of(context).canPop() ? 36 : 0),
+                    child: Text(l.getNotifiedOnPriceChanges,
+                        style: const TextStyle(fontSize: 13, color: TradEtTheme.textSecondary)),
                   ),
                 ],
               ),
@@ -249,10 +263,6 @@ class _AlertsScreenState extends State<AlertsScreen> {
               child: _loading
                   ? const Center(child: CircularProgressIndicator(color: TradEtTheme.positive))
                   : _buildAlertList(wide),
-            ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 4, 20, 16),
-              child: DisclaimerFooter(),
             ),
           ],
         ),
@@ -288,6 +298,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
         ],
         if (_alerts.isEmpty && _triggered.isEmpty)
           _buildEmptyState(),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(0, 12, 0, 16),
+          child: DisclaimerFooter(),
+        ),
       ],
     );
     // Skip RefreshIndicator on web — it adds a grey Material3 background
