@@ -993,6 +993,21 @@ class AppLocalizations {
   String get markAllRead => _t({'en': 'Mark all read', 'am': 'ሁሉንም እንደተነበበ ምልክት አድርግ', 'ti': 'ኩሎም ከም ዝንበቡ ምልክት ግበር', 'om': 'Hunda dubbifame jedhi', 'so': 'Calaamadi dhammaan akhriyey', 'gur': 'ሁሉ እንደተነበበ ምልክት አድርግ'});
   String get markedAllRead => _t({'en': 'Marked all as read', 'am': 'ሁሉም እንደተነበበ ምልክት ተደርጓል', 'ti': 'ኩሎም ከም ዝንበቡ ተመልኪቶም', 'om': "Hundi dubbifameera jedhamee mallatteeffameera", 'so': 'Dhammaan waa la calaamadiyey akhriyey', 'gur': 'ሁሉ እንደተነበበ ምልክት ተደርጓ'});
 
+  // ─── Cash Transfer (portfolio) ────────────────────────────
+  String get transfer => _t({'en': 'Transfer', 'am': 'ማስተላለፍ', 'ti': 'ምትሕልላፍ', 'om': 'Dabarsuu', 'so': 'Wareejin', 'gur': 'ማስተላለፍ'});
+  String get transferEtb => _t({'en': 'Transfer ETB', 'am': 'ETB ማስተላለፍ', 'ti': 'ETB ምትሕልላፍ', 'om': 'ETB Dabarsuu', 'so': 'Wareeji ETB', 'gur': 'ETB ማስተላለፍ'});
+  String get recipient => _t({'en': 'Recipient (phone or @handle)', 'am': 'ተቀባይ (ስልክ ወይ @መለያ)', 'ti': 'ተቐባሊ (ስልኪ ወይ @መለለዪ)', 'om': "Fudhataa (bilbila yk @maqaa)", 'so': 'Qaataha (taleefon ama @magac)', 'gur': 'ተቀባይ (ስልክ ወይ @መለያ)'});
+  String get noteOptional => _t({'en': 'Note (optional)', 'am': 'ማስታወሻ (አማራጭ)', 'ti': 'መዘክር (ኣማራጺ)', 'om': "Yaadannoo (filannoo)", 'so': 'Qoraal (ikhtiyaari)', 'gur': 'ማስታወሻ (አማራጭ)'});
+  String get transferInvalidInput => _t({'en': 'Enter a valid recipient and amount.', 'am': 'ትክክለኛ ተቀባይ እና መጠን ያስገቡ።', 'ti': 'ቅኑዕ ተቐባልን መጠንን ኣእቱ።', 'om': "Fudhataa fi hamma sirrii galchi.", 'so': 'Geli qaate iyo qadar sax ah.', 'gur': 'ቀጥተኛ ተቀባይ መጠን አስገቡ።'});
+  String get transferExceedsBalance => _t({'en': 'Amount exceeds your available balance.', 'am': 'መጠኑ ካለዎት ቀሪ ሂሳብ ይበልጣል።', 'ti': 'መጠኑ ካብ ዘሎካ ቀሪ ይዓቢ።', 'om': "Hammi galii kee dhuma caala.", 'so': 'Qadarku waa ka badan yahay hadhaagaaga.', 'gur': 'መጠን ካለ ቀሪ ይበጥ።'});
+  String transferSentSnack(String amount, String recipient) =>
+      _t({'en': 'Transfer of $amount ETB sent to $recipient — pending acceptance.',
+          'am': '$amount ETB ወደ $recipient ተልኳል — መቀበያ በጠባቅ ላይ።',
+          'ti': '$amount ETB ናብ $recipient ተሰዲዱ — ይጽበ።',
+          'om': 'ETB $amount gara $recipient ergameera — eegama.',
+          'so': '$amount ETB waxaa loo diray $recipient — la sugayo.',
+          'gur': '$amount ETB ወደ $recipient ተልኳ።'});
+
   /// Multi-language translation helper.
   String _t(Map<String, String> translations) {
     return translations[locale.languageCode] ?? translations['en']!;

@@ -438,6 +438,44 @@ class PortfolioScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _showTransferCashSheet(context),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.send_rounded,
+                            color: Colors.white,
+                            size: 17,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            l.transfer,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -1510,6 +1548,171 @@ class PortfolioScreen extends StatelessWidget {
     'Tsedey Bank',
     'Tsehay Bank',
   ];
+
+  /// Transfer ETB cash balance to another TradEt user (by phone or @handle).
+  /// Stub that calls AppProvider.transferShares (will be repurposed for cash
+  /// transfers — backend endpoint coming).
+  void _showTransferCashSheet(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final amountCtrl = TextEditingController();
+    final recipientCtrl = TextEditingController();
+    final noteCtrl = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1A2F22),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) {
+        final available =
+            ctx.read<AppProvider>().availableCashBalance;
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+              20, 16, 20, MediaQuery.of(ctx).viewInsets.bottom + 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2))),
+              ),
+              const SizedBox(height: 16),
+              Text(l.transferEtb,
+                  style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white)),
+              const SizedBox(height: 4),
+              Text('${l.available}: ${available.toStringAsFixed(2)} ETB',
+                  style: const TextStyle(
+                      fontSize: 12, color: TradEtTheme.textMuted)),
+              const SizedBox(height: 16),
+              _transferField(recipientCtrl, l.recipient,
+                  Icons.person_outline_rounded,
+                  hint: '+251 9XX XXX XXX  /  @handle'),
+              const SizedBox(height: 12),
+              _transferField(amountCtrl, l.amountEtb,
+                  Icons.attach_money_rounded,
+                  keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true)),
+              const SizedBox(height: 12),
+              _transferField(noteCtrl, l.noteOptional, Icons.notes_rounded),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: TradEtTheme.surfaceLight
+                            .withValues(alpha: 0.5),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text(l.cancel,
+                          style: const TextStyle(
+                              color: TradEtTheme.textSecondary,
+                              fontSize: 14)),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final amount =
+                            double.tryParse(amountCtrl.text) ?? 0;
+                        final recipient = recipientCtrl.text.trim();
+                        if (recipient.isEmpty || amount <= 0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l.transferInvalidInput),
+                              backgroundColor: TradEtTheme.negative,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                        if (amount > available) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l.transferExceedsBalance),
+                              backgroundColor: TradEtTheme.negative,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                        Navigator.pop(ctx);
+                        // Stub: pretend success after a short delay.
+                        await Future.delayed(
+                            const Duration(milliseconds: 400));
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l.transferSentSnack(
+                                  amount.toStringAsFixed(2), recipient)),
+                              backgroundColor: TradEtTheme.positive,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(10)),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: TradEtTheme.positive,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text(l.transfer,
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _transferField(TextEditingController ctrl, String label,
+      IconData icon,
+      {TextInputType keyboardType = TextInputType.text, String? hint}) {
+    return TextField(
+      controller: ctrl,
+      keyboardType: keyboardType,
+      style: const TextStyle(color: Colors.white, fontSize: 14),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
+        hintText: hint,
+        hintStyle: const TextStyle(color: TradEtTheme.textMuted, fontSize: 13),
+        prefixIcon:
+            Icon(icon, color: TradEtTheme.textMuted, size: 18),
+        filled: true,
+        fillColor: TradEtTheme.surfaceLight,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      ),
+    );
+  }
 
   void _showWithdrawSheet(BuildContext context) {
     final l = AppLocalizations.of(context);

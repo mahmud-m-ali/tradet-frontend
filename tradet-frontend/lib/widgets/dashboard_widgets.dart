@@ -132,7 +132,7 @@ class HeroTradeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Label + Halal badge
+          // Label
           Row(
             children: [
               const Icon(Icons.account_balance_rounded,
@@ -141,20 +141,6 @@ class HeroTradeCard extends StatelessWidget {
               Text(l.totalPortfolioValue,
                   style: const TextStyle(
                       fontSize: 11, color: TradEtTheme.textSecondary)),
-              const Spacer(),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: TradEtTheme.positive.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Text(l.halal,
-                    style: const TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: TradEtTheme.positive)),
-              ),
             ],
           ),
           const SizedBox(height: 3),
